@@ -64,7 +64,7 @@ class Groth16 {
  
         let line_cnt = 0
 
-        for (let i = 1; i < 20; i++) {
+        for (let i = 1; i < ATE_LOOP_COUNT.length; i++) {
             let line_b = b_lines[line_cnt];
             let line_gamma = this.gamma_lines[line_cnt];
             let line_delta = this.delta_lines[line_cnt];
@@ -137,11 +137,11 @@ class Groth16 {
         line_delta = this.delta_lines[line_cnt];
         line_cnt += 1
 
-        // let b_line_b_acc = line_b.evaluate(bAcc)
-        // assert(b_line_b_acc.equals(ZERO).equals(F_ONE))
+        let b_line_b_acc = line_b.evaluate(bAcc)
+        assert(b_line_b_acc.equals(ZERO).equals(F_ONE))
 
-        // let b_piB = line_b.evaluate(piB)
-        // assert(b_piB.equals(ZERO).equals(F_ONE))
+        let b_piB = line_b.evaluate(piB)
+        assert(b_piB.equals(ZERO).equals(F_ONE))
 
         let ba_eval = line_b.psi(a_cache)
         let gamma_pi_eval = line_gamma.psi(pi_cache)
@@ -156,11 +156,11 @@ class Groth16 {
         line_gamma = this.gamma_lines[line_cnt];
         line_delta = this.delta_lines[line_cnt];
 
-        // b_line_b_acc = line_b.evaluate(bAcc)
-        // assert(b_line_b_acc.equals(ZERO).equals(F_ONE))
+        b_line_b_acc = line_b.evaluate(bAcc)
+        assert(b_line_b_acc.equals(ZERO).equals(F_ONE))
 
-        // let b_pi_2_B = line_b.evaluate(pi_2_B)
-        // assert(b_pi_2_B.equals(ZERO).equals(F_ONE))
+        let b_pi_2_B = line_b.evaluate(pi_2_B)
+        assert(b_pi_2_B.equals(ZERO).equals(F_ONE))
 
         ba_eval = line_b.psi(a_cache)
         gamma_pi_eval = line_gamma.psi(pi_cache)
@@ -231,6 +231,7 @@ function main() {
     let f = g16.multiMillerLoop(A, B, PI, C, bLines);
 }
 
+// npm run build && node --max-old-space-size=65536 build/src/groth16/multi_miller.js
 import v8 from 'v8';
 (async () => {
     console.time('running Fp constant version');
@@ -245,8 +246,13 @@ import v8 from 'v8';
     let cs = await Provable.constraintSystem(main);
     console.timeEnd('creating Fp constraint system');
 
-    // console.log(cs.summary());
+    console.log(cs.summary());
     const totalHeapSize = v8.getHeapStatistics().total_available_size;
     let totalHeapSizeinGB = (totalHeapSize /1024/1024/1024).toFixed(2);
     console.log(`Total heap size: ${totalHeapSizeinGB} GB`);
+
+    // used_heap_size
+    const usedHeapSize = v8.getHeapStatistics().used_heap_size;
+    let usedHeapSizeinGB = (usedHeapSize /1024/1024/1024).toFixed(2);
+    console.log(`Used heap size: ${usedHeapSizeinGB} GB`);
 })();
