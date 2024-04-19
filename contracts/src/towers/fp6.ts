@@ -105,52 +105,52 @@ class Fp6 extends Struct({c0: Fp2, c1: Fp2, c2: Fp2}) {
 
 export { Fp6 }
 
-function main() {
-    // TODO: add all of this in unit tests
-    const g00 = FpC.from(-10n);
-    const g01 = FpC.from(-11n);
-    const g0 = new Fp2({c0: g00, c1: g01});
+// function main() {
+//     // TODO: add all of this in unit tests
+//     const g00 = FpC.from(-10n);
+//     const g01 = FpC.from(-11n);
+//     const g0 = new Fp2({c0: g00, c1: g01});
 
-    const g10 = FpC.from(-12n);
-    const g11 = FpC.from(-13n);
-    const g1 = new Fp2({c0: g10, c1: g11});
+//     const g10 = FpC.from(-12n);
+//     const g11 = FpC.from(-13n);
+//     const g1 = new Fp2({c0: g10, c1: g11});
 
-    const g20 = FpC.from(-14n);
-    const g21 = FpC.from(-15n);
-    const g2 = new Fp2({c0: g20, c1: g21});
+//     const g20 = FpC.from(-14n);
+//     const g21 = FpC.from(-15n);
+//     const g2 = new Fp2({c0: g20, c1: g21});
 
-    const g = new Fp6({c0: g0, c1: g1, c2: g2});
+//     const g = new Fp6({c0: g0, c1: g1, c2: g2});
 
-    const h00 = FpC.from(-16n);
-    const h01 = FpC.from(-17n);
-    const h0 = new Fp2({c0: h00, c1: h01});
+//     const h00 = FpC.from(-16n);
+//     const h01 = FpC.from(-17n);
+//     const h0 = new Fp2({c0: h00, c1: h01});
 
-    const h10 = FpC.from(-18n);
-    const h11 = FpC.from(-19n);
-    const h1 = new Fp2({c0: h10, c1: h11});
+//     const h10 = FpC.from(-18n);
+//     const h11 = FpC.from(-19n);
+//     const h1 = new Fp2({c0: h10, c1: h11});
 
-    const h20 = FpC.from(-20n);
-    const h21 = FpC.from(-21n);
-    const h2 = new Fp2({c0: h20, c1: h21});
+//     const h20 = FpC.from(-20n);
+//     const h21 = FpC.from(-21n);
+//     const h2 = new Fp2({c0: h20, c1: h21});
 
-    const h = new Fp6({c0: h0, c1: h1, c2: h2});
+//     const h = new Fp6({c0: h0, c1: h1, c2: h2});
 
-    const gh = g.mul(h);
-    const g_inv = g.inverse();
+//     const gh = g.mul(h);
+//     const g_inv = g.inverse();
 
-    // from arkworks when doing g * h
-    // a00
-    console.log(gh.c0.c0.toBigInt().toString() == '21888242871839275222246405745257275088696311157297823662689037894645226206914');
-    // a01
-    console.log(gh.c0.c1.toBigInt().toString() == '9712');
-    // a10
-    console.log(gh.c1.c0.toBigInt().toString() == '21888242871839275222246405745257275088696311157297823662689037894645226207616');
-    // a11
-    console.log(gh.c1.c1.toBigInt().toString() == '6111');
-    // a20
-    console.log(gh.c2.c0.toBigInt().toString() == '21888242871839275222246405745257275088696311157297823662689037894645226208490');
-    // a21
-    console.log(gh.c2.c1.toBigInt().toString() == '1370');
-}
+//     // from arkworks when doing g * h
+//     // a00
+//     console.log(gh.c0.c0.toBigInt().toString() == '21888242871839275222246405745257275088696311157297823662689037894645226206914');
+//     // a01
+//     console.log(gh.c0.c1.toBigInt().toString() == '9712');
+//     // a10
+//     console.log(gh.c1.c0.toBigInt().toString() == '21888242871839275222246405745257275088696311157297823662689037894645226207616');
+//     // a11
+//     console.log(gh.c1.c1.toBigInt().toString() == '6111');
+//     // a20
+//     console.log(gh.c2.c0.toBigInt().toString() == '21888242871839275222246405745257275088696311157297823662689037894645226208490');
+//     // a21
+//     console.log(gh.c2.c1.toBigInt().toString() == '1370');
+// }
 
-main();
+// main();

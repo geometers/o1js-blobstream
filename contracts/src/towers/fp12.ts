@@ -172,85 +172,85 @@ class Fp12 extends Struct({c0: Fp6, c1: Fp6}) {
     }
 }
 
-function main() {
-    // TODO: add all of this in unit tests
-    const g00 = FpC.from(1n);
-    const g01 = FpC.from(2n);
-    const g0 = new Fp2({c0: g00, c1: g01});
+// function main() {
+//     // TODO: add all of this in unit tests
+//     const g00 = FpC.from(1n);
+//     const g01 = FpC.from(2n);
+//     const g0 = new Fp2({c0: g00, c1: g01});
 
-    const g10 = FpC.from(3n);
-    const g11 = FpC.from(4n);
-    const g1 = new Fp2({c0: g10, c1: g11});
+//     const g10 = FpC.from(3n);
+//     const g11 = FpC.from(4n);
+//     const g1 = new Fp2({c0: g10, c1: g11});
 
-    const g20 = FpC.from(5n);
-    const g21 = FpC.from(6n);
-    const g2 = new Fp2({c0: g20, c1: g21});
+//     const g20 = FpC.from(5n);
+//     const g21 = FpC.from(6n);
+//     const g2 = new Fp2({c0: g20, c1: g21});
 
-    const g = new Fp6({c0: g0, c1: g1, c2: g2});
+//     const g = new Fp6({c0: g0, c1: g1, c2: g2});
 
-    const h00 = FpC.from(7n);
-    const h01 = FpC.from(8n);
-    const h0 = new Fp2({c0: h00, c1: h01});
+//     const h00 = FpC.from(7n);
+//     const h01 = FpC.from(8n);
+//     const h0 = new Fp2({c0: h00, c1: h01});
 
-    const h10 = FpC.from(9n);
-    const h11 = FpC.from(10n);
-    const h1 = new Fp2({c0: h10, c1: h11});
+//     const h10 = FpC.from(9n);
+//     const h11 = FpC.from(10n);
+//     const h1 = new Fp2({c0: h10, c1: h11});
 
-    const h20 = FpC.from(11n);
-    const h21 = FpC.from(12n);
-    const h2 = new Fp2({c0: h20, c1: h21});
+//     const h20 = FpC.from(11n);
+//     const h21 = FpC.from(12n);
+//     const h2 = new Fp2({c0: h20, c1: h21});
 
-    const h = new Fp6({c0: h0, c1: h1, c2: h2});
+//     const h = new Fp6({c0: h0, c1: h1, c2: h2});
 
-    const x = new Fp12({c0: g, c1: h});
+//     const x = new Fp12({c0: g, c1: h});
 
-    let res = x.frobenius_pow_p(); 
-    // from arkworks after doing x.frobenius_map(1)
-    compare_results(res, arkworks_res_frob1);
+//     let res = x.frobenius_pow_p(); 
+//     // from arkworks after doing x.frobenius_map(1)
+//     compare_results(res, arkworks_res_frob1);
 
-    res = x.frobenius_pow_p_squared(); 
-    res = x.frobenius_pow_p_cubed(); 
-    res = x.square();
-    res = x.mul(x);
-    res = x.pow([1, 1]); // x^3
-    res = x.pow([1, 0, 0, 0, -1])
-    res = x.conjugate()
-    res = x.inverse();
-    res = x.exp_e();
-}
+//     res = x.frobenius_pow_p_squared(); 
+//     res = x.frobenius_pow_p_cubed(); 
+//     res = x.square();
+//     res = x.mul(x);
+//     res = x.pow([1, 1]); // x^3
+//     res = x.pow([1, 0, 0, 0, -1])
+//     res = x.conjugate()
+//     res = x.inverse();
+//     res = x.exp_e();
+// }
 
-function compare_results(res: Fp12, arkworks_res: any) {
-    console.log(res.c0.c0.c0.toBigInt().toString() == arkworks_res["c0.c0.c0"]);
-    console.log(res.c0.c0.c1.toBigInt().toString() == arkworks_res["c0.c0.c1"]);
-    console.log(res.c0.c1.c0.toBigInt().toString() == arkworks_res["c0.c1.c0"]);
-    console.log(res.c0.c1.c1.toBigInt().toString() == arkworks_res["c0.c1.c1"]);
-    console.log(res.c0.c2.c0.toBigInt().toString() == arkworks_res["c0.c2.c0"]);
-    console.log(res.c0.c2.c1.toBigInt().toString() == arkworks_res["c0.c2.c1"]);
+// function compare_results(res: Fp12, arkworks_res: any) {
+//     console.log(res.c0.c0.c0.toBigInt().toString() == arkworks_res["c0.c0.c0"]);
+//     console.log(res.c0.c0.c1.toBigInt().toString() == arkworks_res["c0.c0.c1"]);
+//     console.log(res.c0.c1.c0.toBigInt().toString() == arkworks_res["c0.c1.c0"]);
+//     console.log(res.c0.c1.c1.toBigInt().toString() == arkworks_res["c0.c1.c1"]);
+//     console.log(res.c0.c2.c0.toBigInt().toString() == arkworks_res["c0.c2.c0"]);
+//     console.log(res.c0.c2.c1.toBigInt().toString() == arkworks_res["c0.c2.c1"]);
 
-    console.log(res.c1.c0.c0.toBigInt().toString() == arkworks_res["c1.c0.c0"]);
-    console.log(res.c1.c0.c1.toBigInt().toString() == arkworks_res["c1.c0.c1"]);
-    console.log(res.c1.c1.c0.toBigInt().toString() == arkworks_res["c1.c1.c0"]);
-    console.log(res.c1.c1.c1.toBigInt().toString() == arkworks_res["c1.c1.c1"]);
-    console.log(res.c1.c2.c0.toBigInt().toString() == arkworks_res["c1.c2.c0"]);
-    console.log(res.c1.c2.c1.toBigInt().toString() == arkworks_res["c1.c2.c1"]);
-}
+//     console.log(res.c1.c0.c0.toBigInt().toString() == arkworks_res["c1.c0.c0"]);
+//     console.log(res.c1.c0.c1.toBigInt().toString() == arkworks_res["c1.c0.c1"]);
+//     console.log(res.c1.c1.c0.toBigInt().toString() == arkworks_res["c1.c1.c0"]);
+//     console.log(res.c1.c1.c1.toBigInt().toString() == arkworks_res["c1.c1.c1"]);
+//     console.log(res.c1.c2.c0.toBigInt().toString() == arkworks_res["c1.c2.c0"]);
+//     console.log(res.c1.c2.c1.toBigInt().toString() == arkworks_res["c1.c2.c1"]);
+// }
 
 export { Fp12 }
 
-const arkworks_res_frob1 = {
-    "c0.c0.c0": "1",
-    "c0.c0.c1": "21888242871839275222246405745257275088696311157297823662689037894645226208581",
-    "c0.c1.c0": "18403825810980266942818486922527826999298808716316102853382469444191903103267",
-    "c0.c1.c1": "10285678850015582725602772979496857661220446766353913946092242777037565658567",
-    "c0.c2.c0": "1206641321953283270833714125376416931468304999383738418085045759374114446372",
-    "c0.c2.c1": "18532588176558358261636576921062066108174276162474095808292927126658498601373",
-    "c1.c0.c0": "15285475670255014489229669040738642330633146371560861622129435166663266298424",
-    "c1.c0.c1": "4503326591755535150059358256710294674953135681215152008960092180291386250406",
-    "c1.c1.c0": "16676038575187844943310927664569462212246367451594032388461421128719214025850",
-    "c1.c1.c1": "3336942089258638962701677172923213016266019736652133098342307295433337108087",
-    "c1.c2.c0": "21349673280550689267642407988536924884743314711499493762643067160037446099821",
-    "c1.c2.c1": "19033225495368496540456934014739061511647005313793238349017974916481889468720",  
-}
+// const arkworks_res_frob1 = {
+//     "c0.c0.c0": "1",
+//     "c0.c0.c1": "21888242871839275222246405745257275088696311157297823662689037894645226208581",
+//     "c0.c1.c0": "18403825810980266942818486922527826999298808716316102853382469444191903103267",
+//     "c0.c1.c1": "10285678850015582725602772979496857661220446766353913946092242777037565658567",
+//     "c0.c2.c0": "1206641321953283270833714125376416931468304999383738418085045759374114446372",
+//     "c0.c2.c1": "18532588176558358261636576921062066108174276162474095808292927126658498601373",
+//     "c1.c0.c0": "15285475670255014489229669040738642330633146371560861622129435166663266298424",
+//     "c1.c0.c1": "4503326591755535150059358256710294674953135681215152008960092180291386250406",
+//     "c1.c1.c0": "16676038575187844943310927664569462212246367451594032388461421128719214025850",
+//     "c1.c1.c1": "3336942089258638962701677172923213016266019736652133098342307295433337108087",
+//     "c1.c2.c0": "21349673280550689267642407988536924884743314711499493762643067160037446099821",
+//     "c1.c2.c1": "19033225495368496540456934014739061511647005313793238349017974916481889468720",  
+// }
 
 
 // from arkworks after doing x.frobenius_map(2)

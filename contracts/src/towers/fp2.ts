@@ -99,23 +99,27 @@ class Fp2 extends Struct({c0: FpC.provable, c1: FpC.provable}) {
 
         return new Fp2({c0, c1});
     }
+
+    static fromJson(json: any): Fp2 {
+        return new Fp2({c0: FpC.provable.fromJSON(json.c0.value), c1: FpC.provable.fromJSON(json.c1.value)});
+    }
 }
 
 
-function main() {
-    let c0 = Provable.witness(
-      FpC.provable,
-      () => FpC.from(21888242871839275222246405745257275088696357297823662689037894645226208581n)
-    );
-    let c1 = Provable.witness(
-        FpC.provable,
-        () => FpC.from(21888242871839275246405745257275088696311157297823662689037894645226208581n)
-    );
-    let fp2 = new Fp2({c0, c1});
-    let s = fp2.square();
-    let sinv = Provable.witness(Fp2, () => s.inverse());
-    sinv.mul(s).assertEquals(Fp2.one());
-}
+// function main() {
+//     let c0 = Provable.witness(
+//       FpC.provable,
+//       () => FpC.from(21888242871839275222246405745257275088696357297823662689037894645226208581n)
+//     );
+//     let c1 = Provable.witness(
+//         FpC.provable,
+//         () => FpC.from(21888242871839275246405745257275088696311157297823662689037894645226208581n)
+//     );
+//     let fp2 = new Fp2({c0, c1});
+//     let s = fp2.square();
+//     let sinv = Provable.witness(Fp2, () => s.inverse());
+//     sinv.mul(s).assertEquals(Fp2.one());
+// }
 
 // (async () => {
 //     console.time('running Fp2 constant version');
