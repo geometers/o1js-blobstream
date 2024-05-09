@@ -25,10 +25,11 @@ pub fn display_fq12(x: Fq12, label: &str) {
 mod tests {
     use ark_bn254::{Bn254, Fq12, Fq2, Fq6, Fr, G1Affine, G2Affine};
     use ark_ec::{pairing::{MillerLoopOutput, Pairing}, AffineRepr, CurveGroup};
+    use ark_std::rand::{rngs::StdRng, SeedableRng};
     use std::ops::Mul;
-    use ark_ff::{MontFp, One};
+    use ark_ff::{Field, MontFp, Zero, One};
 
-    use crate::display_fq12;
+    use crate::{constants::{E, RESIDUE}, display_fq12, eth_root::eth_root, tonelli_shanks::TS, utils::{exp, sample_27th_root_of_unity}};
 
     fn get_alpha_beta() -> Fq12 {
         let g1 = G1Affine::generator();
@@ -40,10 +41,16 @@ mod tests {
         Bn254::multi_miller_loop(&[alpha], &[beta]).0
     }
 
+    fn get_shift_factor() -> Fq12 {
+        let rng = &mut StdRng::seed_from_u64(123u64);
+        sample_27th_root_of_unity(rng)
+    }
+
     #[test]
-    fn display_alpha_beta() {
-        let ab = get_alpha_beta();
-        display_fq12(ab, "ab");
+    fn display() {
+        // let ab = get_alpha_beta();
+        let w27 = get_shift_factor();
+        display_fq12(w27, "w27");
     }
 
     #[test]
@@ -91,8 +98,8 @@ mod tests {
         // let c = c.into_affine();
         // let pi = pi.into_affine();
 
-        println!("a.x: {}", a.x);
-        println!("a.y: {}", a.y);
+        // println!("a.x: {}", a.x);
+        // println!("a.y: {}", a.y);
 
         // println!("b.x: {}", b.x);
         // println!("b.y: {}", b.y);
@@ -173,5 +180,41 @@ mod tests {
         let x = MillerLoopOutput(x);
         let e = Bn254::final_exponentiation(x).unwrap();
         assert_eq!(e.0, Fq12::one());
+
+        // here we build the auxiliary witness 
+        let w27 = get_shift_factor();
+
+        let mut eth_residue = Fq12::zero();
+        let mut shift = Fq12::zero();
+
+        for i in 0..3 {
+            let tmp_shift = w27.pow(&[i as u64, 0, 0, 0]);
+            let tmp_eth = x.0 * tmp_shift;
+    
+            if exp(tmp_eth, &RESIDUE) == Fq12::one() {
+                println!("found at {}", i);
+                shift = tmp_shift;
+                // shift = tmp_shift;
+                eth_residue = tmp_eth;
+    
+                break;
+            }
+        }
+    
+        // this roots can be hardcoded instead of sampling each time
+        let rng = &mut StdRng::seed_from_u64(1232313u64);
+        let w27 = sample_27th_root_of_unity(rng);
+        let ts = TS { w: w27 };
+    
+        let root = eth_root(eth_residue, ts);
+        assert_eq!(exp(root, &E), eth_residue);
+
+        // display_fq12(root, "c");
+
+        // mm * w^shift = c^e 
+        // mm * w^shift * c^(-e) = 1 
+        let c = root.inverse().unwrap();
+        let res = x.0 * shift * exp(c, &E); 
+        assert_eq!(res, Fq12::one());
     }
 }

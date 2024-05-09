@@ -1,4 +1,4 @@
-import { Struct } from "o1js";
+import { Field, Struct, assert } from "o1js";
 import { ATE_LOOP_COUNT, atc } from "./consts.js";
 import { FpC } from "./fp.js";
 import { Fp2 } from "./fp2.js";
@@ -29,6 +29,11 @@ class Fp12 extends Struct({c0: Fp6, c1: Fp6}) {
 
     conjugate(): Fp12 {
         return new Fp12({c0: this.c0, c1: this.c1.neg()})
+    }
+
+    assert_equals(rhs: Fp12) {
+        this.c0.assert_equals(rhs.c0);
+        this.c1.assert_equals(rhs.c1);
     }
 
     inverse() {

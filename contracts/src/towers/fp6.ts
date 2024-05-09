@@ -1,4 +1,4 @@
-import { Struct } from "o1js";
+import { Field, Struct, assert } from "o1js";
 import { FpC } from "./fp.js";
 import { Fp2 } from "./fp2.js";
 import { fp2_non_residue } from "./precomputed.js";
@@ -21,6 +21,13 @@ class Fp6 extends Struct({c0: Fp2, c1: Fp2, c2: Fp2}) {
 
     static one() {
         return new Fp6({c0: Fp2.one(), c1: Fp2.zero(), c2: Fp2.zero()})
+    }
+
+    assert_equals(rhs: Fp6) {
+        const ONE = Field(1);
+        assert(this.c0.equals(rhs.c0).equals(ONE))
+        assert(this.c1.equals(rhs.c1).equals(ONE))
+        assert(this.c2.equals(rhs.c2).equals(ONE))
     }
 
     neg(): Fp6 {
