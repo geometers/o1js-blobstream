@@ -3,14 +3,6 @@ import { FpC, Fp2, Fp6, Fp12 } from "../towers/index.js"
 import { GAMMA_1S, NEG_GAMMA_13 } from "../towers/precomputed.js";
 
 class G2Affine extends Struct({x: Fp2, y: Fp2}) {
-    // x: Fp2 
-    // y: Fp2
-
-    // constructor(x: Fp2, y: Fp2) {
-    //     this.x = x; 
-    //     this.y = y;
-    // }
-
     equals(rhs: G2Affine): Field {
         let same_x: Field = this.x.equals(rhs.x); 
         let same_y: Field = this.y.equals(rhs.y); 
@@ -104,37 +96,3 @@ class G2Affine extends Struct({x: Fp2, y: Fp2}) {
 }
 
 export { G2Affine }
-
-// p = 5G1 
-// q = 7G2
-
-// let px = FpC.from(10744596414106452074759370245733544594153395043370666422502510773307029471145n)
-// let py = FpC.from(848677436511517736191562425154572367705380862894644942948681172815252343932n)
-// let p = new G1(px, py);
-
-// let qx_0 = FpC.from(15512671280233143720612069991584289591749188907863576513414377951116606878472n)
-// let qx_1 = FpC.from(18551411094430470096460536606940536822990217226529861227533666875800903099477n)
-// let qx = new Fp2(qx_0, qx_1)
-
-// let qy_0 = FpC.from(13376798835316611669264291046140500151806347092962367781523498857425536295743n)
-// let qy_1 = FpC.from(1711576522631428957817575436337311654689480489843856945284031697403898093784n)
-// let qy = new Fp2(qy_0, qy_1)
-
-// let qz_0 = FpC.from(1n)
-// let qz_1 = FpC.from(0n)
-// let qz = new Fp2(qz_0, qz_1)
-
-// const q = new G2Affine(qx, qy)
-// const q_cp = new G2Affine(qx, qy)
-
-// const qq_line = q.line(q_cp);
-
-// let e = qq_line.evaluate(q);
-// console.log(e.c0.toBigInt())
-// console.log(e.c1.toBigInt())
-
-// e = qq_line.evaluate_in_g1(p);
-// console.log(e.c0.toBigInt())
-// console.log(e.c1.toBigInt())
-
-// Don't forget to explore -mu precomputation

@@ -1,7 +1,6 @@
 import { FpC } from "./fp.js";
 import { Fp2 } from "./fp2.js";
 
-// TODO: comment why is 9 + u non residue from which we compute exponentiations
 const fp2_non_residue = new Fp2({c0: FpC.from(9n), c1: FpC.from(1n)});
 
 // (9 + u)^(i * (p - 1) / 6) for i in 1..5

@@ -2,14 +2,6 @@ import { Field, Struct, Provable } from 'o1js'
 import { FpC } from './fp.js'
 
 class Fp2 extends Struct({c0: FpC.provable, c1: FpC.provable}) {
-    // c0: FpC
-    // c1: FpC
-
-    // constructor(c0: FpC.provable, c1: FpC.provable) {
-    //     this.c0 = c0
-    //     this.c1 = c1
-    // }
-
     static zero(): Fp2 {
         return new Fp2({c0: FpC.from(0n), c1: FpC.from(0n)})
     }
@@ -18,8 +10,7 @@ class Fp2 extends Struct({c0: FpC.provable, c1: FpC.provable}) {
         return new Fp2({c0: FpC.from(1n), c1: FpC.from(0n)})
     }
 
-    // TODO: modify this to return Bool from Fp
-    assertEquals(rhs: Fp2) {
+    assert_equals(rhs: Fp2) {
         this.c0.assertEquals(rhs.c0) 
         this.c1.assertEquals(rhs.c1)
     }
