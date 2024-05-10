@@ -18,6 +18,43 @@ class Groth16 {
         this.w27 = [Fp12.one(), w27, w27_square];
     }
 
+    withSparseLines(negA: G1Affine, B: G2Affine, PI: G1Affine, C: G1Affine, b_lines: Array<G2Line>, shift_power: number, c: Fp12) {
+        let g = Groth16LineAccumulator.accumulate(b_lines, this.gamma_lines, this.delta_lines, B, negA, PI, C);
+
+        const c_inv = c.inverse();
+        let f = c_inv;
+
+        let idx = 0;
+
+        for (let i = 1; i < ATE_LOOP_COUNT.length; i++) {
+            idx = i - 1;
+            f = f.square().mul(g[idx]);
+
+            if (ATE_LOOP_COUNT[i] == 1) {
+                f = f.mul(c_inv);
+            }
+
+            if (ATE_LOOP_COUNT[i] == -1) {
+                f = f.mul(c);
+            }
+        }
+
+        idx += 1;
+        f = f.mul(g[idx]);
+        idx += 1; 
+        f = f.mul(g[idx]);
+
+        f = f.mul(c_inv.frobenius_pow_p()).mul(c.frobenius_pow_p_squared()).mul(c_inv.frobenius_pow_p_cubed()).mul(this.alpha_beta);
+
+        const shift = this.w27[shift_power];
+        f = f.mul(shift);
+
+        // f.display("f");
+
+        f.assert_equals(Fp12.one());
+
+    }
+
     // A*B = alpha * beta + PI * gamma + C * delta
     // 0 = (-A)*B + alpha * beta + PI * gamma + C * delta
     multiMillerLoop(negA: G1Affine, B: G2Affine, PI: G1Affine, C: G1Affine, b_lines: Array<G2Line>, shift_power: number, c: Fp12) {
@@ -279,11 +316,14 @@ const w27_square = w27.mul(w27);
 const g16 = new Groth16(gamma_lines, delta_lines, alpha_beta, w27, w27_square);
 
 function main() {
-    g16.multiMillerLoop(A, B, PI, C, bLines, 2, make_c());
+    // g16.multiMillerLoop(A, B, PI, C, bLines, 2, make_c());
+    g16.withSparseLines(A, B, PI, C, bLines, 2, make_c());
+
 }
 
 // npm run build && node --max-old-space-size=65536 build/src/groth16/multi_miller.js
 import v8 from 'v8';
+import { Groth16LineAccumulator } from './accumulate_lines.js';
 (async () => {
     console.time('running Fp constant version');
     await main();
