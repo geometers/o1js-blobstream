@@ -108,6 +108,32 @@ class Fp6 extends Struct({c0: Fp2, c1: Fp2, c2: Fp2}) {
 
         return new Fp6({c0, c1, c2});
     }
+
+    mul_by_fp2(rhs: Fp2): Fp6 {
+        const c0 = this.c0.mul(rhs); 
+        const c1 = this.c1.mul(rhs); 
+        const c2 = this.c2.mul(rhs); 
+
+        return new Fp6({c0, c1, c2});
+    }
+
+    // rhs = c0 + c1v + 0v^2
+    mul_by_sparse_fp6(rhs: Fp6) {
+        const t0 = this.c0.mul(rhs.c0);
+        const t1 = this.c1.mul(rhs.c1); 
+
+        let c0 = this.c2.mul(rhs.c1).mul(fp2_non_residue);
+        c0 = c0.add(t0);
+
+        const a0_a1 = this.c0.add(this.c1); 
+        const b0_b1 = rhs.c0.add(rhs.c1); 
+        let c1 = a0_a1.mul(b0_b1); 
+        c1 = c1.sub(t0).sub(t1); 
+
+        const c2 = this.c2.mul(rhs.c0).add(t1);
+
+        return new Fp6({c0, c1, c2});
+    }
 }
 
 export { Fp6 }

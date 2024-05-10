@@ -56,6 +56,21 @@ class Fp12 extends Struct({c0: Fp6, c1: Fp6}) {
         return new Fp12({c0, c1});
     }
 
+    // rhs.c0 b00 + 0v + 0v^2
+    // rhs.c1 b10 + b11v + 0v^2
+    sparse_mul(rhs: Fp12): Fp12 {
+        const t0 = this.c0.mul_by_fp2(rhs.c0.c0); 
+        const t1 = this.c1.mul_by_sparse_fp6(rhs.c1);
+
+        const c0 = t0.add(t1.mul_by_v());
+
+        const t2 = new Fp6({c0: rhs.c0.c0.add(rhs.c1.c0), c1: rhs.c1.c1, c2: Fp2.zero()});
+        let c1 = (this.c0.add(this.c1)).mul_by_sparse_fp6(t2);
+        c1 = c1.sub(t0).sub(t1);
+
+        return new Fp12({c0, c1});
+    }
+
     square(): Fp12 {
         let c0 = this.c0.sub(this.c1);
         let c3 = this.c0.sub(this.c1.mul_by_v());

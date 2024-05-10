@@ -75,7 +75,7 @@ class Groth16 {
                 let ba_eval = line_b.psi(a_cache)
                 let gamma_pi_eval = line_gamma.psi(pi_cache)
                 let delta_c_eval = line_delta.psi(c_cache)
-                f = f.mul(ba_eval).mul(gamma_pi_eval).mul(delta_c_eval).mul(c);
+                f = f.sparse_mul(ba_eval).mul(gamma_pi_eval).mul(delta_c_eval).mul(c);
         
                 bAcc = bAcc.add_from_line(line_b.lambda, negB);
             }
@@ -117,6 +117,8 @@ class Groth16 {
 
         const shift = this.w27[shift_power];
         f = f.mul(shift);
+
+        f.display("f");
 
         f.assert_equals(Fp12.one());
     }

@@ -24,7 +24,7 @@ pub fn display_fq12(x: Fq12, label: &str) {
 #[cfg(test)]
 mod tests {
     use ark_bn254::{Bn254, Fq12, Fq2, Fq6, Fr, G1Affine, G2Affine};
-    use ark_ec::{pairing::{MillerLoopOutput, Pairing}, AffineRepr, CurveGroup};
+    use ark_ec::{pairing::{MillerLoopOutput, Pairing}, AffineRepr};
     use ark_std::rand::{rngs::StdRng, SeedableRng};
     use std::ops::Mul;
     use ark_ff::{Field, MontFp, Zero, One};
@@ -48,7 +48,6 @@ mod tests {
 
     #[test]
     fn display() {
-        // let ab = get_alpha_beta();
         let w27 = get_shift_factor();
         display_fq12(w27, "w27");
     }
@@ -59,15 +58,12 @@ mod tests {
 
         // alpha_beta = 6
 
-        // pi * gamma = 36
         // gamma = 9 
         // pi = 4
 
-        // delta * c = -30
         // delta = 10 
         // c = -3 
 
-        // a * b = 12
         // a = 4
         // b = 3
 
@@ -90,26 +86,6 @@ mod tests {
         let x = MillerLoopOutput(x);
         let e = Bn254::final_exponentiation(x).unwrap();
         assert_eq!(e.0, Fq12::one());
-
-        // let gamma = gamma.into_affine();
-        // let delta = delta.into_affine();
-        let a = -a.into_affine();
-        // let b = b.into_affine();
-        // let c = c.into_affine();
-        // let pi = pi.into_affine();
-
-        // println!("a.x: {}", a.x);
-        // println!("a.y: {}", a.y);
-
-        // println!("b.x: {}", b.x);
-        // println!("b.y: {}", b.y);
-
-        // println!("c.x: {}", c.x);
-        // println!("c.y: {}", c.y);
-
-        // println!("pi.x: {}", pi.x);
-        // println!("pi.y: {}", pi.y);
-
     }
 
     #[test]
@@ -208,8 +184,6 @@ mod tests {
     
         let root = eth_root(eth_residue, ts);
         assert_eq!(exp(root, &E), eth_residue);
-
-        // display_fq12(root, "c");
 
         // mm * w^shift = c^e 
         // mm * w^shift * c^(-e) = 1 
