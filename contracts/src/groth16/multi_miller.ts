@@ -11,9 +11,13 @@ class Groth16 {
     delta_lines: Array<G2Line>;
     w27: Array<Fp12>;
 
-    constructor(gamma_lines: Array<G2Line>, delta_lines: Array<G2Line>, alpha_beta: Fp12, w27: Fp12, w27_square: Fp12) {
-        this.gamma_lines = gamma_lines; 
-        this.delta_lines = delta_lines;
+    constructor(gamma_lines: string, delta_lines: string, alpha_beta: Fp12, w27: Fp12, w27_square: Fp12) {
+        let parsed_gamma_lines: any[] = JSON.parse(gamma_lines);
+        this.gamma_lines = parsed_gamma_lines.map((g: any): G2Line => G2Line.fromJSON(g));
+
+        let parsed_delta_lines: any[] = JSON.parse(delta_lines);
+        this.delta_lines = parsed_delta_lines.map((g: any): G2Line => G2Line.fromJSON(g));
+
         this.alpha_beta = alpha_beta;
         this.w27 = [Fp12.one(), w27, w27_square];
     }
@@ -258,31 +262,6 @@ const h = new Fp6({c0: h0, c1: h1, c2: h2});
 
 const alpha_beta = new Fp12({c0: g, c1: h});
 
-
-// gamma = 9G2
-let gamma_x_0 = FpC.from(13193736976255674115506271204866518055492249136949196233486205080643750676277n)
-let gamma_x_1 = FpC.from(4821341333500639427117806840255663771228880693152568023710381392280915109763n)
-let gamma_x = new Fp2({c0: gamma_x_0, c1: gamma_x_1})
-
-let gamma_y_0 = FpC.from(18281872490245496509379794148214936771631698359916681711594256455596877716636n)
-let gamma_y_1 = FpC.from(5830427496645529367349790160167113194176899755997018131088404969293864912751n)
-let gamma_y = new Fp2({c0: gamma_y_0, c1: gamma_y_1})
-
-let gamma = new G2Affine({x: gamma_x, y: gamma_y})
-let gamma_lines = computeLineCoeffs(gamma);
-
-// delta = 10G2
-let delta_x_0 = FpC.from(14502447760486387799059318541209757040844770937862468921929310682431317530875n)
-let delta_x_1 = FpC.from(2443430939986969712743682923434644543094899517010817087050769422599268135103n)
-let delta_x = new Fp2({c0: delta_x_0, c1: delta_x_1})
-
-let delta_y_0 = FpC.from(11721331165636005533649329538372312212753336165656329339895621434122061690013n)
-let delta_y_1 = FpC.from(4704672529862198727079301732358554332963871698433558481208245291096060730807n)
-let delta_y = new Fp2({c0: delta_y_0, c1: delta_y_1})
-
-let delta = new G2Affine({x: delta_x, y: delta_y})
-let delta_lines = computeLineCoeffs(delta);
-
 // -a = 4G1
 let ax = FpC.from(3010198690406615200373504922352659861758983907867017329644089018310584441462n)
 let ay = FpC.from(17861058253836152797273815394432013122766662423622084931972383889279925210507n)
@@ -313,6 +292,8 @@ let C = new G1Affine({x: cx, y: cy});
 const w27 = make_w27(); 
 const w27_square = w27.mul(w27);
 
+var gamma_lines = fs.readFileSync('./src/groth16/gamma_lines.json', 'utf8');
+var delta_lines = fs.readFileSync('./src/groth16/delta_lines.json', 'utf8');
 const g16 = new Groth16(gamma_lines, delta_lines, alpha_beta, w27, w27_square);
 
 function main() {

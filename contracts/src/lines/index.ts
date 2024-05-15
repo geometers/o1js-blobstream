@@ -13,6 +13,11 @@ class G2Line extends Struct({lambda: Fp2, neg_mu: Fp2}) {
         super({lambda, neg_mu})
     }
 
+    static fromJSON(json: any): G2Line {
+        let value = super.fromJSON(json);
+        return new G2Line(value.lambda, value.neg_mu);
+      }
+
     static fromPoints(lhs: G2Affine, rhs: G2Affine): G2Line {
         const eq = lhs.equals(rhs); 
 
