@@ -1,4 +1,4 @@
-import { Field, Struct, Provable } from 'o1js';
+import { Field, Struct } from 'o1js';
 import { FpC } from './fp.js';
 
 class Fp2 extends Struct({ c0: FpC.provable, c1: FpC.provable }) {

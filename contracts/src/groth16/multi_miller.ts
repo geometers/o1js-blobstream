@@ -41,15 +41,28 @@ class Groth16 {
     shift_power: number,
     c: Fp12
   ) {
-    let g = Groth16LineAccumulator.accumulate(
-      b_lines,
-      this.gamma_lines,
-      this.delta_lines,
-      B,
-      negA,
-      PI,
-      C
+    // TODO witness this part for now to be able to run on my machine
+    // this has about half the constraints
+    let g = Provable.witness(Provable.Array(Fp12, 66), () =>
+      Groth16LineAccumulator.accumulate(
+        b_lines,
+        this.gamma_lines,
+        this.delta_lines,
+        B,
+        negA,
+        PI,
+        C
+      )
     );
+    // let g = Groth16LineAccumulator.accumulate(
+    //   b_lines,
+    //   this.gamma_lines,
+    //   this.delta_lines,
+    //   B,
+    //   negA,
+    //   PI,
+    //   C
+    // );
 
     const c_inv = c.inverse();
     let f = c_inv;
@@ -457,10 +470,10 @@ function main() {
     Provable.Array(G2Line, bLines.length),
     () => bLines
   );
-  let makeCW = Provable.witness(Fp12, make_c);
+  let cW = Provable.witness(Fp12, make_c);
 
-  // g16.multiMillerLoop(A, B, PI, C, bLinesW, 2, makeCW);
-  g16.withSparseLines(A, B, PI, C, bLinesW, 2, makeCW);
+  // g16.multiMillerLoop(A, B, PI, C, bLinesW, 2, cW);
+  g16.withSparseLines(A, B, PI, C, bLinesW, 2, cW);
 }
 
 // npm run build && node --max-old-space-size=65536 build/src/groth16/multi_miller.js
@@ -468,7 +481,7 @@ import v8 from 'v8';
 import { Groth16LineAccumulator } from './accumulate_lines.js';
 (async () => {
   console.time('running Fp constant version');
-  await main();
+  main();
   console.timeEnd('running Fp constant version');
 
   console.time('running Fp witness generation & checks');
