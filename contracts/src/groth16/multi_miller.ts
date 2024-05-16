@@ -41,28 +41,15 @@ class Groth16 {
     shift_power: number,
     c: Fp12
   ) {
-    // TODO witness this part for now to be able to run on my machine
-    // this has about half the constraints
-    let g = Provable.witness(Provable.Array(Fp12, 66), () =>
-      Groth16LineAccumulator.accumulate(
-        b_lines,
-        this.gamma_lines,
-        this.delta_lines,
-        B,
-        negA,
-        PI,
-        C
-      )
+    let g = Groth16LineAccumulator.accumulate(
+      b_lines,
+      this.gamma_lines,
+      this.delta_lines,
+      B,
+      negA,
+      PI,
+      C
     );
-    // let g = Groth16LineAccumulator.accumulate(
-    //   b_lines,
-    //   this.gamma_lines,
-    //   this.delta_lines,
-    //   B,
-    //   negA,
-    //   PI,
-    //   C
-    // );
 
     const c_inv = c.inverse();
     let f = c_inv;
