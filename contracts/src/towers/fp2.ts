@@ -70,17 +70,23 @@ class Fp2 extends Struct({ c0: FpA.provable, c1: FpA.provable }) {
 
   // uses the fact that we work over modulus: X^2 + 1
   mul(rhs: Fp2): Fp2 {
+    // c0 = a0*b0 - a1*b1
+    // c1 = (a0 + a1)*(b0 + b1) - a0*b0 - a1*b1
+    //    = a0*b1 + a1*b0
+
     // QN: this two assertCanonical calls can probably me omitted
     const a0b0 = this.c0.mul(rhs.c0).assertCanonical();
     const a1b1 = this.c1.mul(rhs.c1).assertCanonical();
 
+    // TODO can save a range check with assertMul()
     const c0 = a0b0.sub(a1b1);
 
+    // TODO this is a single assertMul()
     const xx = this.c0.add(this.c1);
     const yy = rhs.c0.add(rhs.c1);
     let { c0: xxA, c1: yyA } = Fp2.fromUnreduced({ c0: xx, c1: yy });
-
-    const c1 = xxA.mul(yyA).sub(a0b0).sub(a1b1);
+    let xxyy = xxA.mul(yyA);
+    const c1 = FpU.sum([xxyy, a0b0, a1b1], [-1, -1]);
 
     return Fp2.fromUnreduced({ c0, c1 });
   }
@@ -90,17 +96,18 @@ class Fp2 extends Struct({ c0: FpA.provable, c1: FpA.provable }) {
   }
 
   inverse(): Fp2 {
-    let t0 = this.c0.mul(this.c0).assertCanonical();
-    let t1 = this.c1.mul(this.c1).assertCanonical();
+    let t0 = this.c0.mul(this.c0);
+    let t1 = this.c1.mul(this.c1);
 
     // beta = -1
-    t0 = t0.add(t1).assertCanonical();
-    t1 = FpC.from(1n).div(t0).assertCanonical();
+    t0 = t0.add(t1);
+    // TODO this should be doable with 1 assertAlmostReduced + assertMul
+    let t1A = t0.assertAlmostReduced().inv().assertAlmostReduced();
 
-    const c0 = this.c0.mul(t1).assertCanonical();
-    const c1 = this.c1.mul(t1).neg().assertCanonical();
+    const c0 = this.c0.mul(t1A);
+    const c1 = this.c1.mul(t1A).neg();
 
-    return new Fp2({ c0, c1 });
+    return Fp2.fromUnreduced({ c0, c1 });
   }
 
   static fromJson(json: any): Fp2 {
