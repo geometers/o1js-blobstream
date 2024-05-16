@@ -1,7 +1,7 @@
 import { Field, Struct } from 'o1js';
-import { FpC } from './fp.js';
+import { FpC, FpU, FpA } from './fp.js';
 
-class Fp2 extends Struct({ c0: FpC.provable, c1: FpC.provable }) {
+class Fp2 extends Struct({ c0: FpA.provable, c1: FpA.provable }) {
   static zero(): Fp2 {
     return new Fp2({ c0: FpC.from(0n), c1: FpC.from(0n) });
   }
@@ -15,45 +15,53 @@ class Fp2 extends Struct({ c0: FpC.provable, c1: FpC.provable }) {
     this.c1.assertEquals(rhs.c1);
   }
 
+  canonical() {
+    return { c0: this.c0.assertCanonical(), c1: this.c1.assertCanonical() };
+  }
+
+  static fromUnreduced({ c0, c1 }: { c0: FpU; c1: FpU }): Fp2 {
+    let [c0A, c0B] = FpA.assertAlmostReduced(c0, c1);
+    return new Fp2({ c0: c0A, c1: c0B });
+  }
+
   equals(rhs: Fp2): Field {
-    return this.c0.equals(rhs.c0).and(this.c1.equals(rhs.c1)).toField();
+    let a = this.canonical();
+    let b = rhs.canonical();
+    return a.c0.equals(b.c0).and(a.c1.equals(b.c1)).toField();
   }
 
   neg(): Fp2 {
-    return new Fp2({
-      c0: this.c0.neg().assertCanonical(),
-      c1: this.c1.neg().assertCanonical(),
-    });
+    return new Fp2({ c0: this.c0.neg(), c1: this.c1.neg() });
   }
 
   conjugate(): Fp2 {
-    return new Fp2({ c0: this.c0, c1: this.c1.neg().assertCanonical() });
+    return new Fp2({ c0: this.c0, c1: this.c1.neg() });
   }
 
   add(rhs: Fp2): Fp2 {
-    const c0 = this.c0.add(rhs.c0).assertCanonical();
-    const c1 = this.c1.add(rhs.c1).assertCanonical();
+    const c0 = this.c0.add(rhs.c0);
+    const c1 = this.c1.add(rhs.c1);
 
-    return new Fp2({ c0, c1 });
+    return Fp2.fromUnreduced({ c0, c1 });
   }
 
   add_fp(rhs: FpC) {
-    const c0 = this.c0.add(rhs).assertCanonical();
-    return new Fp2({ c0, c1: this.c1 });
+    const c0 = this.c0.add(rhs);
+    return new Fp2({ c0: c0.assertAlmostReduced(), c1: this.c1 });
   }
 
   sub(rhs: Fp2): Fp2 {
-    const c0 = this.c0.sub(rhs.c0).assertCanonical();
-    const c1 = this.c1.sub(rhs.c1).assertCanonical();
+    const c0 = this.c0.sub(rhs.c0);
+    const c1 = this.c1.sub(rhs.c1);
 
-    return new Fp2({ c0, c1 });
+    return Fp2.fromUnreduced({ c0, c1 });
   }
 
   mul_by_fp(rhs: FpC) {
-    const c0 = this.c0.mul(rhs).assertCanonical();
-    const c1 = this.c1.mul(rhs).assertCanonical();
+    const c0 = this.c0.mul(rhs);
+    const c1 = this.c1.mul(rhs);
 
-    return new Fp2({ c0, c1 });
+    return Fp2.fromUnreduced({ c0, c1 });
   }
 
   mul_by_non_residue(): Fp2 {
@@ -66,14 +74,15 @@ class Fp2 extends Struct({ c0: FpC.provable, c1: FpC.provable }) {
     const a0b0 = this.c0.mul(rhs.c0).assertCanonical();
     const a1b1 = this.c1.mul(rhs.c1).assertCanonical();
 
-    const c0 = a0b0.sub(a1b1).assertCanonical();
+    const c0 = a0b0.sub(a1b1);
 
-    const xx = this.c0.add(this.c1).assertCanonical();
-    const yy = rhs.c0.add(rhs.c1).assertCanonical();
+    const xx = this.c0.add(this.c1);
+    const yy = rhs.c0.add(rhs.c1);
+    let { c0: xxA, c1: yyA } = Fp2.fromUnreduced({ c0: xx, c1: yy });
 
-    const c1 = xx.mul(yy).sub(a0b0).sub(a1b1).assertCanonical();
+    const c1 = xxA.mul(yyA).sub(a0b0).sub(a1b1);
 
-    return new Fp2({ c0, c1 });
+    return Fp2.fromUnreduced({ c0, c1 });
   }
 
   square(): Fp2 {
