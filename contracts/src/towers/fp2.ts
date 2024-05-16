@@ -86,7 +86,7 @@ class Fp2 extends Struct({ c0: FpC.provable, c1: FpC.provable }) {
 
     // beta = -1
     t0 = t0.add(t1).assertCanonical();
-    t1 = FpC.from(1n).div(t0.toBigInt()).assertCanonical();
+    t1 = FpC.from(1n).div(t0).assertCanonical();
 
     const c0 = this.c0.mul(t1).assertCanonical();
     const c1 = this.c1.mul(t1).neg().assertCanonical();
