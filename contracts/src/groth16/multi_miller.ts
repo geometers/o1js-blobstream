@@ -449,8 +449,18 @@ var delta_lines = fs.readFileSync('./src/groth16/delta_lines.json', 'utf8');
 const g16 = new Groth16(gamma_lines, delta_lines, alpha_beta, w27, w27_square);
 
 function main() {
-  // g16.multiMillerLoop(A, B, PI, C, bLines, 2, make_c());
-  g16.withSparseLines(A, B, PI, C, bLines, 2, make_c());
+  A = Provable.witness(G1Affine, () => A);
+  B = Provable.witness(G2Affine, () => B);
+  PI = Provable.witness(G1Affine, () => PI);
+  C = Provable.witness(G1Affine, () => C);
+  let bLinesW = Provable.witness(
+    Provable.Array(G2Line, bLines.length),
+    () => bLines
+  );
+  let makeCW = Provable.witness(Fp12, make_c);
+
+  // g16.multiMillerLoop(A, B, PI, C, bLinesW, 2, makeCW);
+  g16.withSparseLines(A, B, PI, C, bLinesW, 2, makeCW);
 }
 
 // npm run build && node --max-old-space-size=65536 build/src/groth16/multi_miller.js
