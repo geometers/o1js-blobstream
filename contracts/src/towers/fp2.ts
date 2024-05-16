@@ -45,7 +45,7 @@ class Fp2 extends Struct({ c0: FpA.provable, c1: FpA.provable }) {
     return Fp2.fromUnreduced({ c0, c1 });
   }
 
-  add_fp(rhs: FpC) {
+  add_fp(rhs: FpA) {
     const c0 = this.c0.add(rhs);
     return new Fp2({ c0: c0.assertAlmostReduced(), c1: this.c1 });
   }
@@ -57,7 +57,7 @@ class Fp2 extends Struct({ c0: FpA.provable, c1: FpA.provable }) {
     return Fp2.fromUnreduced({ c0, c1 });
   }
 
-  mul_by_fp(rhs: FpC) {
+  mul_by_fp(rhs: FpA) {
     const c0 = this.c0.mul(rhs);
     const c1 = this.c1.mul(rhs);
 
