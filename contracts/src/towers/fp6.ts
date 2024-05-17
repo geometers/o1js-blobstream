@@ -24,10 +24,9 @@ class Fp6 extends Struct({ c0: Fp2, c1: Fp2, c2: Fp2 }) {
   }
 
   assert_equals(rhs: Fp6) {
-    const ONE = Field(1);
-    assert(this.c0.equals(rhs.c0).equals(ONE));
-    assert(this.c1.equals(rhs.c1).equals(ONE));
-    assert(this.c2.equals(rhs.c2).equals(ONE));
+    this.c0.assert_equals(rhs.c0);
+    this.c1.assert_equals(rhs.c1);
+    this.c2.assert_equals(rhs.c2);
   }
 
   neg(): Fp6 {
