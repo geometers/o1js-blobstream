@@ -1,7 +1,7 @@
-import { Struct } from "o1js";
-import { FpC } from "../towers/fp.js";
-import { G2Affine } from "./g2.js";
+import { Struct } from 'o1js';
+import { FpC } from '../towers/fp.js';
+import { G2Affine } from './g2.js';
 
-class G1Affine extends Struct({x: FpC.provable, y: FpC.provable}) {}
+class G1Affine extends Struct({ x: FpC.provable, y: FpC.provable }) {}
 
-export { G1Affine, G2Affine }
+export { G1Affine, G2Affine };
