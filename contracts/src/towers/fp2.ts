@@ -98,7 +98,25 @@ class Fp2 extends Struct({ c0: FpA.provable, c1: FpA.provable }) {
   }
 
   square(): Fp2 {
-    return this.mul(this);
+    // c0 = a0^2 - a1^2 = (a0 + a1)(a0 - a1)
+    // c1 = 2*a0*a1 = (a0 + a0)*a1
+
+    let [c0, c1] = Provable.witness(
+      Provable.Array(FpU.provable, 2),
+      (): FpU[] => {
+        let [a0, a1] = [this.c0.toBigInt(), this.c1.toBigInt()];
+        return [FpU.from(a0 * a0 - a1 * a1), FpU.from(2n * a0 * a1)];
+      }
+    );
+
+    let sum_a0_a1 = new AlmostReducedSum(this.c0).add(this.c1);
+    let diff_a0_a1 = new AlmostReducedSum(this.c0).sub(this.c1);
+    assertMul(sum_a0_a1, diff_a0_a1, c0);
+
+    let sum_a0_a0 = new AlmostReducedSum(this.c0).add(this.c0);
+    assertMul(sum_a0_a0, this.c1, c1);
+
+    return Fp2.fromUnreduced({ c0, c1 });
   }
 
   inverse(): Fp2 {
