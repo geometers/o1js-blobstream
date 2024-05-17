@@ -1,5 +1,6 @@
-import { Field, Struct } from 'o1js';
+import { Field, Provable, Struct } from 'o1js';
 import { FpC, FpU, FpA } from './fp.js';
+import { AlmostReducedSum, UnreducedSum, assertMul } from './assert-mul.js';
 
 class Fp2 extends Struct({ c0: FpA.provable, c1: FpA.provable }) {
   static zero(): Fp2 {
@@ -71,22 +72,27 @@ class Fp2 extends Struct({ c0: FpA.provable, c1: FpA.provable }) {
   // uses the fact that we work over modulus: X^2 + 1
   mul(rhs: Fp2): Fp2 {
     // c0 = a0*b0 - a1*b1
-    // c1 = (a0 + a1)*(b0 + b1) - a0*b0 - a1*b1
-    //    = a0*b1 + a1*b0
-
-    // QN: this two assertCanonical calls can probably me omitted
-    const a0b0 = this.c0.mul(rhs.c0).assertCanonical();
-    const a1b1 = this.c1.mul(rhs.c1).assertCanonical();
-
-    // TODO can save a range check with assertMul()
+    const a0b0 = this.c0.mul(rhs.c0);
+    const a1b1 = this.c1.mul(rhs.c1);
     const c0 = a0b0.sub(a1b1);
 
-    // TODO this is a single assertMul()
-    const xx = this.c0.add(this.c1);
-    const yy = rhs.c0.add(rhs.c1);
-    let { c0: xxA, c1: yyA } = Fp2.fromUnreduced({ c0: xx, c1: yy });
-    let xxyy = xxA.mul(yyA);
-    const c1 = FpU.sum([xxyy, a0b0, a1b1], [-1, -1]);
+    // c1 = a0*b1 + a1*b0
+    //    = (a0 + a1)*(b0 + b1) - a0*b0 - a1*b1
+    // <=>
+    // (a0 + a1)*(b0 + b1) = c1 + a0*b0 + a1*b1
+
+    // strategy: witness c1 and prove the equation above with `assertMul()`
+    // this saves range checks on a0 + a1, b0 + b1 and c1
+    let c1 = Provable.witness(FpU.provable, (): FpU => {
+      let [a0, a1] = [this.c0.toBigInt(), this.c1.toBigInt()];
+      let [b0, b1] = [rhs.c0.toBigInt(), rhs.c1.toBigInt()];
+      return FpU.from(a0 * b1 + a1 * b0);
+    });
+
+    let sum_a0_a1 = new AlmostReducedSum(this.c0).add(this.c1);
+    let sum_b0_b1 = new AlmostReducedSum(rhs.c0).add(rhs.c1);
+    let sum_c1_a0b0_a1b1 = new UnreducedSum(c1).add(a0b0).add(a1b1);
+    assertMul(sum_a0_a1, sum_b0_b1, sum_c1_a0b0_a1b1);
 
     return Fp2.fromUnreduced({ c0, c1 });
   }
