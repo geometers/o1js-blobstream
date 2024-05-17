@@ -10,47 +10,59 @@ type ForeignFieldSum = ReturnType<typeof Gadgets.ForeignField.Sum>;
 
 // typed version of `Gadgets.ForeignField.assertMul()`
 
-function assertMul(a: AlmostReducedSum, b: AlmostReducedSum, c: UnreducedSum) {
+function assertMul(
+  a: AlmostReducedSum | AlmostForeignField,
+  b: AlmostReducedSum | AlmostForeignField,
+  c: UnreducedSum | ForeignField
+) {
   assert(a.modulus === b.modulus && a.modulus === c.modulus);
-  Gadgets.ForeignField.assertMul(a.sum, b.sum, c.sum, a.modulus);
+  Gadgets.ForeignField.assertMul(a.value, b.value, c.value, a.modulus);
 }
 
 // typed wrappers around `Gadgets.ForeignField.Sum`
 
 class UnreducedSum {
-  sum: ForeignFieldSum;
+  value: ForeignFieldSum;
   modulus: bigint;
+  type: typeof ForeignField;
 
   constructor(input: ForeignField) {
-    this.sum = Gadgets.ForeignField.Sum(input.value);
+    this.value = Gadgets.ForeignField.Sum(input.value);
     this.modulus = input.modulus;
+    this.type = input.Constructor;
   }
 
   add(input: ForeignField) {
-    this.sum = this.sum.add(input.value);
+    this.value = this.value.add(input.value);
     return this;
   }
   sub(input: ForeignField) {
-    this.sum = this.sum.sub(input.value);
+    this.value = this.value.sub(input.value);
     return this;
+  }
+
+  toBigint() {
+    return Gadgets.Field3.toBigint(this.value.finish(this.modulus));
   }
 }
 
 class AlmostReducedSum {
-  sum: ForeignFieldSum;
+  value: ForeignFieldSum;
   modulus: bigint;
+  type: typeof ForeignField;
 
   constructor(input: AlmostForeignField) {
-    this.sum = Gadgets.ForeignField.Sum(input.value);
+    this.value = Gadgets.ForeignField.Sum(input.value);
     this.modulus = input.modulus;
+    this.type = input.Constructor;
   }
 
   add(input: AlmostForeignField) {
-    this.sum = this.sum.add(input.value);
+    this.value = this.value.add(input.value);
     return this;
   }
   sub(input: AlmostForeignField) {
-    this.sum = this.sum.sub(input.value);
+    this.value = this.value.sub(input.value);
     return this;
   }
 }
