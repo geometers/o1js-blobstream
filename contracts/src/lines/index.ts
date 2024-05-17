@@ -1,83 +1,82 @@
-import { Field, Struct, assert } from "o1js";
-import { G1Affine, G2Affine } from "../ec/index.js";
-import { FpC, Fp2, Fp6, Fp12 } from "../towers/index.js";
-import { computeLineCoeffs } from "./coeffs.js";
-import { AffineCache } from "./precompute.js";
+import { Field, Struct, assert } from 'o1js';
+import { G1Affine, G2Affine } from '../ec/index.js';
+import { FpC, Fp2, Fp6, Fp12 } from '../towers/index.js';
+import { computeLineCoeffs } from './coeffs.js';
+import { AffineCache } from './precompute.js';
 
 const F_ONE = Field(1);
 const ZERO = Fp2.zero();
 
-class G2Line extends Struct({lambda: Fp2, neg_mu: Fp2}) {
+class G2Line extends Struct({ lambda: Fp2, neg_mu: Fp2 }) {
+  constructor(lambda: Fp2, neg_mu: Fp2) {
+    super({ lambda, neg_mu });
+  }
 
-    constructor(lambda: Fp2, neg_mu: Fp2) {
-        super({lambda, neg_mu})
+  static fromJSON(json: any): G2Line {
+    let value = super.fromJSON(json);
+    return new G2Line(value.lambda, value.neg_mu);
+  }
+
+  static fromPoints(lhs: G2Affine, rhs: G2Affine): G2Line {
+    const eq = lhs.equals(rhs);
+
+    let lambda: Fp2;
+    if (eq.toBigInt() === 1n) {
+      lambda = lhs.computeLambdaSame();
+    } else {
+      lambda = lhs.computeLambdaDiff(rhs);
     }
 
-    static fromJSON(json: any): G2Line {
-        let value = super.fromJSON(json);
-        return new G2Line(value.lambda, value.neg_mu);
-      }
+    return new G2Line(lambda, lhs.computeMu(lambda).neg());
+  }
 
-    static fromPoints(lhs: G2Affine, rhs: G2Affine): G2Line {
-        const eq = lhs.equals(rhs); 
+  // g + hw = g0 + h0W + g1W^2 + h1W^3 + g2W^4 + h2W^5
+  psi(cache: AffineCache): Fp12 {
+    const g0 = new Fp2({ c0: FpC.from(1n), c1: FpC.from(0) });
+    const h0 = this.lambda.mul_by_fp(cache.xp_prime);
+    const g1 = Fp2.zero();
+    const h1 = this.neg_mu.mul_by_fp(cache.yp_prime);
+    const g2 = Fp2.zero();
+    const h2 = Fp2.zero();
 
-        let lambda: Fp2; 
-        if (eq.toBigInt() === 1n) {
-            lambda = lhs.computeLambdaSame();
-        } else {
-            lambda = lhs.computeLambdaDiff(rhs);
-        }
+    const c0 = new Fp6({ c0: g0, c1: g1, c2: g2 });
+    const c1 = new Fp6({ c0: h0, c1: h1, c2: h2 });
 
-        return new G2Line(lambda, lhs.computeMu(lambda).neg())
-    }
+    return new Fp12({ c0, c1 });
+  }
 
-    // g + hw = g0 + h0W + g1W^2 + h1W^3 + g2W^4 + h2W^5
-    psi(cache: AffineCache): Fp12 {
-        const g0 = new Fp2({c0: FpC.from(1n), c1: FpC.from(0)});
-        const h0 = this.lambda.mul_by_fp(cache.xp_prime);
-        const g1 = Fp2.zero();
-        const h1 = this.neg_mu.mul_by_fp(cache.yp_prime);
-        const g2 = Fp2.zero();
-        const h2 = Fp2.zero();
+  // L, T : Y − (λX + µ) = 0
+  evaluate(p: G2Affine): Fp2 {
+    let t = this.lambda.mul(p.x);
+    t = t.neg();
+    t = t.add(this.neg_mu);
+    return t.add(p.y);
+  }
 
-        const c0 = new Fp6({c0: g0, c1: g1, c2: g2}); 
-        const c1 = new Fp6({c0: h0, c1: h1, c2: h2});
+  // L, T : Y − (λX + µ) = 0
+  assert_is_line(t: G2Affine, q: G2Affine) {
+    let e1 = this.evaluate(t);
+    let e2 = this.evaluate(q);
 
-        return new Fp12({c0, c1});
-    }
+    assert(e1.equals(ZERO).equals(F_ONE));
+    assert(e2.equals(ZERO).equals(F_ONE));
+  }
 
-    // L, T : Y − (λX + µ) = 0
-    evaluate(p: G2Affine): Fp2 {
-        let t = this.lambda.mul(p.x); 
-        t = t.neg(); 
-        t = t.add(this.neg_mu); 
-        return t.add(p.y);
-    }
+  assert_is_tangent(p: G2Affine) {
+    let e = this.evaluate(p);
+    assert(e.equals(ZERO).equals(F_ONE));
 
-    // L, T : Y − (λX + µ) = 0
-    assert_is_line(t: G2Affine, q: G2Affine) {
-        let e1 = this.evaluate(t); 
-        let e2 = this.evaluate(q); 
+    let dbl_lambda_y = this.lambda.add(this.lambda).mul(p.y);
+    dbl_lambda_y.assert_equals(p.x.square().mul_by_fp(FpC.from(3n)));
+  }
 
-        assert(e1.equals(ZERO).equals(F_ONE))
-        assert(e2.equals(ZERO).equals(F_ONE))
-    }
-
-    assert_is_tangent(p: G2Affine) {
-        let e = this.evaluate(p);
-        assert(e.equals(ZERO).equals(F_ONE));
-
-        let dbl_lambda_y = (this.lambda.add(this.lambda)).mul(p.y);
-        dbl_lambda_y.assert_equals(p.x.square().mul_by_fp(FpC.from(3n)));
-    }
-
-    // L, T : Y − (λX + µ) = 0
-    evaluate_g1(p: G1Affine): Fp2 {
-        let t = this.lambda.mul_by_fp(p.x); 
-        t = t.neg(); 
-        t = t.add(this.neg_mu); 
-        return t.add_fp(p.y)
-    }
+  // L, T : Y − (λX + µ) = 0
+  evaluate_g1(p: G1Affine): Fp2 {
+    let t = this.lambda.mul_by_fp(p.x);
+    t = t.neg();
+    t = t.add(this.neg_mu);
+    return t.add_fp(p.y);
+  }
 }
 
-export { G2Line, computeLineCoeffs }
+export { G2Line, computeLineCoeffs };
