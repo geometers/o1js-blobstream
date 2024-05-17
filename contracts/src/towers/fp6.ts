@@ -101,9 +101,14 @@ class Fp6 extends Struct({ c0: Fp2, c1: Fp2, c2: Fp2 }) {
     const b0_b1 = rhs.c0.add(rhs.c1);
     const b0_b2 = rhs.c0.add(rhs.c2);
 
-    let c0 = a1_a2.mul(b1_b2).sub(t1).sub(t2).mul(fp2_non_residue).add(t0);
-    let c1 = a0_a1.mul(b0_b1).sub(t0).sub(t1).add(t2.mul(fp2_non_residue));
-    let c2 = a0_a2.mul(b0_b2).sub(t0).sub(t2).add(t1);
+    let c0 = Fp2.sum([a1_a2.mul(b1_b2), t1, t2], [-1, -1])
+      .mul(fp2_non_residue)
+      .add(t0);
+    let c1 = Fp2.sum(
+      [a0_a1.mul(b0_b1), t0, t1, t2.mul(fp2_non_residue)],
+      [-1, -1, 1]
+    );
+    let c2 = Fp2.sum([a0_a2.mul(b0_b2), t0, t2, t1], [-1, -1, 1]);
 
     return new Fp6({ c0, c1, c2 });
   }

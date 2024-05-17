@@ -58,6 +58,18 @@ class Fp2 extends Struct({ c0: FpA.provable, c1: FpA.provable }) {
     return Fp2.fromUnreduced({ c0, c1 });
   }
 
+  static sum(inputs: Fp2[], operators: (-1 | 1)[]): Fp2 {
+    let c0 = FpA.sum(
+      inputs.map((x) => x.c0),
+      operators
+    );
+    let c1 = FpA.sum(
+      inputs.map((x) => x.c1),
+      operators
+    );
+    return Fp2.fromUnreduced({ c0, c1 });
+  }
+
   mul_by_fp(rhs: FpA) {
     const c0 = this.c0.mul(rhs);
     const c1 = this.c1.mul(rhs);
