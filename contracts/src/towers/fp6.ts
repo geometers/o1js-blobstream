@@ -1,142 +1,142 @@
-import { Field, Struct, assert } from "o1js";
-import { FpC } from "./fp.js";
-import { Fp2 } from "./fp2.js";
-import { fp2_non_residue } from "./precomputed.js";
+import { Field, Struct, assert } from 'o1js';
+import { FpC } from './fp.js';
+import { Fp2 } from './fp2.js';
+import { fp2_non_residue } from './precomputed.js';
 
 // Fp^2[v]/(v^3 - u)
-class Fp6 extends Struct({c0: Fp2, c1: Fp2, c2: Fp2}) {
-    // c0: Fp2 
-    // c1: Fp2 
-    // c2: Fp2
+class Fp6 extends Struct({ c0: Fp2, c1: Fp2, c2: Fp2 }) {
+  // c0: Fp2
+  // c1: Fp2
+  // c2: Fp2
 
-    // constructor(c0: Fp2, c1: Fp2, c2: Fp2) {
-    //     this.c0 = c0
-    //     this.c1 = c1
-    //     this.c2 = c2
-    // }
+  // constructor(c0: Fp2, c1: Fp2, c2: Fp2) {
+  //     this.c0 = c0
+  //     this.c1 = c1
+  //     this.c2 = c2
+  // }
 
-    static zero() {
-        return new Fp6({c0: Fp2.zero(), c1: Fp2.zero(), c2: Fp2.zero()})
-    }
+  static zero() {
+    return new Fp6({ c0: Fp2.zero(), c1: Fp2.zero(), c2: Fp2.zero() });
+  }
 
-    static one() {
-        return new Fp6({c0: Fp2.one(), c1: Fp2.zero(), c2: Fp2.zero()})
-    }
+  static one() {
+    return new Fp6({ c0: Fp2.one(), c1: Fp2.zero(), c2: Fp2.zero() });
+  }
 
-    assert_equals(rhs: Fp6) {
-        const ONE = Field(1);
-        assert(this.c0.equals(rhs.c0).equals(ONE))
-        assert(this.c1.equals(rhs.c1).equals(ONE))
-        assert(this.c2.equals(rhs.c2).equals(ONE))
-    }
+  assert_equals(rhs: Fp6) {
+    const ONE = Field(1);
+    assert(this.c0.equals(rhs.c0).equals(ONE));
+    assert(this.c1.equals(rhs.c1).equals(ONE));
+    assert(this.c2.equals(rhs.c2).equals(ONE));
+  }
 
-    neg(): Fp6 {
-        return new Fp6({c0: this.c0.neg(), c1: this.c1.neg(), c2: this.c2.neg()})
-    }
+  neg(): Fp6 {
+    return new Fp6({ c0: this.c0.neg(), c1: this.c1.neg(), c2: this.c2.neg() });
+  }
 
-    inverse(): Fp6 {
-        const t0 = this.c0.mul(this.c0); 
-        const t1 = this.c1.mul(this.c1); 
-        const t2 = this.c2.mul(this.c2);
+  inverse(): Fp6 {
+    const t0 = this.c0.mul(this.c0);
+    const t1 = this.c1.mul(this.c1);
+    const t2 = this.c2.mul(this.c2);
 
-        const t3 = this.c0.mul(this.c1);
-        const t4 = this.c0.mul(this.c2);
-        const t5 = this.c1.mul(this.c2);
+    const t3 = this.c0.mul(this.c1);
+    const t4 = this.c0.mul(this.c2);
+    const t5 = this.c1.mul(this.c2);
 
-        let c0 = t0.sub(t5.mul_by_non_residue());
-        let c1 = (t2.mul_by_non_residue()).sub(t3);
-        let c2 = t1.sub(t4);
+    let c0 = t0.sub(t5.mul_by_non_residue());
+    let c1 = t2.mul_by_non_residue().sub(t3);
+    let c2 = t1.sub(t4);
 
-        let t6 = this.c0.mul(c0);
-        t6 = t6.add(this.c2.mul(c1).mul_by_non_residue());
-        t6 = t6.add(this.c1.mul(c2).mul_by_non_residue());
-        t6 = t6.inverse();
+    let t6 = this.c0.mul(c0);
+    t6 = t6.add(this.c2.mul(c1).mul_by_non_residue());
+    t6 = t6.add(this.c1.mul(c2).mul_by_non_residue());
+    t6 = t6.inverse();
 
-        c0 = c0.mul(t6);
-        c1 = c1.mul(t6);
-        c2 = c2.mul(t6);
+    c0 = c0.mul(t6);
+    c1 = c1.mul(t6);
+    c2 = c2.mul(t6);
 
-        return new Fp6({c0, c1, c2})
-    }
+    return new Fp6({ c0, c1, c2 });
+  }
 
-    add(rhs: Fp6): Fp6 {
-        const c0 = this.c0.add(rhs.c0);
-        const c1 = this.c1.add(rhs.c1);
-        const c2 = this.c2.add(rhs.c2);
+  add(rhs: Fp6): Fp6 {
+    const c0 = this.c0.add(rhs.c0);
+    const c1 = this.c1.add(rhs.c1);
+    const c2 = this.c2.add(rhs.c2);
 
-        return new Fp6({c0, c1, c2});
-    }
+    return new Fp6({ c0, c1, c2 });
+  }
 
-    sub(rhs: Fp6): Fp6 {
-        const c0 = this.c0.sub(rhs.c0);
-        const c1 = this.c1.sub(rhs.c1);
-        const c2 = this.c2.sub(rhs.c2);
+  sub(rhs: Fp6): Fp6 {
+    const c0 = this.c0.sub(rhs.c0);
+    const c1 = this.c1.sub(rhs.c1);
+    const c2 = this.c2.sub(rhs.c2);
 
-        return new Fp6({c0, c1, c2});
-    }
+    return new Fp6({ c0, c1, c2 });
+  }
 
-    // Fp^2[v]/(v^3 - eta), eta = 9 + u
-    mul_by_v(): Fp6 {
-        const c0 = this.c2.mul(fp2_non_residue);
-        return new Fp6({c0, c1: this.c0, c2: this.c1});
-    }
+  // Fp^2[v]/(v^3 - eta), eta = 9 + u
+  mul_by_v(): Fp6 {
+    const c0 = this.c2.mul(fp2_non_residue);
+    return new Fp6({ c0, c1: this.c0, c2: this.c1 });
+  }
 
-    mul_by_fp(rhs: FpC): Fp6 {
-        const c0 = this.c0.mul_by_fp(rhs);
-        const c1 = this.c1.mul_by_fp(rhs);
-        const c2 = this.c2.mul_by_fp(rhs);
+  mul_by_fp(rhs: FpC): Fp6 {
+    const c0 = this.c0.mul_by_fp(rhs);
+    const c1 = this.c1.mul_by_fp(rhs);
+    const c2 = this.c2.mul_by_fp(rhs);
 
-        return new Fp6({c0, c1, c2});
-    }
+    return new Fp6({ c0, c1, c2 });
+  }
 
-    mul(rhs: Fp6): Fp6 {
-        const t0 = this.c0.mul(rhs.c0);
-        const t1 = this.c1.mul(rhs.c1);
-        const t2 = this.c2.mul(rhs.c2);
+  mul(rhs: Fp6): Fp6 {
+    const t0 = this.c0.mul(rhs.c0);
+    const t1 = this.c1.mul(rhs.c1);
+    const t2 = this.c2.mul(rhs.c2);
 
-        const a1_a2 = this.c1.add(this.c2);
-        const a0_a1 = this.c0.add(this.c1);
-        const a0_a2 = this.c0.add(this.c2);
+    const a1_a2 = this.c1.add(this.c2);
+    const a0_a1 = this.c0.add(this.c1);
+    const a0_a2 = this.c0.add(this.c2);
 
-        const b1_b2 = rhs.c1.add(rhs.c2);
-        const b0_b1 = rhs.c0.add(rhs.c1);
-        const b0_b2 = rhs.c0.add(rhs.c2);
+    const b1_b2 = rhs.c1.add(rhs.c2);
+    const b0_b1 = rhs.c0.add(rhs.c1);
+    const b0_b2 = rhs.c0.add(rhs.c2);
 
-        let c0 = (((a1_a2.mul(b1_b2)).sub(t1).sub(t2)).mul(fp2_non_residue)).add(t0);
-        let c1 = (((a0_a1.mul(b0_b1)).sub(t0).sub(t1))).add(t2.mul(fp2_non_residue));
-        let c2 = (a0_a2.mul(b0_b2)).sub(t0).sub(t2).add(t1);
+    let c0 = a1_a2.mul(b1_b2).sub(t1).sub(t2).mul(fp2_non_residue).add(t0);
+    let c1 = a0_a1.mul(b0_b1).sub(t0).sub(t1).add(t2.mul(fp2_non_residue));
+    let c2 = a0_a2.mul(b0_b2).sub(t0).sub(t2).add(t1);
 
-        return new Fp6({c0, c1, c2});
-    }
+    return new Fp6({ c0, c1, c2 });
+  }
 
-    mul_by_fp2(rhs: Fp2): Fp6 {
-        const c0 = this.c0.mul(rhs); 
-        const c1 = this.c1.mul(rhs); 
-        const c2 = this.c2.mul(rhs); 
+  mul_by_fp2(rhs: Fp2): Fp6 {
+    const c0 = this.c0.mul(rhs);
+    const c1 = this.c1.mul(rhs);
+    const c2 = this.c2.mul(rhs);
 
-        return new Fp6({c0, c1, c2});
-    }
+    return new Fp6({ c0, c1, c2 });
+  }
 
-    // rhs = c0 + c1v + 0v^2
-    mul_by_sparse_fp6(rhs: Fp6) {
-        const t0 = this.c0.mul(rhs.c0);
-        const t1 = this.c1.mul(rhs.c1); 
+  // rhs = c0 + c1v + 0v^2
+  mul_by_sparse_fp6(rhs: Fp6) {
+    const t0 = this.c0.mul(rhs.c0);
+    const t1 = this.c1.mul(rhs.c1);
 
-        let c0 = this.c2.mul(rhs.c1).mul(fp2_non_residue);
-        c0 = c0.add(t0);
+    let c0 = this.c2.mul(rhs.c1).mul(fp2_non_residue);
+    c0 = c0.add(t0);
 
-        const a0_a1 = this.c0.add(this.c1); 
-        const b0_b1 = rhs.c0.add(rhs.c1); 
-        let c1 = a0_a1.mul(b0_b1); 
-        c1 = c1.sub(t0).sub(t1); 
+    const a0_a1 = this.c0.add(this.c1);
+    const b0_b1 = rhs.c0.add(rhs.c1);
+    let c1 = a0_a1.mul(b0_b1);
+    c1 = c1.sub(t0).sub(t1);
 
-        const c2 = this.c2.mul(rhs.c0).add(t1);
+    const c2 = this.c2.mul(rhs.c0).add(t1);
 
-        return new Fp6({c0, c1, c2});
-    }
+    return new Fp6({ c0, c1, c2 });
+  }
 }
 
-export { Fp6 }
+export { Fp6 };
 
 // function main() {
 //     // TODO: add all of this in unit tests
