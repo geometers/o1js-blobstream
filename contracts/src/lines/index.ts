@@ -58,13 +58,13 @@ class G2Line extends Struct({ lambda: Fp2, neg_mu: Fp2 }) {
     let e1 = this.evaluate(t);
     let e2 = this.evaluate(q);
 
-    assert(e1.equals(ZERO).equals(F_ONE));
-    assert(e2.equals(ZERO).equals(F_ONE));
+    e1.assert_equals(ZERO);
+    e2.assert_equals(ZERO);
   }
 
   assert_is_tangent(p: G2Affine) {
     let e = this.evaluate(p);
-    assert(e.equals(ZERO).equals(F_ONE));
+    e.assert_equals(ZERO);
 
     let dbl_lambda_y = this.lambda.add(this.lambda).mul(p.y);
     dbl_lambda_y.assert_equals(p.x.square().mul_by_fp(FpC.from(3n)));

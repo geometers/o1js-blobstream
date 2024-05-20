@@ -1,4 +1,4 @@
-import { Field, Struct, assert } from 'o1js';
+import { Struct } from 'o1js';
 import { ATE_LOOP_COUNT, atc } from './consts.js';
 import { FpC } from './fp.js';
 import { Fp2 } from './fp2.js';
