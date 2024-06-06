@@ -44,7 +44,7 @@ const zkp1 = ZkProgram({
 
             // handle pair (A, B) as first point
             const g: Array<Fp12> = []; 
-            for (let i = 0; i < ATE_LOOP_COUNT.length + 1; i++) {
+            for (let i = 0; i < ATE_LOOP_COUNT.length; i++) {
                 g.push(Fp12.one());
             }
         
@@ -83,7 +83,7 @@ const zkp1 = ZkProgram({
               }
             }
             
-            const gDigest = Poseidon.hashPacked(Provable.Array(Fp12, ATE_LOOP_COUNT.length + 1), g);
+            const gDigest = Poseidon.hashPacked(Provable.Array(Fp12, ATE_LOOP_COUNT.length), g);
             return new ZKP1Output({
                 gDigest,
                 T,

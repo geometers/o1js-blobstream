@@ -71,7 +71,8 @@ class Groth16LineAccumulator {
     line_b = b_lines[line_cnt];
     line_b.assert_is_line(T, pi_2_B);
 
-    g.push(line_b.psi(a_cache));
+    // g.push(line_b.psi(a_cache));
+    g[g.length - 1] = g[g.length - 1].mul(line_b.psi(a_cache));
 
     // GAMMA
     const pi_cache = new AffineCache(PI);
@@ -109,7 +110,7 @@ class Groth16LineAccumulator {
 
     idx += 1;
     g[idx] = g[idx].sparse_mul(line_gamma.psi(pi_cache));
-    idx += 1;
+    // idx += 1;
 
     line_gamma = gamma_lines[line_cnt];
     g[idx] = g[idx].sparse_mul(line_gamma.psi(pi_cache));
@@ -150,7 +151,7 @@ class Groth16LineAccumulator {
 
     idx += 1;
     g[idx] = g[idx].sparse_mul(line_delta.psi(c_cache));
-    idx += 1;
+    // idx += 1;
 
     line_delta = delta_lines[line_cnt];
     g[idx] = g[idx].sparse_mul(line_delta.psi(c_cache));

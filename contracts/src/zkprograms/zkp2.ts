@@ -35,7 +35,7 @@ const zkp2 = ZkProgram({
     publicOutput: ZKP2Output,
     methods: {
       compute: {
-        privateInputs: [Provable.Array(Fp12, ATE_LOOP_COUNT.length + 1), Provable.Array(G2Line, 29), ZKP1Proof, Fp2, Fp2, Fp2],
+        privateInputs: [Provable.Array(Fp12, ATE_LOOP_COUNT.length), Provable.Array(G2Line, 29), ZKP1Proof, Fp2, Fp2, Fp2],
         async method(
             _input: ZKP2Input,
             g: Array<Fp12>,
@@ -103,10 +103,10 @@ const zkp2 = ZkProgram({
             line_b = b_lines[line_cnt];
             line_b.assert_is_line(T, pi_2_B);
 
-            idx += 1;
+            // idx += 1;
             g[idx] = g[idx].sparse_mul(line_b.psi(a_cache));
             
-            const gDigest = Poseidon.hashPacked(Provable.Array(Fp12, ATE_LOOP_COUNT.length + 1), g);
+            const gDigest = Poseidon.hashPacked(Provable.Array(Fp12, ATE_LOOP_COUNT.length), g);
             return new ZKP2Output({
                 negA,
                 b: B,
@@ -137,7 +137,7 @@ console.log('ok?', validZkp1);
 const gt = new GWitnessTracker();
 const g = gt.zkp1(getNegA(), bLines, getB());
 
-console.log(Poseidon.hashPacked(Provable.Array(Fp12, ATE_LOOP_COUNT.length + 1), g))
+console.log(Poseidon.hashPacked(Provable.Array(Fp12, ATE_LOOP_COUNT.length), g))
 
 console.log('---------------------')
 console.log(proof1.publicOutput.gDigest);

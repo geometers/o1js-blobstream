@@ -6,7 +6,7 @@ import { ATE_LOOP_COUNT, Fp12 } from "../towers/index.js";
 class GWitnessTracker {
     zkp1(negA: G1Affine, b_lines: Array<G2Line>, B: G2Affine): Array<Fp12> {
         const g: Array<Fp12> = []; 
-        for (let i = 0; i < ATE_LOOP_COUNT.length + 1; i++) {
+        for (let i = 0; i < ATE_LOOP_COUNT.length; i++) {
             g.push(Fp12.one());
         }
 
