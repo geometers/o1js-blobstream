@@ -73,9 +73,23 @@ class G2Affine extends Struct({ x: Fp2, y: Fp2 }) {
     return new G2Affine({ x, y });
   }
 
+  frobFromInputs(g1: Fp2, g2: Fp2) {
+    const x = this.x.conjugate().mul(g1);
+    const y = this.y.conjugate().mul(g2);
+
+    return new G2Affine({ x, y });
+  }
+
   negative_frobenius() {
     const x = this.x.conjugate().mul(GAMMA_1S[1]);
     const y = this.y.conjugate().mul(NEG_GAMMA_13);
+
+    return new G2Affine({ x, y });
+  }
+
+  negFrobFromInputs(g1: Fp2, g2: Fp2) {
+    const x = this.x.conjugate().mul(g1);
+    const y = this.y.conjugate().mul(g2);
 
     return new G2Affine({ x, y });
   }

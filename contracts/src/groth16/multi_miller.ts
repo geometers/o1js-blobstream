@@ -51,42 +51,41 @@ class Groth16 {
       C
     );
 
-    // const c_inv = c.inverse();
-    // let f = c_inv;
+    const c_inv = c.inverse();
+    let f = c_inv;
 
-    // let idx = 0;
+    let idx = 0;
 
-    // for (let i = 1; i < ATE_LOOP_COUNT.length; i++) {
-    //   idx = i - 1;
-    //   f = f.square().mul(g[idx]);
+    for (let i = 1; i < ATE_LOOP_COUNT.length; i++) {
+      idx = i - 1;
+      f = f.square().mul(g[idx]);
 
-    //   if (ATE_LOOP_COUNT[i] == 1) {
-    //     f = f.mul(c_inv);
-    //   }
+      if (ATE_LOOP_COUNT[i] == 1) {
+        f = f.mul(c_inv);
+      }
 
-    //   if (ATE_LOOP_COUNT[i] == -1) {
-    //     f = f.mul(c);
-    //   }
-    // }
+      if (ATE_LOOP_COUNT[i] == -1) {
+        f = f.mul(c);
+      }
+    }
 
-    // idx += 1;
-    // f = f.mul(g[idx]);
-    // idx += 1;
-    // f = f.mul(g[idx]);
+    idx += 1;
+    f = f.mul(g[idx]);
+    idx += 1;
+    f = f.mul(g[idx]);
 
-    // f = f
-    //   .mul(c_inv.frobenius_pow_p())
-    //   .mul(c.frobenius_pow_p_squared())
-    //   .mul(c_inv.frobenius_pow_p_cubed())
-    //   .mul(this.alpha_beta);
+    f = f
+      .mul(c_inv.frobenius_pow_p())
+      .mul(c.frobenius_pow_p_squared())
+      .mul(c_inv.frobenius_pow_p_cubed())
+      .mul(this.alpha_beta);
 
-    // const shift = this.w27[shift_power];
-    // f = f.mul(shift);
+    const shift = this.w27[shift_power];
+    f = f.mul(shift);
 
     // f.display("f");
 
-    // let f = Fp12.one();
-    // f.assert_equals(Fp12.one());
+    f.assert_equals(Fp12.one());
   }
 
   // A*B = alpha * beta + PI * gamma + C * delta

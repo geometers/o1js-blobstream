@@ -29,7 +29,7 @@ class Groth16LineAccumulator {
     let idx = 0;
     let line_cnt = 0;
 
-    for (let i = 1; i < ATE_LOOP_COUNT.length - 14; i++) {
+    for (let i = 1; i < ATE_LOOP_COUNT.length; i++) {
       idx = i - 1;
 
       let line_b = b_lines[line_cnt];
@@ -57,103 +57,103 @@ class Groth16LineAccumulator {
       }
     }
 
-  //   let piB = B.frobenius();
-  //   let line_b;
+    let piB = B.frobenius();
+    let line_b;
 
-  //   line_b = b_lines[line_cnt];
-  //   line_cnt += 1;
-  //   line_b.assert_is_line(T, piB);
+    line_b = b_lines[line_cnt];
+    line_cnt += 1;
+    line_b.assert_is_line(T, piB);
 
-  //   g.push(line_b.psi(a_cache));
-  //   T = T.add_from_line(line_b.lambda, piB);
+    g.push(line_b.psi(a_cache));
+    T = T.add_from_line(line_b.lambda, piB);
 
-  //   let pi_2_B = piB.negative_frobenius();
-  //   line_b = b_lines[line_cnt];
-  //   line_b.assert_is_line(T, pi_2_B);
+    let pi_2_B = piB.negative_frobenius();
+    line_b = b_lines[line_cnt];
+    line_b.assert_is_line(T, pi_2_B);
 
-  //   g.push(line_b.psi(a_cache));
+    g.push(line_b.psi(a_cache));
 
-  //   // GAMMA
-  //   const pi_cache = new AffineCache(PI);
+    // GAMMA
+    const pi_cache = new AffineCache(PI);
 
-  //   // reset counters
-  //   idx = 0;
-  //   line_cnt = 0;
+    // reset counters
+    idx = 0;
+    line_cnt = 0;
 
-  //   for (let i = 1; i < ATE_LOOP_COUNT.length; i++) {
-  //     idx = i - 1;
+    for (let i = 1; i < ATE_LOOP_COUNT.length; i++) {
+      idx = i - 1;
 
-  //     let line = gamma_lines[line_cnt];
-  //     line_cnt += 1;
+      let line = gamma_lines[line_cnt];
+      line_cnt += 1;
 
-  //     g[idx] = g[idx].sparse_mul(line.psi(pi_cache));
+      g[idx] = g[idx].sparse_mul(line.psi(pi_cache));
 
-  //     if (ATE_LOOP_COUNT[i] == 1) {
-  //       let line = gamma_lines[line_cnt];
-  //       line_cnt += 1;
+      if (ATE_LOOP_COUNT[i] == 1) {
+        let line = gamma_lines[line_cnt];
+        line_cnt += 1;
 
-  //       g[idx] = g[idx].sparse_mul(line.psi(pi_cache));
-  //     }
-  //     if (ATE_LOOP_COUNT[i] == -1) {
-  //       let line = gamma_lines[line_cnt];
-  //       line_cnt += 1;
+        g[idx] = g[idx].sparse_mul(line.psi(pi_cache));
+      }
+      if (ATE_LOOP_COUNT[i] == -1) {
+        let line = gamma_lines[line_cnt];
+        line_cnt += 1;
 
-  //       g[idx] = g[idx].sparse_mul(line.psi(pi_cache));
-  //     }
-  //   }
+        g[idx] = g[idx].sparse_mul(line.psi(pi_cache));
+      }
+    }
 
-  //   let line_gamma;
+    let line_gamma;
 
-  //   line_gamma = gamma_lines[line_cnt];
-  //   line_cnt += 1;
+    line_gamma = gamma_lines[line_cnt];
+    line_cnt += 1;
 
-  //   idx += 1;
-  //   g[idx] = g[idx].sparse_mul(line_gamma.psi(pi_cache));
-  //   idx += 1;
+    idx += 1;
+    g[idx] = g[idx].sparse_mul(line_gamma.psi(pi_cache));
+    idx += 1;
 
-  //   line_gamma = gamma_lines[line_cnt];
-  //   g[idx] = g[idx].sparse_mul(line_gamma.psi(pi_cache));
+    line_gamma = gamma_lines[line_cnt];
+    g[idx] = g[idx].sparse_mul(line_gamma.psi(pi_cache));
 
-  //   // DELTA
-  //   const c_cache = new AffineCache(C);
+    // DELTA
+    const c_cache = new AffineCache(C);
 
-  //   // reset counters
-  //   idx = 0;
-  //   line_cnt = 0;
+    // reset counters
+    idx = 0;
+    line_cnt = 0;
 
-  //   for (let i = 1; i < ATE_LOOP_COUNT.length; i++) {
-  //     idx = i - 1;
+    for (let i = 1; i < ATE_LOOP_COUNT.length; i++) {
+      idx = i - 1;
 
-  //     let line = delta_lines[line_cnt];
-  //     line_cnt += 1;
+      let line = delta_lines[line_cnt];
+      line_cnt += 1;
 
-  //     g[idx] = g[idx].sparse_mul(line.psi(c_cache));
+      g[idx] = g[idx].sparse_mul(line.psi(c_cache));
 
-  //     if (ATE_LOOP_COUNT[i] == 1) {
-  //       let line = delta_lines[line_cnt];
-  //       line_cnt += 1;
+      if (ATE_LOOP_COUNT[i] == 1) {
+        let line = delta_lines[line_cnt];
+        line_cnt += 1;
 
-  //       g[idx] = g[idx].sparse_mul(line.psi(c_cache));
-  //     }
-  //     if (ATE_LOOP_COUNT[i] == -1) {
-  //       let line = delta_lines[line_cnt];
-  //       line_cnt += 1;
+        g[idx] = g[idx].sparse_mul(line.psi(c_cache));
+      }
+      if (ATE_LOOP_COUNT[i] == -1) {
+        let line = delta_lines[line_cnt];
+        line_cnt += 1;
 
-  //       g[idx] = g[idx].sparse_mul(line.psi(c_cache));
-  //     }
-  //   }
+        g[idx] = g[idx].sparse_mul(line.psi(c_cache));
+      }
+    }
 
-  //   let line_delta;
+    let line_delta;
 
-  //   line_delta = delta_lines[line_cnt];
-  //   line_cnt += 1;
+    line_delta = delta_lines[line_cnt];
+    line_cnt += 1;
 
-  //   idx += 1;
-  //   g[idx] = g[idx].sparse_mul(line_delta.psi(c_cache));
-  //   idx += 1;
+    idx += 1;
+    g[idx] = g[idx].sparse_mul(line_delta.psi(c_cache));
+    idx += 1;
 
-  //   line_delta = delta_lines[line_cnt];
-  //   g[idx] = g[idx].sparse_mul(line_delta.psi(c_cache));
+    line_delta = delta_lines[line_cnt];
+    g[idx] = g[idx].sparse_mul(line_delta.psi(c_cache));
 
     return g;
   }

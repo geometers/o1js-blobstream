@@ -7,7 +7,8 @@ import {
     Undefined,
     verify,
     Provable,
-    Struct
+    Struct,
+    Poseidon
   } from 'o1js';
 import { ATE_LOOP_COUNT, Fp12 } from '../towers/index.js';
 import { G1Affine, G2Affine } from '../ec/index.js';
@@ -21,7 +22,8 @@ class ZKP1Input extends Struct({
 }) {}
 
 class ZKP1Output extends Struct({
-    g: Provable.Array(Fp12, ATE_LOOP_COUNT.length - 1),
+    // g: Provable.Array(Fp12, ATE_LOOP_COUNT.length - 1),
+    gDigest: Field,
     T: G2Affine,
 }) {}
 
@@ -32,7 +34,7 @@ const zkp1 = ZkProgram({
     publicOutput: ZKP1Output,
     methods: {
       compute: {
-        privateInputs: [Provable.Array(G2Line, 55)],
+        privateInputs: [Provable.Array(G2Line, 62)],
         async method(
             input: ZKP1Input,
             b_lines: Array<G2Line>
@@ -42,7 +44,7 @@ const zkp1 = ZkProgram({
 
             // handle pair (A, B) as first point
             const g: Array<Fp12> = []; 
-            for (let i = 0; i < ATE_LOOP_COUNT.length - 1; i++) {
+            for (let i = 0; i < ATE_LOOP_COUNT.length + 1; i++) {
                 g.push(Fp12.one());
             }
         
@@ -53,7 +55,7 @@ const zkp1 = ZkProgram({
             let idx = 0;
             let line_cnt = 0;
         
-            for (let i = 1; i < ATE_LOOP_COUNT.length - 24; i++) {
+            for (let i = 1; i < ATE_LOOP_COUNT.length - 19; i++) {
               idx = i - 1;
         
               let line_b = b_lines[line_cnt];
@@ -81,8 +83,9 @@ const zkp1 = ZkProgram({
               }
             }
             
+            const gDigest = Poseidon.hashPacked(Provable.Array(Fp12, ATE_LOOP_COUNT.length + 1), g);
             return new ZKP1Output({
-                g,
+                gDigest,
                 T,
               });
         },
@@ -101,7 +104,7 @@ const ZKP1Proof = ZkProgram.Proof(zkp1);
 //   b: getB()
 // });
 
-// const proof1 = await zkp1.compute(zkp1Input, bLines.slice(0, 55));
+// const proof1 = await zkp1.compute(zkp1Input, bLines.slice(0, 62)); // return 55
 // const validZkp1 = await verify(proof1, VK1);
 // console.log('ok?', validZkp1);
 // console.log(proof1)
