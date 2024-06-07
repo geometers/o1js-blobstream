@@ -40,10 +40,28 @@ const getB = (): G2Affine => {
     return new G2Affine({ x: qx, y: qy });
 }
 
+const getC = (): G1Affine => {
+    let cx =
+    FpC.from(
+      3353031288059533942658390886683067124040920775575537747144343083137631628272n
+    );
+  let cy =
+    FpC.from(
+      2566709105286906361299853307776759647279481117519912024775619069693558446822n
+    );
+  return new G1Affine({ x: cx, y: cy });
+}
+
 const getBHardcodedLines = (): Array<G2Line> => {
     const bLines = computeLineCoeffs(getB());
 
     return bLines
 }
 
-export { getBHardcodedLines, getNegA, getB }
+const getGammaHardcodedLines = (): Array<G2Line> => {
+  const bLines = computeLineCoeffs(getB());
+
+  return bLines
+}
+
+export { getBHardcodedLines, getNegA, getB, getC }

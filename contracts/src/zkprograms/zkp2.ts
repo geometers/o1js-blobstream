@@ -23,10 +23,7 @@ class ZKP2Input extends Struct({
 }) {}
 
 class ZKP2Output extends Struct({
-    negA: G1Affine,
-    b: G2Affine,
-    gDigest: Field,
-    T: G2Affine,
+    gDigest: Field
 }) {}
 
 const zkp2 = ZkProgram({
@@ -50,7 +47,7 @@ const zkp2 = ZkProgram({
             const negA = proof.publicInput.negA;
             const a_cache = new AffineCache(negA);
 
-            const gDigestOk = Poseidon.hashPacked(Provable.Array(Fp12, ATE_LOOP_COUNT.length + 1), g);
+            const gDigestOk = Poseidon.hashPacked(Provable.Array(Fp12, ATE_LOOP_COUNT.length), g);
             gDigestOk.assertEquals(proof.publicOutput.gDigest);
         
             const B = proof.publicInput.b;
@@ -108,10 +105,7 @@ const zkp2 = ZkProgram({
             
             const gDigest = Poseidon.hashPacked(Provable.Array(Fp12, ATE_LOOP_COUNT.length), g);
             return new ZKP2Output({
-                negA,
-                b: B,
                 gDigest,
-                T,
             });
         },
       },
@@ -121,29 +115,29 @@ const zkp2 = ZkProgram({
 const VK2 = (await zkp2.compile()).verificationKey;
 const ZKP2Proof = ZkProgram.Proof(zkp2);
 
-const bLines = getBHardcodedLines();
+// const bLines = getBHardcodedLines();
 
-let zkp1Input = new ZKP1Input({
-  negA: getNegA(),
-  b: getB()
-});
+// let zkp1Input = new ZKP1Input({
+//   negA: getNegA(),
+//   b: getB()
+// });
 
-const vk1 = (await zkp1.compile()).verificationKey;
-const proof1 = await zkp1.compute(zkp1Input, bLines.slice(0, 62));
-const validZkp1 = await verify(proof1, vk1);
-console.log('ok?', validZkp1);
-// console.log(proof1)
+// const vk1 = (await zkp1.compile()).verificationKey;
+// const proof1 = await zkp1.compute(zkp1Input, bLines.slice(0, 62));
+// const validZkp1 = await verify(proof1, vk1);
+// console.log('ok?', validZkp1);
+// // console.log(proof1)
 
-const gt = new GWitnessTracker();
-const g = gt.zkp1(getNegA(), bLines, getB());
+// const gt = new GWitnessTracker();
+// const g = gt.zkp1(getNegA(), bLines, getB());
 
-console.log(Poseidon.hashPacked(Provable.Array(Fp12, ATE_LOOP_COUNT.length), g))
+// console.log(Poseidon.hashPacked(Provable.Array(Fp12, ATE_LOOP_COUNT.length), g))
 
-console.log('---------------------')
-console.log(proof1.publicOutput.gDigest);
+// console.log('---------------------')
+// console.log(proof1.publicOutput.gDigest);
 
-const proof2 = await zkp2.compute(ZKP2Input, g, bLines.slice(62, 62 + 29), proof1, GAMMA_1S[1], GAMMA_1S[2], NEG_GAMMA_13);
-const validZkp2 = await verify(proof2, VK2);
-console.log('ok?', validZkp2);
+// const proof2 = await zkp2.compute(ZKP2Input, g, bLines.slice(62, 62 + 29), proof1, GAMMA_1S[1], GAMMA_1S[2], NEG_GAMMA_13);
+// const validZkp2 = await verify(proof2, VK2);
+// console.log('ok?', validZkp2);
 
 export { VK2, ZKP2Proof, ZKP2Input, ZKP2Output, zkp2 }
