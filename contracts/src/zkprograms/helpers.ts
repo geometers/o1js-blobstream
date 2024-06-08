@@ -1,7 +1,7 @@
 import { G1Affine, G2Affine } from "../ec/index.js";
 import { computeLineCoeffs } from "../lines/coeffs.js";
 import { G2Line } from "../lines/index.js";
-import { FpC, Fp2 } from "../towers/index.js";
+import { FpC, Fp2, Fp6, Fp12 } from "../towers/index.js";
 
 const getNegA = (): G1Affine => {
     let ax =
@@ -52,16 +52,90 @@ const getC = (): G1Affine => {
   return new G1Affine({ x: cx, y: cy });
 }
 
+const getPI = (): G1Affine => {
+  let px =
+  FpC.from(
+    3010198690406615200373504922352659861758983907867017329644089018310584441462n
+  );
+let py =
+  FpC.from(
+    4027184618003122424972590350825261965929648733675738730716654005365300998076n
+  );
+return new G1Affine({ x: px, y: py });
+}
+
 const getBHardcodedLines = (): Array<G2Line> => {
     const bLines = computeLineCoeffs(getB());
 
     return bLines
 }
 
-const getGammaHardcodedLines = (): Array<G2Line> => {
-  const bLines = computeLineCoeffs(getB());
+const get_c_hint = () => {
+  const g00 =
+    FpC.from(
+      8897423645001056939056268519231815325467656837342852882451087287537275473804n
+    );
+  const g01 =
+    FpC.from(
+      18138139272559567939518097482985718014906685667120368514277181390096172923024n
+    );
+  const g0 = new Fp2({ c0: g00, c1: g01 });
 
-  return bLines
-}
+  const g10 =
+    FpC.from(
+      890682786386207419990401269408877867055365238513127066872467761270125110890n
+    );
+  const g11 =
+    FpC.from(
+      4750321666726336751205035517601280287609855317476938700678826930426843064773n
+    );
+  const g1 = new Fp2({ c0: g10, c1: g11 });
 
-export { getBHardcodedLines, getNegA, getB, getC }
+  const g20 =
+    FpC.from(
+      14953000407776584730421940156750752760443598970594431156013040878221356476707n
+    );
+  const g21 =
+    FpC.from(
+      6946591669033202601688125790035809701439099296024168416231992724982469545916n
+    );
+  const g2 = new Fp2({ c0: g20, c1: g21 });
+
+  const g = new Fp6({ c0: g0, c1: g1, c2: g2 });
+
+  const h00 =
+    FpC.from(
+      16547839259872247812199200552840319554753470001240188786695026128107318278780n
+    );
+  const h01 =
+    FpC.from(
+      6986228249436824240579247638359343971029877154439482835588533029426127968008n
+    );
+  const h0 = new Fp2({ c0: h00, c1: h01 });
+
+  const h10 =
+    FpC.from(
+      16374047592147651661889250799806620149277779368240268725094717916293235563222n
+    );
+  const h11 =
+    FpC.from(
+      217057155512489562238842102396389203095220456084723260332959485276833336678n
+    );
+  const h1 = new Fp2({ c0: h10, c1: h11 });
+
+  const h20 =
+    FpC.from(
+      12992454955650978638035141566990652346837801465571809702823130195607152254938n
+    );
+  const h21 =
+    FpC.from(
+      12841826423360331447630860607932783436371936581969657268937606435533635857034n
+    );
+  const h2 = new Fp2({ c0: h20, c1: h21 });
+
+  const h = new Fp6({ c0: h0, c1: h1, c2: h2 });
+
+  return new Fp12({ c0: g, c1: h });
+};
+
+export { getBHardcodedLines, getNegA, getB, getC, getPI, get_c_hint }

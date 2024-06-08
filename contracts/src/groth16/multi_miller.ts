@@ -85,6 +85,7 @@ class Groth16 {
 
     // f.display("f");
 
+    // let f = Fp12.one();
     f.assert_equals(Fp12.one());
   }
 
