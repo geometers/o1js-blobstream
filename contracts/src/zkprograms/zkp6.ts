@@ -43,16 +43,16 @@ const zkp6 = ZkProgram({
             let idx = 0;
         
             for (let i = 1; i < 7; i++) {
-              idx = i - 1;
-              f = f.square().mul(g[idx]);
-        
-              if (ATE_LOOP_COUNT[i] == 1) {
-                f = f.mul(c_inv);
-              }
-        
-              if (ATE_LOOP_COUNT[i] == -1) {
-                f = f.mul(input.c);
-              }
+                idx = i - 1;
+                f = f.square().mul(g[idx]);
+            
+                if (ATE_LOOP_COUNT[i] == 1) {
+                    f = f.mul(c_inv);
+                }
+            
+                if (ATE_LOOP_COUNT[i] == -1) {
+                    f = f.mul(input.c);
+                }
             }
 
             return new ZKP6Output({

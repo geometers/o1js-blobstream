@@ -58,7 +58,7 @@ const zkp5 = ZkProgram({
                 let line = gamma_lines[line_cnt];
                 line_cnt += 1;
           
-                g[idx] = line.psi(pi_cache);
+                g[idx] = g[idx].sparse_mul(line.psi(pi_cache));
           
                 if (ATE_LOOP_COUNT[i] == 1) {
                   let line = gamma_lines[line_cnt];

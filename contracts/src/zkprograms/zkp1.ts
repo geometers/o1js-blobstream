@@ -63,6 +63,7 @@ const zkp1 = ZkProgram({
               line_cnt += 1;
               line_b.assert_is_tangent(T);
         
+              // we can do this instead of g*= because we know that g is initialize to all `1s`
               g[idx] = line_b.psi(a_cache);
               T = T.double_from_line(line_b.lambda);
         

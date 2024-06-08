@@ -47,13 +47,13 @@ const zkp3 = ZkProgram({
         
             let idx = 0;
             let line_cnt = 0;
-            for (let i = 1; i < ATE_LOOP_COUNT.length - 12; i++) {
+            for (let i = 1; i < ATE_LOOP_COUNT.length - 50; i++) {
                 idx = i - 1;
         
                 let line_b = delta_lines[line_cnt];
                 line_cnt += 1;
           
-                g[idx] = line_b.psi(c_cache);
+                g[idx] = g[idx].sparse_mul(line_b.psi(c_cache));
           
                 if (ATE_LOOP_COUNT[i] == 1) {
                   let line_b = delta_lines[line_cnt];

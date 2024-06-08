@@ -65,6 +65,7 @@ const zkp2 = ZkProgram({
               line_cnt += 1;
               line_b.assert_is_tangent(T);
         
+              // we can do this instead of g*= because we know that g is initialize to all `1s`
               g[idx] = line_b.psi(a_cache);
               T = T.double_from_line(line_b.lambda);
         
@@ -103,7 +104,7 @@ const zkp2 = ZkProgram({
 
             // idx += 1;
             g[idx] = g[idx].sparse_mul(line_b.psi(a_cache));
-            
+                          
             const gDigest = Poseidon.hashPacked(Provable.Array(Fp12, ATE_LOOP_COUNT.length), g);
             return new ZKP2Output({
                 gDigest,
@@ -113,29 +114,5 @@ const zkp2 = ZkProgram({
     },
   });
 
-// console.log('Compiling circuits zkp2...');
-// const VK2 = (await zkp2.compile()).verificationKey;
 const ZKP2Proof = ZkProgram.Proof(zkp2);
-
-// const bLines = getBHardcodedLines();
-
-
-// const proof1 = await ZKP1Proof.fromJSON(JSON.parse(fs.readFileSync('./src/groth16/zkp1.json', 'utf8')));
-// const validZkp1 = await verify(proof1, VK1);
-// console.log('ok?', validZkp1);
-// // console.log(proof1)
-
-// const gt = new GWitnessTracker();
-// const g = gt.zkp1(getNegA(), bLines, getB());
-
-// console.log(Poseidon.hashPacked(Provable.Array(Fp12, ATE_LOOP_COUNT.length), g))
-
-// console.log('---------------------')
-// console.log(proof1.publicOutput.gDigest);
-
-// const proof2 = await zkp2.compute(ZKP2Input, g, bLines.slice(62, 62 + 29), proof1, GAMMA_1S[1], GAMMA_1S[2], NEG_GAMMA_13);
-// const validZkp2 = await verify(proof2, VK2);
-// console.log('ok?', validZkp2);
-// fs.writeFileSync('./src/groth16/zkp2.json', JSON.stringify(proof2), 'utf8');
-
 export { ZKP2Proof, ZKP2Input, ZKP2Output, zkp2 }

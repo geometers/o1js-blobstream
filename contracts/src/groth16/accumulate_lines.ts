@@ -3,6 +3,7 @@
  - It checks if lines are correct (if point is not fixed) and evaluates them with sparse mul 
 */
 
+import { Poseidon, Provable } from 'o1js';
 import { G1Affine, G2Affine } from '../ec/index.js';
 import { G2Line } from '../lines';
 import { AffineCache } from '../lines/precompute.js';
@@ -74,47 +75,6 @@ class Groth16LineAccumulator {
     // g.push(line_b.psi(a_cache));
     g[g.length - 1] = g[g.length - 1].mul(line_b.psi(a_cache));
 
-    // GAMMA
-    const pi_cache = new AffineCache(PI);
-
-    // reset counters
-    idx = 0;
-    line_cnt = 0;
-
-    for (let i = 1; i < ATE_LOOP_COUNT.length; i++) {
-      idx = i - 1;
-
-      let line = gamma_lines[line_cnt];
-      line_cnt += 1;
-
-      g[idx] = g[idx].sparse_mul(line.psi(pi_cache));
-
-      if (ATE_LOOP_COUNT[i] == 1) {
-        let line = gamma_lines[line_cnt];
-        line_cnt += 1;
-
-        g[idx] = g[idx].sparse_mul(line.psi(pi_cache));
-      }
-      if (ATE_LOOP_COUNT[i] == -1) {
-        let line = gamma_lines[line_cnt];
-        line_cnt += 1;
-
-        g[idx] = g[idx].sparse_mul(line.psi(pi_cache));
-      }
-    }
-
-    let line_gamma;
-
-    line_gamma = gamma_lines[line_cnt];
-    line_cnt += 1;
-
-    idx += 1;
-    g[idx] = g[idx].sparse_mul(line_gamma.psi(pi_cache));
-    // idx += 1;
-
-    line_gamma = gamma_lines[line_cnt];
-    g[idx] = g[idx].sparse_mul(line_gamma.psi(pi_cache));
-
     // DELTA
     const c_cache = new AffineCache(C);
 
@@ -155,6 +115,47 @@ class Groth16LineAccumulator {
 
     line_delta = delta_lines[line_cnt];
     g[idx] = g[idx].sparse_mul(line_delta.psi(c_cache));
+
+    // GAMMA
+    const pi_cache = new AffineCache(PI);
+
+    // reset counters
+    idx = 0;
+    line_cnt = 0;
+
+    for (let i = 1; i < ATE_LOOP_COUNT.length; i++) {
+      idx = i - 1;
+
+      let line = gamma_lines[line_cnt];
+      line_cnt += 1;
+
+      g[idx] = g[idx].sparse_mul(line.psi(pi_cache));
+
+      if (ATE_LOOP_COUNT[i] == 1) {
+        let line = gamma_lines[line_cnt];
+        line_cnt += 1;
+
+        g[idx] = g[idx].sparse_mul(line.psi(pi_cache));
+      }
+      if (ATE_LOOP_COUNT[i] == -1) {
+        let line = gamma_lines[line_cnt];
+        line_cnt += 1;
+
+        g[idx] = g[idx].sparse_mul(line.psi(pi_cache));
+      }
+    }
+
+    let line_gamma;
+
+    line_gamma = gamma_lines[line_cnt];
+    line_cnt += 1;
+
+    idx += 1;
+    g[idx] = g[idx].sparse_mul(line_gamma.psi(pi_cache));
+    // idx += 1;
+
+    line_gamma = gamma_lines[line_cnt];
+    g[idx] = g[idx].sparse_mul(line_gamma.psi(pi_cache));
 
     return g;
   }
