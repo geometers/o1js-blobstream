@@ -138,4 +138,110 @@ const get_c_hint = () => {
   return new Fp12({ c0: g, c1: h });
 };
 
-export { getBHardcodedLines, getNegA, getB, getC, getPI, get_c_hint }
+const make_w27 = () => {
+  const g00 = FpC.from(0n);
+  const g01 = FpC.from(0n);
+  const g0 = new Fp2({ c0: g00, c1: g01 });
+
+  const g10 = FpC.from(0n);
+  const g11 = FpC.from(0n);
+  const g1 = new Fp2({ c0: g10, c1: g11 });
+
+  const g20 =
+    FpC.from(
+      8204864362109909869166472767738877274689483185363591877943943203703805152849n
+    );
+  const g21 =
+    FpC.from(
+      17912368812864921115467448876996876278487602260484145953989158612875588124088n
+    );
+  const g2 = new Fp2({ c0: g20, c1: g21 });
+
+  const g = new Fp6({ c0: g0, c1: g1, c2: g2 });
+
+  const h00 = FpC.from(0n);
+  const h01 = FpC.from(0n);
+  const h0 = new Fp2({ c0: h00, c1: h01 });
+
+  const h10 = FpC.from(0n);
+  const h11 = FpC.from(0n);
+  const h1 = new Fp2({ c0: h10, c1: h11 });
+
+  const h20 = FpC.from(0n);
+  const h21 = FpC.from(0n);
+  const h2 = new Fp2({ c0: h20, c1: h21 });
+
+  const h = new Fp6({ c0: h0, c1: h1, c2: h2 });
+
+  return new Fp12({ c0: g, c1: h });
+};
+
+const get_alpha_beta = () => {
+  const g00 =
+  FpC.from(
+    15236026366081115775189008268827279188460509767791412223002071516712230243136n
+  );
+  const g01 =
+    FpC.from(
+      6215440416257879771835798894462272911584362693554071507387333170022915968459n
+    );
+  const g0 = new Fp2({ c0: g00, c1: g01 });
+
+  const g10 =
+    FpC.from(
+      327103057455241435067667443479313476231822605363483269492284441153947736163n
+    );
+  const g11 =
+    FpC.from(
+      21407491999181370110335727005627502700263477893657601253120262494381745798609n
+    );
+  const g1 = new Fp2({ c0: g10, c1: g11 });
+
+  const g20 =
+    FpC.from(
+      525552180734769320146546775716359936285417910747929441332388181393396138352n
+    );
+  const g21 =
+    FpC.from(
+      21839895985146908497205908141525701798812735906666117163465035659757713220218n
+    );
+  const g2 = new Fp2({ c0: g20, c1: g21 });
+
+  const g = new Fp6({ c0: g0, c1: g1, c2: g2 });
+
+  const h00 =
+    FpC.from(
+      3412291023425229121559615912222884028117294810598010176384323265610784774414n
+    );
+  const h01 =
+    FpC.from(
+      5950684622229973500866478431516135192754943733316958101749273043553811422450n
+    );
+  const h0 = new Fp2({ c0: h00, c1: h01 });
+
+  const h10 =
+    FpC.from(
+      21615021913054200784401842387888144272574260691304757679221043470900768699496n
+    );
+  const h11 =
+    FpC.from(
+      7174236496269853539658238539172004552147343051569083162686377767746463697606n
+    );
+  const h1 = new Fp2({ c0: h10, c1: h11 });
+
+  const h20 =
+    FpC.from(
+      18952846741600723806547666744734397713181953677964385696143456321504215601481n
+    );
+  const h21 =
+    FpC.from(
+      10053629471188292207905180123447562562427005580494322676492107379963220942539n
+    );
+  const h2 = new Fp2({ c0: h20, c1: h21 });
+
+  const h = new Fp6({ c0: h0, c1: h1, c2: h2 });
+
+  return new Fp12({ c0: g, c1: h });
+}
+
+export { getBHardcodedLines, getNegA, getB, getC, getPI, get_c_hint, make_w27, get_alpha_beta }

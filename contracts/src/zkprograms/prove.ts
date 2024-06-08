@@ -14,7 +14,7 @@ import {
     Poseidon,
     Cache,
   } from 'o1js';
-import { getBHardcodedLines, getNegA, getB, getC, getPI, get_c_hint } from './helpers.js';
+import { getBHardcodedLines, getNegA, getB, getC, getPI, get_c_hint, get_alpha_beta, make_w27 } from './helpers.js';
 import { GAMMA_1S, GAMMA_2S, NEG_GAMMA_13 } from '../towers/precomputed.js';
 import { ATE_LOOP_COUNT, Fp12, Fp2, FpC } from '../towers/index.js';
 import { GWitnessTracker } from './g_witness_tracker.js';
@@ -29,7 +29,11 @@ import { ZKP9Input, ZKP9Proof, zkp9 } from './zkp9.js';
 import { ZKP10Input, ZKP10Proof, zkp10 } from './zkp10.js';
 import { ZKP11Input, ZKP11Proof, zkp11 } from './zkp11.js';
 import { ZKP12Input, ZKP12Proof, zkp12 } from './zkp12.js';
-import { ZKP13Input, zkp13 } from './zkp13.js';
+import { ZKP13Input, ZKP13Proof, zkp13 } from './zkp13.js';
+import { ZKP14Input, ZKP14Proof, zkp14 } from './zkp14.js';
+import { ZKP15Input, ZKP15Proof, zkp15 } from './zkp15.js';
+import { ZKP16Input, ZKP16Proof, zkp16 } from './zkp16.js';
+import { ZKP17Input, zkp17 } from './zkp17.js';
 
 async function runZKP1() {
     const VK1 = (await zkp1.compile({ cache: Cache.FileSystem('./groth16_cache') })).verificationKey;
@@ -515,6 +519,210 @@ async function runZKP13() {
   fs.writeFileSync('./src/groth16/vk13.json', JSON.stringify(VK13), 'utf8');
 }
 
+async function runZKP14() {
+  const VK1 = (await zkp1.compile({ cache: Cache.FileSystem('./groth16_cache') })).verificationKey;
+  const VK2 = (await zkp2.compile({ cache: Cache.FileSystem('./groth16_cache') })).verificationKey;
+  const VK3 = (await zkp3.compile({ cache: Cache.FileSystem('./groth16_cache') })).verificationKey;
+  const VK4 = (await zkp4.compile({ cache: Cache.FileSystem('./groth16_cache') })).verificationKey;
+  const VK5 = (await zkp5.compile({ cache: Cache.FileSystem('./groth16_cache') })).verificationKey;
+  const VK6 = (await zkp6.compile({ cache: Cache.FileSystem('./groth16_cache') })).verificationKey;
+  const VK7 = (await zkp7.compile({ cache: Cache.FileSystem('./groth16_cache') })).verificationKey;
+  const VK8 = (await zkp8.compile({ cache: Cache.FileSystem('./groth16_cache') })).verificationKey;
+  const VK9 = (await zkp9.compile({ cache: Cache.FileSystem('./groth16_cache') })).verificationKey;
+  const VK10 = (await zkp10.compile({ cache: Cache.FileSystem('./groth16_cache') })).verificationKey;
+  const VK11 = (await zkp11.compile({ cache: Cache.FileSystem('./groth16_cache') })).verificationKey;
+  const VK12 = (await zkp12.compile({ cache: Cache.FileSystem('./groth16_cache') })).verificationKey;
+  const VK13 = (await zkp13.compile({ cache: Cache.FileSystem('./groth16_cache') })).verificationKey;
+  const VK14 = (await zkp14.compile({ cache: Cache.FileSystem('./groth16_cache') })).verificationKey;
+
+  const bLines = getBHardcodedLines();
+  let delta_lines_input = fs.readFileSync('./src/groth16/delta_lines.json', 'utf8');
+  let parsed_delta_lines: any[] = JSON.parse(delta_lines_input);
+  const delta_lines = parsed_delta_lines.map(
+    (g: any): G2Line => G2Line.fromJSON(g)
+  );
+
+  let gamma_lines_input = fs.readFileSync('./src/groth16/gamma_lines.json', 'utf8');
+  let parsed_gamma_lines: any[] = JSON.parse(gamma_lines_input);
+  const gamma_lines = parsed_gamma_lines.map(
+    (g: any): G2Line => G2Line.fromJSON(g)
+  );
+
+  const proof13 = await ZKP13Proof.fromJSON(JSON.parse(fs.readFileSync('./src/groth16/zkp13.json', 'utf8')));
+  
+  const gt = new GWitnessTracker();
+  let g = gt.zkp1(getNegA(), bLines, getB());
+  g = gt.zkp2(g, getNegA(), bLines.slice(62, 62 + 29), getB());
+  g = gt.zkp3(g, getC(), delta_lines);
+  g = gt.zkp4(g, getC(), delta_lines.slice(72, 72 + 19), getPI(), gamma_lines);
+  g = gt.zkp5(g, getPI(), gamma_lines.slice(46, 46 + 43 + 2));
+
+  const zkp14Input = new ZKP14Input({ 
+    // c: get_c_hint() 
+  });
+  const proof14 = await zkp14.compute(zkp14Input, g, proof13);
+  const validZkp14 = await verify(proof14, VK14);
+  console.log('ok?', validZkp14);
+  fs.writeFileSync('./src/groth16/zkp14.json', JSON.stringify(proof14), 'utf8');
+  fs.writeFileSync('./src/groth16/vk14.json', JSON.stringify(VK14), 'utf8');
+}
+
+async function runZKP15() {
+  const VK1 = (await zkp1.compile({ cache: Cache.FileSystem('./groth16_cache') })).verificationKey;
+  const VK2 = (await zkp2.compile({ cache: Cache.FileSystem('./groth16_cache') })).verificationKey;
+  const VK3 = (await zkp3.compile({ cache: Cache.FileSystem('./groth16_cache') })).verificationKey;
+  const VK4 = (await zkp4.compile({ cache: Cache.FileSystem('./groth16_cache') })).verificationKey;
+  const VK5 = (await zkp5.compile({ cache: Cache.FileSystem('./groth16_cache') })).verificationKey;
+  const VK6 = (await zkp6.compile({ cache: Cache.FileSystem('./groth16_cache') })).verificationKey;
+  const VK7 = (await zkp7.compile({ cache: Cache.FileSystem('./groth16_cache') })).verificationKey;
+  const VK8 = (await zkp8.compile({ cache: Cache.FileSystem('./groth16_cache') })).verificationKey;
+  const VK9 = (await zkp9.compile({ cache: Cache.FileSystem('./groth16_cache') })).verificationKey;
+  const VK10 = (await zkp10.compile({ cache: Cache.FileSystem('./groth16_cache') })).verificationKey;
+  const VK11 = (await zkp11.compile({ cache: Cache.FileSystem('./groth16_cache') })).verificationKey;
+  const VK12 = (await zkp12.compile({ cache: Cache.FileSystem('./groth16_cache') })).verificationKey;
+  const VK13 = (await zkp13.compile({ cache: Cache.FileSystem('./groth16_cache') })).verificationKey;
+  const VK14 = (await zkp14.compile({ cache: Cache.FileSystem('./groth16_cache') })).verificationKey;
+  const VK15 = (await zkp15.compile({ cache: Cache.FileSystem('./groth16_cache') })).verificationKey;
+
+  const bLines = getBHardcodedLines();
+  let delta_lines_input = fs.readFileSync('./src/groth16/delta_lines.json', 'utf8');
+  let parsed_delta_lines: any[] = JSON.parse(delta_lines_input);
+  const delta_lines = parsed_delta_lines.map(
+    (g: any): G2Line => G2Line.fromJSON(g)
+  );
+
+  let gamma_lines_input = fs.readFileSync('./src/groth16/gamma_lines.json', 'utf8');
+  let parsed_gamma_lines: any[] = JSON.parse(gamma_lines_input);
+  const gamma_lines = parsed_gamma_lines.map(
+    (g: any): G2Line => G2Line.fromJSON(g)
+  );
+
+  const proof14 = await ZKP14Proof.fromJSON(JSON.parse(fs.readFileSync('./src/groth16/zkp14.json', 'utf8')));
+  
+  const gt = new GWitnessTracker();
+  let g = gt.zkp1(getNegA(), bLines, getB());
+  g = gt.zkp2(g, getNegA(), bLines.slice(62, 62 + 29), getB());
+  g = gt.zkp3(g, getC(), delta_lines);
+  g = gt.zkp4(g, getC(), delta_lines.slice(72, 72 + 19), getPI(), gamma_lines);
+  g = gt.zkp5(g, getPI(), gamma_lines.slice(46, 46 + 43 + 2));
+
+  const zkp15Input = new ZKP15Input({ 
+    // c: get_c_hint() 
+  });
+  const proof15 = await zkp15.compute(zkp15Input, g, proof14);
+  const validZkp15 = await verify(proof15, VK15);
+  console.log('ok?', validZkp15);
+  fs.writeFileSync('./src/groth16/zkp15.json', JSON.stringify(proof15), 'utf8');
+  fs.writeFileSync('./src/groth16/vk15.json', JSON.stringify(VK15), 'utf8');
+}
+
+async function runZKP16() {
+  const VK1 = (await zkp1.compile({ cache: Cache.FileSystem('./groth16_cache') })).verificationKey;
+  const VK2 = (await zkp2.compile({ cache: Cache.FileSystem('./groth16_cache') })).verificationKey;
+  const VK3 = (await zkp3.compile({ cache: Cache.FileSystem('./groth16_cache') })).verificationKey;
+  const VK4 = (await zkp4.compile({ cache: Cache.FileSystem('./groth16_cache') })).verificationKey;
+  const VK5 = (await zkp5.compile({ cache: Cache.FileSystem('./groth16_cache') })).verificationKey;
+  const VK6 = (await zkp6.compile({ cache: Cache.FileSystem('./groth16_cache') })).verificationKey;
+  const VK7 = (await zkp7.compile({ cache: Cache.FileSystem('./groth16_cache') })).verificationKey;
+  const VK8 = (await zkp8.compile({ cache: Cache.FileSystem('./groth16_cache') })).verificationKey;
+  const VK9 = (await zkp9.compile({ cache: Cache.FileSystem('./groth16_cache') })).verificationKey;
+  const VK10 = (await zkp10.compile({ cache: Cache.FileSystem('./groth16_cache') })).verificationKey;
+  const VK11 = (await zkp11.compile({ cache: Cache.FileSystem('./groth16_cache') })).verificationKey;
+  const VK12 = (await zkp12.compile({ cache: Cache.FileSystem('./groth16_cache') })).verificationKey;
+  const VK13 = (await zkp13.compile({ cache: Cache.FileSystem('./groth16_cache') })).verificationKey;
+  const VK14 = (await zkp14.compile({ cache: Cache.FileSystem('./groth16_cache') })).verificationKey;
+  const VK15 = (await zkp15.compile({ cache: Cache.FileSystem('./groth16_cache') })).verificationKey;
+  const VK16 = (await zkp16.compile({ cache: Cache.FileSystem('./groth16_cache') })).verificationKey;
+
+
+  const bLines = getBHardcodedLines();
+  let delta_lines_input = fs.readFileSync('./src/groth16/delta_lines.json', 'utf8');
+  let parsed_delta_lines: any[] = JSON.parse(delta_lines_input);
+  const delta_lines = parsed_delta_lines.map(
+    (g: any): G2Line => G2Line.fromJSON(g)
+  );
+
+  let gamma_lines_input = fs.readFileSync('./src/groth16/gamma_lines.json', 'utf8');
+  let parsed_gamma_lines: any[] = JSON.parse(gamma_lines_input);
+  const gamma_lines = parsed_gamma_lines.map(
+    (g: any): G2Line => G2Line.fromJSON(g)
+  );
+
+  const proof15 = await ZKP15Proof.fromJSON(JSON.parse(fs.readFileSync('./src/groth16/zkp15.json', 'utf8')));
+  
+  const gt = new GWitnessTracker();
+  let g = gt.zkp1(getNegA(), bLines, getB());
+  g = gt.zkp2(g, getNegA(), bLines.slice(62, 62 + 29), getB());
+  g = gt.zkp3(g, getC(), delta_lines);
+  g = gt.zkp4(g, getC(), delta_lines.slice(72, 72 + 19), getPI(), gamma_lines);
+  g = gt.zkp5(g, getPI(), gamma_lines.slice(46, 46 + 43 + 2));
+
+  const zkp16Input = new ZKP16Input({ 
+    // c: get_c_hint() 
+  });
+  const proof16 = await zkp16.compute(zkp16Input, g, proof15);
+  const validZkp16 = await verify(proof16, VK16);
+  console.log('ok?', validZkp16);
+  fs.writeFileSync('./src/groth16/zkp16.json', JSON.stringify(proof16), 'utf8');
+  fs.writeFileSync('./src/groth16/vk16.json', JSON.stringify(VK16), 'utf8');
+}
+
+async function runZKP17() {
+  const VK1 = (await zkp1.compile({ cache: Cache.FileSystem('./groth16_cache') })).verificationKey;
+  const VK2 = (await zkp2.compile({ cache: Cache.FileSystem('./groth16_cache') })).verificationKey;
+  const VK3 = (await zkp3.compile({ cache: Cache.FileSystem('./groth16_cache') })).verificationKey;
+  const VK4 = (await zkp4.compile({ cache: Cache.FileSystem('./groth16_cache') })).verificationKey;
+  const VK5 = (await zkp5.compile({ cache: Cache.FileSystem('./groth16_cache') })).verificationKey;
+  const VK6 = (await zkp6.compile({ cache: Cache.FileSystem('./groth16_cache') })).verificationKey;
+  const VK7 = (await zkp7.compile({ cache: Cache.FileSystem('./groth16_cache') })).verificationKey;
+  const VK8 = (await zkp8.compile({ cache: Cache.FileSystem('./groth16_cache') })).verificationKey;
+  const VK9 = (await zkp9.compile({ cache: Cache.FileSystem('./groth16_cache') })).verificationKey;
+  const VK10 = (await zkp10.compile({ cache: Cache.FileSystem('./groth16_cache') })).verificationKey;
+  const VK11 = (await zkp11.compile({ cache: Cache.FileSystem('./groth16_cache') })).verificationKey;
+  const VK12 = (await zkp12.compile({ cache: Cache.FileSystem('./groth16_cache') })).verificationKey;
+  const VK13 = (await zkp13.compile({ cache: Cache.FileSystem('./groth16_cache') })).verificationKey;
+  const VK14 = (await zkp14.compile({ cache: Cache.FileSystem('./groth16_cache') })).verificationKey;
+  const VK15 = (await zkp15.compile({ cache: Cache.FileSystem('./groth16_cache') })).verificationKey;
+  const VK16 = (await zkp16.compile({ cache: Cache.FileSystem('./groth16_cache') })).verificationKey;
+  const VK17 = (await zkp17.compile({ cache: Cache.FileSystem('./groth16_cache') })).verificationKey;
+
+  const bLines = getBHardcodedLines();
+  let delta_lines_input = fs.readFileSync('./src/groth16/delta_lines.json', 'utf8');
+  let parsed_delta_lines: any[] = JSON.parse(delta_lines_input);
+  const delta_lines = parsed_delta_lines.map(
+    (g: any): G2Line => G2Line.fromJSON(g)
+  );
+
+  let gamma_lines_input = fs.readFileSync('./src/groth16/gamma_lines.json', 'utf8');
+  let parsed_gamma_lines: any[] = JSON.parse(gamma_lines_input);
+  const gamma_lines = parsed_gamma_lines.map(
+    (g: any): G2Line => G2Line.fromJSON(g)
+  );
+
+  const proof16 = await ZKP16Proof.fromJSON(JSON.parse(fs.readFileSync('./src/groth16/zkp16.json', 'utf8')));
+  
+  const gt = new GWitnessTracker();
+  let g = gt.zkp1(getNegA(), bLines, getB());
+  g = gt.zkp2(g, getNegA(), bLines.slice(62, 62 + 29), getB());
+  g = gt.zkp3(g, getC(), delta_lines);
+  g = gt.zkp4(g, getC(), delta_lines.slice(72, 72 + 19), getPI(), gamma_lines);
+  g = gt.zkp5(g, getPI(), gamma_lines.slice(46, 46 + 43 + 2));
+
+  const zkp17Input = new ZKP17Input({ 
+      alpha_beta: get_alpha_beta()
+  });
+
+  const w27 = make_w27(); 
+  const w27_sq = w27.mul(w27);
+  let non_residues = [Fp12.one(), w27, w27_sq];
+
+  const proof17 = await zkp17.compute(zkp17Input, g, proof16, non_residues, Field("2"));
+  const validZkp17 = await verify(proof17, VK17);
+  console.log('ok?', validZkp17);
+  fs.writeFileSync('./src/groth16/zkp17.json', JSON.stringify(proof17), 'utf8');
+  fs.writeFileSync('./src/groth16/vk17.json', JSON.stringify(VK17), 'utf8');
+}
+
 switch (process.argv[2]) {
     case 'zkp1':
         await runZKP1();
@@ -555,4 +763,16 @@ switch (process.argv[2]) {
     case 'zkp13':       
         await runZKP13();
         break;  
+    case 'zkp14':       
+        await runZKP14();
+        break;  
+    case 'zkp15':       
+        await runZKP15();
+        break;  
+    case 'zkp16':       
+        await runZKP16();
+        break; 
+    case 'zkp17':       
+        await runZKP17();
+        break; 
 }
