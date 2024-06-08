@@ -15,9 +15,10 @@ import { G1Affine, G2Affine } from '../ec/index.js';
 import { AffineCache } from '../lines/precompute.js';
 import { G2Line } from '../lines/index.js';
 import { getBHardcodedLines, getNegA, getB } from './helpers.js';
-import { VK1, ZKP1Input, ZKP1Proof, ZKP1Output, zkp1 } from './zkp1.js'
+import { ZKP1Input, ZKP1Proof, ZKP1Output, zkp1 } from './zkp1.js'
 import { GWitnessTracker } from './g_witness_tracker.js';
 import { GAMMA_1S, GAMMA_2S, NEG_GAMMA_13 } from '../towers/precomputed.js';
+import fs from 'fs';
 
 class ZKP2Input extends Struct({
 }) {}
@@ -112,19 +113,15 @@ const zkp2 = ZkProgram({
     },
   });
 
-const VK2 = (await zkp2.compile()).verificationKey;
+// console.log('Compiling circuits zkp2...');
+// const VK2 = (await zkp2.compile()).verificationKey;
 const ZKP2Proof = ZkProgram.Proof(zkp2);
 
 // const bLines = getBHardcodedLines();
 
-// let zkp1Input = new ZKP1Input({
-//   negA: getNegA(),
-//   b: getB()
-// });
 
-// const vk1 = (await zkp1.compile()).verificationKey;
-// const proof1 = await zkp1.compute(zkp1Input, bLines.slice(0, 62));
-// const validZkp1 = await verify(proof1, vk1);
+// const proof1 = await ZKP1Proof.fromJSON(JSON.parse(fs.readFileSync('./src/groth16/zkp1.json', 'utf8')));
+// const validZkp1 = await verify(proof1, VK1);
 // console.log('ok?', validZkp1);
 // // console.log(proof1)
 
@@ -139,5 +136,6 @@ const ZKP2Proof = ZkProgram.Proof(zkp2);
 // const proof2 = await zkp2.compute(ZKP2Input, g, bLines.slice(62, 62 + 29), proof1, GAMMA_1S[1], GAMMA_1S[2], NEG_GAMMA_13);
 // const validZkp2 = await verify(proof2, VK2);
 // console.log('ok?', validZkp2);
+// fs.writeFileSync('./src/groth16/zkp2.json', JSON.stringify(proof2), 'utf8');
 
-export { VK2, ZKP2Proof, ZKP2Input, ZKP2Output, zkp2 }
+export { ZKP2Proof, ZKP2Input, ZKP2Output, zkp2 }

@@ -15,6 +15,7 @@ import { G1Affine, G2Affine } from '../ec/index.js';
 import { AffineCache } from '../lines/precompute.js';
 import { G2Line } from '../lines/index.js';
 import { getBHardcodedLines, getNegA, getB } from './helpers.js';
+import fs from 'fs';
 
 class ZKP1Input extends Struct({
     negA: G1Affine,
@@ -94,8 +95,8 @@ const zkp1 = ZkProgram({
   });
 
 
-console.log('Compiling circuits...');
-const VK1 = (await zkp1.compile()).verificationKey;
+// console.log('Compiling circuits zkp1...');
+// const VK1 = (await zkp1.compile()).verificationKey;
 const ZKP1Proof = ZkProgram.Proof(zkp1);
 // const bLines = getBHardcodedLines();
 
@@ -108,5 +109,6 @@ const ZKP1Proof = ZkProgram.Proof(zkp1);
 // const validZkp1 = await verify(proof1, VK1);
 // console.log('ok?', validZkp1);
 // console.log(proof1)
+// fs.writeFileSync('./src/groth16/zkp1.json', JSON.stringify(proof1), 'utf8');
 
-export { VK1, ZKP1Proof, ZKP1Input, ZKP1Output, zkp1 }
+export { ZKP1Proof, ZKP1Input, ZKP1Output, zkp1 }

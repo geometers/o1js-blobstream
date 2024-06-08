@@ -15,8 +15,8 @@ import { G1Affine, G2Affine } from '../ec/index.js';
 import { AffineCache } from '../lines/precompute.js';
 import { G2Line } from '../lines/index.js';
 import { getBHardcodedLines, getNegA, getB, getC } from './helpers.js';
-import { VK1, ZKP1Input, ZKP1Proof, ZKP1Output, zkp1 } from './zkp1.js'
-import { VK2, ZKP2Input, ZKP2Proof, ZKP2Output, zkp2 } from './zkp2.js'
+import { ZKP1Input, ZKP1Proof, ZKP1Output, zkp1 } from './zkp1.js'
+import { ZKP2Input, ZKP2Proof, ZKP2Output, zkp2 } from './zkp2.js'
 import { GWitnessTracker } from './g_witness_tracker.js';
 import { GAMMA_1S, NEG_GAMMA_13 } from '../towers/precomputed.js';
 import fs from 'fs';
@@ -42,8 +42,8 @@ const zkp3 = ZkProgram({
             proof: Proof<ZKP2Input, ZKP2Output>
         ) {
             proof.verify();
-            // const gDigestOk = Poseidon.hashPacked(Provable.Array(Fp12, ATE_LOOP_COUNT.length), g);
-            // gDigestOk.assertEquals(proof.publicOutput.gDigest);
+            const gDigestOk = Poseidon.hashPacked(Provable.Array(Fp12, ATE_LOOP_COUNT.length), g);
+            gDigestOk.assertEquals(proof.publicOutput.gDigest);
 
             const c_cache = new AffineCache(input.C);
             
@@ -56,7 +56,7 @@ const zkp3 = ZkProgram({
         
             let idx = 0;
             let line_cnt = 0;
-            for (let i = 1; i < 10; i++) {
+            for (let i = 1; i < 50; i++) {
                 idx = i - 1;
         
                 let line_b = gamma_lines[line_cnt];
@@ -85,8 +85,7 @@ const zkp3 = ZkProgram({
             }
 
             const gDigest = Poseidon.hashPacked(Provable.Array(Fp12, ATE_LOOP_COUNT.length), g);
-            // const gDigest = Field("1")
-            return new ZKP2Output({
+            return new ZKP3Output({
                 gDigest,
             });
         },
@@ -95,43 +94,49 @@ const zkp3 = ZkProgram({
   });
 
 
-  const VK3 = (await zkp3.compile()).verificationKey;
+//   console.log('zkp3 1...');
   const ZKP3Proof = ZkProgram.Proof(zkp3);
 
+//   console.log('zkp3 2...');
 
-  const bLines = getBHardcodedLines();
+//   const bLines = getBHardcodedLines();
 
-  let zkp1Input = new ZKP1Input({
-    negA: getNegA(),
-    b: getB()
-  });
+//   let zkp1Input = new ZKP1Input({
+//     negA: getNegA(),
+//     b: getB()
+//   });
   
-  const vk1 = (await zkp1.compile()).verificationKey;
-  const proof1 = await zkp1.compute(zkp1Input, bLines.slice(0, 62));
-  const validZkp1 = await verify(proof1, vk1);
-  console.log('ok?', validZkp1);
+//   console.log('zkp3 3...');
+//   const gt = new GWitnessTracker();
+//   let g = gt.zkp1(getNegA(), bLines, getB());
   
-  const gt = new GWitnessTracker();
-  let g = gt.zkp1(getNegA(), bLines, getB());
+// //   console.log(Poseidon.hashPacked(Provable.Array(Fp12, ATE_LOOP_COUNT.length), g))
   
-//   console.log(Poseidon.hashPacked(Provable.Array(Fp12, ATE_LOOP_COUNT.length), g))
+// //   console.log('---------------------')
+// //   console.log(proof1.publicOutput.gDigest);
   
-//   console.log('---------------------')
-//   console.log(proof1.publicOutput.gDigest);
-  
-  const proof2 = await zkp2.compute(ZKP2Input, g, bLines.slice(62, 62 + 29), proof1, GAMMA_1S[1], GAMMA_1S[2], NEG_GAMMA_13);
-  const validZkp2 = await verify(proof2, VK2);
-  console.log('ok?', validZkp2);
+//   console.log('zkp3 4...');
+//   const proof1 = await ZKP1Proof.fromJSON(JSON.parse(fs.readFileSync('./src/groth16/zkp1.json', 'utf8')));
+//   console.log('zkp3 5...');
+//   const proof2 = await ZKP2Proof.fromJSON(JSON.parse(fs.readFileSync('./src/groth16/zkp2.json', 'utf8')));
+//   console.log('zkp3 6...');
+//   console.log(proof2)
+//   const validZkp2 = await verify(proof2, VK2);
+//   console.log('zkp3 7...');
+//   console.log('ok?', validZkp2);
 
-  g = gt.zkp2(g, getNegA(), bLines.slice(62, 62 + 29), getB(), proof1.publicOutput.T);
+//   g = gt.zkp2(g, getNegA(), bLines.slice(62, 62 + 29), getB(), proof1.publicOutput.T);
+//   console.log('zkp3 8...');
 
-  const zkp3Input = new ZKP3Input({
-    C: getC()
-  });
-  console.log("compute zkp3");
-  const proof3 = await  zkp3.compute(zkp3Input, g, proof2); //zkp3.compute(zkp3Input, g, proof2);
-  console.log("verify zkp3");
-  const validZkp3 = await verify(proof3, VK3);
-  console.log('ok?', validZkp3);
+//   const zkp3Input = new ZKP3Input({
+//     C: getC()
+//   });
+//   console.log('Compiling circuits zkp3...');
+//   const VK3 = (await zkp3.compile({ forceRecompile: false })).verificationKey;
+//   console.log("compute zkp3 40", g.length);
+//   const proof3 = await  zkp3.compute(zkp3Input, g, proof2); //zkp3.compute(zkp3Input, g, proof2);
+//   console.log("verify zkp3");
+//   const validZkp3 = await verify(proof3, VK3);
+//   console.log('ok?', validZkp3);
 
-  export { VK3, ZKP3Proof, ZKP3Input, ZKP3Output, zkp3 }
+  export { ZKP3Proof, ZKP3Input, ZKP3Output, zkp3 }
