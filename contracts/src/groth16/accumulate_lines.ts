@@ -78,12 +78,20 @@ class Groth16LineAccumulator {
     // DELTA
     const c_cache = new AffineCache(C);
 
+    // const gDigest = Poseidon.hashPacked(Provable.Array(Fp12, ATE_LOOP_COUNT.length), g);
+    // console.log(gDigest);
+
     // reset counters
     idx = 0;
     line_cnt = 0;
 
     for (let i = 1; i < ATE_LOOP_COUNT.length; i++) {
       idx = i - 1;
+
+      if (i === ATE_LOOP_COUNT.length - 21) {
+        const gDigest = Poseidon.hashPacked(Provable.Array(Fp12, ATE_LOOP_COUNT.length), g);
+        console.log(gDigest);
+      }
 
       let line = delta_lines[line_cnt];
       line_cnt += 1;
@@ -143,6 +151,11 @@ class Groth16LineAccumulator {
 
         g[idx] = g[idx].sparse_mul(line.psi(pi_cache));
       }
+
+      // if (i === ATE_LOOP_COUNT.length - 36) {
+      //   const gDigest = Poseidon.hashPacked(Provable.Array(Fp12, ATE_LOOP_COUNT.length), g);
+      //   console.log(gDigest);
+      // }
     }
 
     let line_gamma;
