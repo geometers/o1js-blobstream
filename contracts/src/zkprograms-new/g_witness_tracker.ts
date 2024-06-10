@@ -461,7 +461,7 @@ g = gt.zkp10(g, getPI(), gamma_lines.slice(40, 59));
 g = gt.zkp11(g, getPI(), gamma_lines.slice(59, 78));
 g = gt.zkp12(g, getPI(), gamma_lines.slice(78, 91));
 
-const gDigest = Poseidon.hashPacked(Provable.Array(Fp12, ATE_LOOP_COUNT.length), g);
-console.log(gDigest);
+// const gDigest = Poseidon.hashPacked(Provable.Array(Fp12, ATE_LOOP_COUNT.length), g);
+// console.log(gDigest);
 
 export { GWitnessTracker }

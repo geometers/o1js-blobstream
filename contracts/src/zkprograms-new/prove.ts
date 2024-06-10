@@ -756,8 +756,8 @@ async function runZKP17() {
 
   const validZkp17 = await verify(proof17, VK17);
   console.log('ok?', validZkp17);
-  fs.writeFileSync('./src/groth17/zkp17.json', JSON.stringify(proof17), 'utf8');
-  fs.writeFileSync('./src/groth17/vk17.json', JSON.stringify(VK17), 'utf8');
+  fs.writeFileSync('./src/groth16/zkp17.json', JSON.stringify(proof17), 'utf8');
+  fs.writeFileSync('./src/groth16/vk17.json', JSON.stringify(VK17), 'utf8');
 }
 
 async function runZKP18() {
@@ -780,7 +780,7 @@ async function runZKP18() {
   const VK17 = (await zkp17.compile({ cache: Cache.FileSystem('./groth16_cache') })).verificationKey;
   const VK18 = (await zkp18.compile({ cache: Cache.FileSystem('./groth16_cache') })).verificationKey;
 
-  const proof17 = await ZKP17Proof.fromJSON(JSON.parse(fs.readFileSync('./src/groth17/zkp16.json', 'utf8')));
+  const proof17 = await ZKP17Proof.fromJSON(JSON.parse(fs.readFileSync('./src/groth16/zkp17.json', 'utf8')));
 
   const bLines = getBHardcodedLines();
   let delta_lines_input = fs.readFileSync('./src/groth16/delta_lines.json', 'utf8');
@@ -816,8 +816,8 @@ async function runZKP18() {
 
   const validZkp18 = await verify(proof18, VK18);
   console.log('ok?', validZkp18);
-  fs.writeFileSync('./src/groth18/zkp18.json', JSON.stringify(proof18), 'utf8');
-  fs.writeFileSync('./src/groth18/vk18.json', JSON.stringify(VK18), 'utf8');
+  fs.writeFileSync('./src/groth16/zkp18.json', JSON.stringify(proof18), 'utf8');
+  fs.writeFileSync('./src/groth16/vk18.json', JSON.stringify(VK18), 'utf8');
 }
 
 async function runZKP19() {
@@ -841,7 +841,7 @@ async function runZKP19() {
   const VK18 = (await zkp18.compile({ cache: Cache.FileSystem('./groth16_cache') })).verificationKey;
   const VK19 = (await zkp19.compile({ cache: Cache.FileSystem('./groth16_cache') })).verificationKey;
 
-  const proof18 = await ZKP18Proof.fromJSON(JSON.parse(fs.readFileSync('./src/groth18/zkp16.json', 'utf8')));
+  const proof18 = await ZKP18Proof.fromJSON(JSON.parse(fs.readFileSync('./src/groth16/zkp18.json', 'utf8')));
 
   const bLines = getBHardcodedLines();
   let delta_lines_input = fs.readFileSync('./src/groth16/delta_lines.json', 'utf8');
@@ -877,8 +877,8 @@ async function runZKP19() {
 
   const validZkp19 = await verify(proof19, VK19);
   console.log('ok?', validZkp19);
-  fs.writeFileSync('./src/groth19/zkp19.json', JSON.stringify(proof19), 'utf8');
-  fs.writeFileSync('./src/groth19/vk19.json', JSON.stringify(VK19), 'utf8');
+  fs.writeFileSync('./src/groth16/zkp19.json', JSON.stringify(proof19), 'utf8');
+  fs.writeFileSync('./src/groth16/vk19.json', JSON.stringify(VK19), 'utf8');
 }
 
 async function runZKP20() {
@@ -903,7 +903,7 @@ async function runZKP20() {
   const VK19 = (await zkp19.compile({ cache: Cache.FileSystem('./groth16_cache') })).verificationKey;
   const VK20 = (await zkp20.compile({ cache: Cache.FileSystem('./groth16_cache') })).verificationKey;
 
-  const proof19 = await ZKP19Proof.fromJSON(JSON.parse(fs.readFileSync('./src/groth19/zkp16.json', 'utf8')));
+  const proof19 = await ZKP19Proof.fromJSON(JSON.parse(fs.readFileSync('./src/groth16/zkp19.json', 'utf8')));
 
   const bLines = getBHardcodedLines();
   let delta_lines_input = fs.readFileSync('./src/groth16/delta_lines.json', 'utf8');
@@ -939,11 +939,19 @@ async function runZKP20() {
 
   const validZkp20 = await verify(proof20, VK20);
   console.log('ok?', validZkp20);
-  fs.writeFileSync('./src/groth20/zkp20.json', JSON.stringify(proof20), 'utf8');
-  fs.writeFileSync('./src/groth20/vk20.json', JSON.stringify(VK20), 'utf8');
+  fs.writeFileSync('./src/groth16/zkp20.json', JSON.stringify(proof20), 'utf8');
+  fs.writeFileSync('./src/groth16/vk20.json', JSON.stringify(VK20), 'utf8');
+}
+
+async function proofReader() {
+  const proof = await ZKP18Proof.fromJSON(JSON.parse(fs.readFileSync('./src/groth16/zkp18.json', 'utf8')));
+  proof.publicOutput.f.display("f");
 }
 
 switch (process.argv[2]) {
+    case 'read': 
+        await proofReader(); 
+        break;
     case 'zkp1':
         await runZKP1();
         break;  
@@ -982,5 +990,26 @@ switch (process.argv[2]) {
         break;
     case 'zkp13': 
         await runZKP13(); 
+        break;
+    case 'zkp14': 
+        await runZKP14(); 
+        break;
+    case 'zkp15': 
+        await runZKP15(); 
+        break;
+    case 'zkp16': 
+        await runZKP16(); 
+        break;
+    case 'zkp17': 
+        await runZKP17(); 
+        break;
+    case 'zkp18': 
+        await runZKP18(); 
+        break;
+    case 'zkp19': 
+        await runZKP19(); 
+        break;    
+    case 'zkp20': 
+        await runZKP20(); 
         break;
 }

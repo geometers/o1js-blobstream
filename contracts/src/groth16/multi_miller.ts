@@ -57,6 +57,11 @@ class Groth16 {
     let idx = 0;
 
     for (let i = 1; i < ATE_LOOP_COUNT.length; i++) {
+
+      if (i === 37) {
+        f.display("f");
+      }
+
       idx = i - 1;
       f = f.square().mul(g[idx]);
 
