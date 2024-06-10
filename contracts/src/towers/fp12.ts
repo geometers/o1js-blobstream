@@ -1,4 +1,4 @@
-import { Struct } from 'o1js';
+import { Provable, Struct } from 'o1js';
 import { ATE_LOOP_COUNT, atc } from './consts.js';
 import { FpC } from './fp.js';
 import { Fp2 } from './fp2.js';
@@ -108,6 +108,26 @@ class Fp12 extends Struct({ c0: Fp6, c1: Fp6 }) {
     return new Fp12({ c0, c1 });
   }
 
+  frobenius_pow_p_with_gammas(gamma_1s: Array<Fp2>): Fp12 {
+    const t1 = this.c0.c0.conjugate();
+    let t2 = this.c1.c0.conjugate();
+    let t3 = this.c0.c1.conjugate();
+    let t4 = this.c1.c1.conjugate();
+    let t5 = this.c0.c2.conjugate();
+    let t6 = this.c1.c2.conjugate();
+
+    t2 = t2.mul(gamma_1s[0]);
+    t3 = t3.mul(gamma_1s[1]);
+    t4 = t4.mul(gamma_1s[2]);
+    t5 = t5.mul(gamma_1s[3]);
+    t6 = t6.mul(gamma_1s[4]);
+
+    const c0 = new Fp6({ c0: t1, c1: t3, c2: t5 });
+    const c1 = new Fp6({ c0: t2, c1: t4, c2: t6 });
+
+    return new Fp12({ c0, c1 });
+  }
+
   frobenius_pow_p_squared(): Fp12 {
     const t1 = this.c0.c0;
     const t2 = this.c1.c0.mul(GAMMA_2S[0]);
@@ -115,6 +135,20 @@ class Fp12 extends Struct({ c0: Fp6, c1: Fp6 }) {
     const t4 = this.c1.c1.mul(GAMMA_2S[2]);
     const t5 = this.c0.c2.mul(GAMMA_2S[3]);
     const t6 = this.c1.c2.mul(GAMMA_2S[4]);
+
+    const c0 = new Fp6({ c0: t1, c1: t3, c2: t5 });
+    const c1 = new Fp6({ c0: t2, c1: t4, c2: t6 });
+
+    return new Fp12({ c0, c1 });
+  }
+
+  frobenius_pow_p_squared_with_gammas(gamma_2s: Array<Fp2>): Fp12 {
+    const t1 = this.c0.c0;
+    const t2 = this.c1.c0.mul(gamma_2s[0]);
+    const t3 = this.c0.c1.mul(gamma_2s[1]);
+    const t4 = this.c1.c1.mul(gamma_2s[2]);
+    const t5 = this.c0.c2.mul(gamma_2s[3]);
+    const t6 = this.c1.c2.mul(gamma_2s[4]);
 
     const c0 = new Fp6({ c0: t1, c1: t3, c2: t5 });
     const c1 = new Fp6({ c0: t2, c1: t4, c2: t6 });
@@ -135,6 +169,26 @@ class Fp12 extends Struct({ c0: Fp6, c1: Fp6 }) {
     t4 = t4.mul(GAMMA_3S[2]);
     t5 = t5.mul(GAMMA_3S[3]);
     t6 = t6.mul(GAMMA_3S[4]);
+
+    const c0 = new Fp6({ c0: t1, c1: t3, c2: t5 });
+    const c1 = new Fp6({ c0: t2, c1: t4, c2: t6 });
+
+    return new Fp12({ c0, c1 });
+  }
+
+  frobenius_pow_p_cubed_with_gammas(gamma_3s: Array<Fp2>): Fp12 {
+    const t1 = this.c0.c0.conjugate();
+    let t2 = this.c1.c0.conjugate();
+    let t3 = this.c0.c1.conjugate();
+    let t4 = this.c1.c1.conjugate();
+    let t5 = this.c0.c2.conjugate();
+    let t6 = this.c1.c2.conjugate();
+
+    t2 = t2.mul(gamma_3s[0]);
+    t3 = t3.mul(gamma_3s[1]);
+    t4 = t4.mul(gamma_3s[2]);
+    t5 = t5.mul(gamma_3s[3]);
+    t6 = t6.mul(gamma_3s[4]);
 
     const c0 = new Fp6({ c0: t1, c1: t3, c2: t5 });
     const c1 = new Fp6({ c0: t2, c1: t4, c2: t6 });
