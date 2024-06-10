@@ -447,21 +447,92 @@ const gamma_lines = parsed_gamma_lines.map(
   (g: any): G2Line => G2Line.fromJSON(g)
 );
 
-const gt = new GWitnessTracker();
-let g = gt.zkp1(getNegA(), bLines, getB());
-g = gt.zkp2(g, getNegA(), bLines.slice(62, 62 + 29), getB());
-g = gt.zkp3(g, getC(), delta_lines);
-g = gt.zkp4(g, getC(), delta_lines.slice(20, 40));
-g = gt.zkp5(g, getC(), delta_lines.slice(40, 59));
-g = gt.zkp6(g, getC(), delta_lines.slice(59, 78));
-g = gt.zkp7(g, getC(), delta_lines.slice(78, 91));
-g = gt.zkp8(g, getPI(), gamma_lines.slice(0, 20));
-g = gt.zkp9(g, getPI(), gamma_lines.slice(20, 40));
-g = gt.zkp10(g, getPI(), gamma_lines.slice(40, 59));
-g = gt.zkp11(g, getPI(), gamma_lines.slice(59, 78));
-g = gt.zkp12(g, getPI(), gamma_lines.slice(78, 91));
+function gt1(gt: GWitnessTracker) {
+  return gt.zkp1(getNegA(), bLines, getB())
+}
 
-// const gDigest = Poseidon.hashPacked(Provable.Array(Fp12, ATE_LOOP_COUNT.length), g);
-// console.log(gDigest);
+function gt2(gt: GWitnessTracker) {
+  let g = gt1(gt);
+  return gt.zkp2(g, getNegA(), bLines.slice(62, 62 + 29), getB())
+}
 
-export { GWitnessTracker }
+function gt3(gt: GWitnessTracker) {
+  let g = gt2(gt);
+  return gt.zkp3(g, getC(), delta_lines)
+}
+
+function gt4(gt: GWitnessTracker) {
+  let g = gt3(gt);
+  return gt.zkp4(g, getC(), delta_lines.slice(20, 40))
+}
+
+function gt5(gt: GWitnessTracker) {
+  let g = gt4(gt);
+  return gt.zkp5(g, getC(), delta_lines.slice(40, 59))
+}
+
+function gt6(gt: GWitnessTracker) {
+  let g = gt5(gt);
+  return gt.zkp6(g, getC(), delta_lines.slice(59, 78))
+}
+
+function gt7(gt: GWitnessTracker) {
+  let g = gt6(gt);
+  return gt.zkp7(g, getC(), delta_lines.slice(78, 91))
+}
+
+function gt8(gt: GWitnessTracker) {
+  let g = gt7(gt);
+  return gt.zkp8(g, getPI(), gamma_lines.slice(0, 20))
+}
+
+function gt9(gt: GWitnessTracker) {
+  let g = gt8(gt);
+  return gt.zkp9(g, getPI(), gamma_lines.slice(20, 40))
+}
+
+function gt10(gt: GWitnessTracker) {
+  let g = gt9(gt);
+  return gt.zkp10(g, getPI(), gamma_lines.slice(40, 59))
+}
+
+function gt11(gt: GWitnessTracker) {
+  let g = gt10(gt);
+  return gt.zkp11(g, getPI(), gamma_lines.slice(59, 78))
+}
+
+function gt12(gt: GWitnessTracker) {
+  let g = gt11(gt);
+  return gt.zkp12(g, getPI(), gamma_lines.slice(78, 91))
+}
+
+function witnessTracker(n: number) {
+  const gt = new GWitnessTracker();
+  if (n == 1) {
+    return gt1(gt)
+  } else if (n == 2) {
+    return gt2(gt)
+  } else if (n == 3) {
+    return gt3(gt)
+  } else if (n == 4) {
+    return gt4(gt)
+  } else if (n == 5) {
+    return gt5(gt)
+  } else if (n == 6) {
+    return gt6(gt)
+  } else if (n == 7) {
+    return gt7(gt)
+  } else if (n == 8) {
+    return gt8(gt)
+  } else if (n == 9) {
+    return gt9(gt)
+  } else if (n == 10) {
+    return gt10(gt)
+  } else if (n == 11) {
+    return gt11(gt)
+  } else if (n == 12) {
+    return gt12(gt)
+  }
+}
+
+export { witnessTracker }

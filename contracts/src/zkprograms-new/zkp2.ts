@@ -16,7 +16,6 @@ import { AffineCache } from '../lines/precompute.js';
 import { G2Line } from '../lines/index.js';
 import { getBHardcodedLines, getNegA, getB } from './helpers.js';
 import { ZKP1Input, ZKP1Proof, ZKP1Output, zkp1 } from './zkp1.js'
-import { GWitnessTracker } from './g_witness_tracker.js';
 import { GAMMA_1S, GAMMA_2S, NEG_GAMMA_13 } from '../towers/precomputed.js';
 import fs from 'fs';
 
