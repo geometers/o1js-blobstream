@@ -30,4 +30,6 @@ class NodeProofRight extends DynamicProof<Undefined, SubtreeCarry> {
     static maxProofsVerified = 2 as const;
 }
 
-export { ZkpProofLeft, ZkpProofRight, NodeProofLeft, NodeProofRight, SubtreeCarry }
+const NOTHING_UP_MY_SLEEVE = Field(0);
+
+export { ZkpProofLeft, ZkpProofRight, NodeProofLeft, NodeProofRight, SubtreeCarry, NOTHING_UP_MY_SLEEVE }

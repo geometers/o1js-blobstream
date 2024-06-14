@@ -3,7 +3,7 @@ import { ZKP1Proof } from "./zkp1.js";
 import { ZKP2Proof } from "./zkp2.js";
 import { ZKP3Proof } from "./zkp3.js";
 import { ZKP4Proof } from "./zkp4.js";
-import { Field, VerificationKey } from "o1js";
+import { Bool, Field, VerificationKey } from "o1js";
 import { layer1 } from "../compressor/layer1node.js";
 import { NodeProofLeft, NodeProofRight, ZkpProofLeft, ZkpProofRight } from "../structs.js";
 import { node } from "../compressor/compressor.js";
@@ -25,8 +25,8 @@ console.log("zkps prepared")
 
 const layer1Vk = (await layer1.compile()).verificationKey; 
 
-const l1 = await layer1.compute(ZkpProofLeft.fromProof(p1), vk1, ZkpProofRight.fromProof(p2), vk2);
-const l2 = await layer1.compute(ZkpProofLeft.fromProof(p3), vk3, ZkpProofRight.fromProof(p4), vk4);
+const l1 = await layer1.compute(ZkpProofLeft.fromProof(p1), vk1, Bool(true), ZkpProofRight.fromProof(p2), vk2, Bool(true));
+const l2 = await layer1.compute(ZkpProofLeft.fromProof(p3), vk3, Bool(true), ZkpProofRight.fromProof(p4), vk4, Bool(true));
 
 console.log("layers proof done");
 
