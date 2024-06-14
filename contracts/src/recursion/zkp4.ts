@@ -1,30 +1,30 @@
 import {
     ZkProgram,
     Provable,
-    Poseidon
+    Poseidon,
+    Field
   } from 'o1js';
 import { ATE_LOOP_COUNT, Fp2 } from '../towers/index.js';
 import { AffineCache } from '../lines/precompute.js';
 import { G2Line } from '../lines/index.js';
-import { CZkpIn, CZkpOut, toDefaultOutput } from '../structs.js';
 import { Groth16Data } from './data.js';
 import fs from "fs";
 
 
 const zkp4 = ZkProgram({
     name: 'zkp4',
-    publicInput: CZkpIn,
-    publicOutput: CZkpOut,
+    publicInput: Field,
+    publicOutput: Field,
     methods: {
       compute: {
         privateInputs: [Groth16Data, Provable.Array(G2Line, 11)],
         async method(
-            input: CZkpIn,
+            input: Field,
             wIn: Groth16Data, 
             b_lines: Array<G2Line>,
         ) {        
             const inDigest = Poseidon.hashPacked(Groth16Data, wIn);
-            inDigest.assertEquals(input.digest);
+            inDigest.assertEquals(input);
 
             const a_cache = new AffineCache(wIn.negA);
 
@@ -104,7 +104,7 @@ const zkp4 = ZkProgram({
                 w27: wIn.w27
             });
 
-            return toDefaultOutput(Poseidon.hashPacked(Groth16Data, output));
+            return Poseidon.hashPacked(Groth16Data, output);
         },
       },
     },

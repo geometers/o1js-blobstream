@@ -7,9 +7,11 @@ import { getB, getBHardcodedLines, getBSlice, getC, getNegA, getPI, get_c_hint, 
 import { WitnessTracker } from "./witness_trace.js";
 import fs from 'fs';
 import { Groth16Data } from "./data.js";
-import { inpFromHashed, toDefaultInput, toDefaultOutput, toInput } from "../structs.js";
 import { GAMMA_1S, NEG_GAMMA_13 } from "../towers/precomputed.js";
 import { G2Line } from "../lines/index.js";
+import { Fp12 } from "../towers/fp12.js";
+import { Fp2 } from "../towers/fp2.js";
+import { FpC } from "../towers/fp.js";
 
 async function prove_zkp1() {
     const vk1 = (await zkp1.compile()).verificationKey; 
@@ -17,7 +19,7 @@ async function prove_zkp1() {
 
     const wt = new WitnessTracker();
     let in1 = wt.init(getNegA(), getB(), getC(), getPI(), get_c_hint(), make_w27());
-    let cin1 = inpFromHashed(Poseidon.hashPacked(Groth16Data, in1));
+    let cin1 = Poseidon.hashPacked(Groth16Data, in1);
 
     const proof1 = await zkp1.compute(cin1, getBSlice(0), in1);
     const valid = await verify(proof1, vk1); 
@@ -37,7 +39,7 @@ async function prove_zkp2() {
     let in1 = wt.init(getNegA(), getB(), getC(), getPI(), get_c_hint(), make_w27());
     let in2 = wt.zkp1(in1);
 
-    let cin2 = inpFromHashed(Poseidon.hashPacked(Groth16Data, in2));
+    let cin2 = Poseidon.hashPacked(Groth16Data, in2);
     const proof2 = await zkp2.compute(cin2, in2, getBSlice(1));
 
     const valid = await verify(proof2, vk2); 
@@ -55,7 +57,7 @@ async function prove_zkp3() {
     let in2 = wt.zkp1(in1);
     let in3 = wt.zkp2(in2);
 
-    let cin3 = inpFromHashed(Poseidon.hashPacked(Groth16Data, in3));
+    let cin3 = Poseidon.hashPacked(Groth16Data, in3);
     const proof3 = await zkp3.compute(cin3, in3, getBSlice(2));
 
     const valid = await verify(proof3, vk3); 
@@ -73,7 +75,7 @@ async function prove_zkp4() {
     let in3 = wt.zkp2(in2);
     let in4 = wt.zkp3(in3);
 
-    let cin4 = inpFromHashed(Poseidon.hashPacked(Groth16Data, in4));
+    let cin4 = Poseidon.hashPacked(Groth16Data, in4);
     const proof4 = await zkp4.compute(cin4, in4, getBSlice(3));
 
     const valid = await verify(proof4, vk4); 

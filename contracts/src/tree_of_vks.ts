@@ -1,17 +1,15 @@
-import { Field, Poseidon, VerificationKey } from "o1js";
-import { NOTHING_UP_MY_SLEEVE } from "./structs.js";
+import { Field, Poseidon } from "o1js";
 
 const isPowerOf2 = (n: number) => {
     return n > 0 && (n & (n - 1)) === 0;
 }
 
-const buildTreeOfVks = (baseVks: Array<VerificationKey>, compressorVk: VerificationKey) => {
-    console.assert(isPowerOf2(baseVks.length));
+const buildTreeOfVks = (baseVksHashes: Array<Field>, layer1VkHash: Field, nodeVkHash: Field) => {
+    console.assert(isPowerOf2(baseVksHashes.length));
 
     const baseLayerHashes: Array<Field> = []; 
-    for (let i = 0; i < baseVks.length; i += 2) {
-        const digest = Poseidon.hash([baseVks[i].hash, baseVks[i+1].hash, NOTHING_UP_MY_SLEEVE, NOTHING_UP_MY_SLEEVE, Field(1)]);
-        console.log(digest);
+    for (let i = 0; i < baseVksHashes.length; i += 2) {
+        const digest = Poseidon.hash([baseVksHashes[i], baseVksHashes[i+1], Field(1)]);
         baseLayerHashes.push(digest); 
     }
 
@@ -20,8 +18,11 @@ const buildTreeOfVks = (baseVks: Array<VerificationKey>, compressorVk: Verificat
     while (layerHashes.length > 1) {
         let runningLayer: Array<Field> = []; 
         layer = layer.add(Field(1));
+
+        let [vkLeft, vkRight] = layer.equals(Field(2)) ? [layer1VkHash, layer1VkHash] : [nodeVkHash, nodeVkHash];
+
         for (let i = 0; i < layerHashes.length; i += 2) {
-            const digest = Poseidon.hash([compressorVk.hash, compressorVk.hash, layerHashes[i], layerHashes[i + 1], layer]);
+            const digest = Poseidon.hash([vkLeft, vkRight, layerHashes[i], layerHashes[i + 1], layer]);
             runningLayer.push(digest); 
         }
 

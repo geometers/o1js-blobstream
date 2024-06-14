@@ -1,49 +1,39 @@
-import { Bool, DynamicProof, Field, Poseidon, Provable, Struct, VerificationKey, ZkProgram, Undefined } from "o1js";
-import { CIn, COut, GenericProofLeft, GenericProofRight, GenericZkpLeft, GenericZkpRight, NOTHING_UP_MY_SLEEVE } from "../structs.js";
+import { Field, Poseidon, Undefined, VerificationKey, ZkProgram } from "o1js";
+import { SubtreeCarry, ZkpProofLeft, ZkpProofRight } from "../structs.js";
 
-const nodeLayer1 = ZkProgram({
-    name: 'nodeLayer1',
+const layer1 = ZkProgram({
+    name: 'layer1',
     publicInput: Undefined,
-    publicOutput: COut,
+    publicOutput: SubtreeCarry,
     methods: {
       compute: {
-        privateInputs: [Bool, GenericZkpLeft, VerificationKey, Bool, GenericZkpRight, VerificationKey],
+        privateInputs: [ZkpProofLeft, VerificationKey, ZkpProofRight, VerificationKey],
         async method(
-            verifyPiLeft: Bool,
-            piLeft: GenericZkpLeft, 
-            vkLeft: VerificationKey,
-            verifyPiRight: Bool,
-            piRight: GenericZkpRight, 
-            vkRight: VerificationKey,
+            piLeft: ZkpProofLeft, 
+            vkLeft: VerificationKey, 
+            piRight: ZkpProofRight, 
+            vkRight: VerificationKey
         ) {
-            piLeft.verifyIf(vkLeft, verifyPiLeft);
-            piRight.verifyIf(vkRight, verifyPiRight);
+            
+            piLeft.verify(vkLeft); 
+            piRight.verify(vkRight); 
 
-            // piLeft.publicOutput.digest.assertEquals(piRight.publicInput.digest);
+            piLeft.publicOutput.assertEquals(piRight.publicInput);
 
-            // maybe there is a better way to do this hash
-            // TODO: add node index here also
-            const runningVksDigest = Poseidon.hashPacked(
-                Provable.Array(Field, 5), 
-                [
-                    verifyPiLeft.toField(),
-                    vkLeft.hash, 
-                    verifyPiRight.toField(),
-                    vkRight.hash, 
-                    
-                    Field(1)
-                ]);
+            const subtreeVkDigest = Poseidon.hash([
+              vkLeft.hash, 
+              vkRight.hash, 
+              Field(1), // layer
+            ]);
 
-            return new COut({
-                leftPiInDigest: piLeft.publicInput.digest, 
-                rightPiOutDigest: piRight.publicOutput.digest,
-                runningVksDigest,
-            });
+            return new SubtreeCarry({
+                leftIn: piLeft.publicInput, 
+                rightOut: piRight.publicOutput, 
+                subtreeVkDigest: subtreeVkDigest
+          });
         },
       },
     },
-  });
+});
 
-const nodeLayer1Proof = ZkProgram.Proof(nodeLayer1);
-
-export { nodeLayer1Proof, nodeLayer1 }
+export { layer1 }

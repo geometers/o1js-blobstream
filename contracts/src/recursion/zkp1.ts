@@ -8,30 +8,31 @@ import {
     verify,
     Provable,
     Struct,
-    Poseidon
+    Poseidon,
+    CanonicalForeignField
   } from 'o1js';
-import { ATE_LOOP_COUNT, Fp12, Fp2 } from '../towers/index.js';
+import { ATE_LOOP_COUNT, Fp12, Fp2, FpC } from '../towers/index.js';
 import { G1Affine, G2Affine } from '../ec/index.js';
 import { AffineCache } from '../lines/precompute.js';
 import { G2Line } from '../lines/index.js';
-import { CZkpIn, CZkpOut, toDefaultOutput } from '../structs.js';
 import { Groth16Data } from './data.js';
+import { Fp } from '../towers/fp.js';
 
 // npm run build && node --max-old-space-size=65536 build/src/zkprograms/zkp1.js
 const zkp1 = ZkProgram({
     name: 'zkp1',
-    publicInput: CZkpIn,
-    publicOutput: CZkpOut,
+    publicInput: Field,
+    publicOutput: Field,
     methods: {
       compute: {
         privateInputs: [Provable.Array(G2Line, 27), Groth16Data],
         async method(
-            input: CZkpIn,
+            input: Field,
             b_lines: Array<G2Line>, 
             wIn: Groth16Data, 
         ) {
             const inDigest = Poseidon.hashPacked(Groth16Data, wIn);
-            inDigest.assertEquals(input.digest);
+            inDigest.assertEquals(input);
 
             const negA = wIn.negA; 
             const a_cache = new AffineCache(negA);
@@ -86,33 +87,33 @@ const zkp1 = ZkProgram({
                 w27: wIn.w27
             });
 
-            return toDefaultOutput(Poseidon.hashPacked(Groth16Data, output));
+            return Poseidon.hashPacked(Groth16Data, output);
         },
       },
     },
   });
+
+// class CustomStruct extends Struct({
+//   a: Fp12, 
+//   b: Field
+// }) {};
+
+// const zkp1 = ZkProgram({
+//   name: 'zkp1',
+//   publicInput: Field,
+//   publicOutput: Field,
+//   methods: {
+//     compute: {
+//       privateInputs: [Field, FpC.provable],
+//       async method(publicInput: Field, privateInput: Field, c: FpC) {
+//         // return publicInput.mul(privateInput).mul(Poseidon.hashPacked(FpC, cs));
+//         // const fields = await c.toFields();
+//         return publicInput.mul(privateInput);
+//       },
+//     },
+//   },
+// });
+
 
 const ZKP1Proof = ZkProgram.Proof(zkp1);
-
-const zkp1Wrapper = ZkProgram({
-    name: 'zkp1Wrapper',
-    publicInput: CZkpIn,
-    publicOutput: CZkpOut,
-    methods: {
-      compute: {
-        privateInputs: [ZKP1Proof],
-        async method(
-            input: CZkpIn,
-            pi: Proof<CZkpIn, CZkpOut>,
-        ) {
-          pi.verify();
-          pi.verify();
-
-          return pi.publicOutput;
-        },
-      },
-    },
-  });
-
-const ZKP1WrapperProof = ZkProgram.Proof(zkp1Wrapper);
-export { ZKP1Proof, zkp1, ZKP1WrapperProof, zkp1Wrapper }
+export { ZKP1Proof, zkp1 }
