@@ -33,6 +33,16 @@ class Groth16LineAccumulator {
     for (let i = 1; i < ATE_LOOP_COUNT.length; i++) {
       idx = i - 1;
 
+      // if (i == ATE_LOOP_COUNT.length - 35) {
+      //   Provable.asProver(() => {
+      //     console.log("Tx", T.x.c0.toBigInt()); 
+      //     console.log("Tx", T.x.c1.toBigInt()); 
+      //     console.log("Ty", T.y.c0.toBigInt()); 
+      //     console.log("Ty", T.y.c1.toBigInt()); 
+      //     console.log("=====================");
+      //   })
+      // }
+
       let line_b = b_lines[line_cnt];
       line_cnt += 1;
       line_b.assert_is_tangent(T);

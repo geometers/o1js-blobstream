@@ -67,7 +67,9 @@ class G2Line extends Struct({ lambda: Fp2, neg_mu: Fp2 }) {
     e.assert_equals(ZERO);
 
     let dbl_lambda_y = this.lambda.add(this.lambda).mul(p.y);
-    dbl_lambda_y.assert_equals(p.x.square().mul_by_fp(FpC.from(3n)));
+    const x_square = p.x.square();
+    dbl_lambda_y.assert_equals(x_square.mul_by_fp(FpC.from(3n)));
+    // dbl_lambda_y.assert_equals(x_square.add(x_square).add(x_square));
   }
 
   // L, T : Y − (λX + µ) = 0

@@ -72,7 +72,7 @@ class Groth16 {
     idx += 1;
     f = f.mul(g[idx]);
 
-    f.display('f')
+    // f.display('f')
 
     f = f
       .mul(c_inv.frobenius_pow_p())

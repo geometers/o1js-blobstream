@@ -2,7 +2,7 @@ import { Field, Provable, Struct } from 'o1js';
 import { FpC, FpU, FpA } from './fp.js';
 import { AlmostReducedSum, UnreducedSum, assertMul } from './assert-mul.js';
 
-class Fp2 extends Struct({ c0: FpA.provable, c1: FpA.provable }) {
+class Fp2 extends Struct({ c0: FpC.provable, c1: FpC.provable }) {
   static zero(): Fp2 {
     return new Fp2({ c0: FpC.from(0n), c1: FpC.from(0n) });
   }
@@ -21,8 +21,7 @@ class Fp2 extends Struct({ c0: FpA.provable, c1: FpA.provable }) {
   }
 
   static fromUnreduced({ c0, c1 }: { c0: FpU; c1: FpU }): Fp2 {
-    let [c0A, c0B] = FpA.assertAlmostReduced(c0, c1);
-    return new Fp2({ c0: c0A, c1: c0B });
+    return new Fp2({ c0: c0.assertCanonical(), c1: c1.assertCanonical() });
   }
 
   equals(rhs: Fp2): Field {
@@ -32,11 +31,11 @@ class Fp2 extends Struct({ c0: FpA.provable, c1: FpA.provable }) {
   }
 
   neg(): Fp2 {
-    return new Fp2({ c0: this.c0.neg(), c1: this.c1.neg() });
+    return new Fp2({ c0: this.c0.neg().assertCanonical(), c1: this.c1.neg().assertCanonical() });
   }
 
   conjugate(): Fp2 {
-    return new Fp2({ c0: this.c0, c1: this.c1.neg() });
+    return new Fp2({ c0: this.c0, c1: this.c1.neg().assertCanonical() });
   }
 
   add(rhs: Fp2): Fp2 {
@@ -48,7 +47,7 @@ class Fp2 extends Struct({ c0: FpA.provable, c1: FpA.provable }) {
 
   add_fp(rhs: FpA) {
     const c0 = this.c0.add(rhs);
-    return new Fp2({ c0: c0.assertAlmostReduced(), c1: this.c1 });
+    return new Fp2({ c0: c0.assertCanonical(), c1: this.c1 });
   }
 
   sub(rhs: Fp2): Fp2 {
@@ -101,9 +100,12 @@ class Fp2 extends Struct({ c0: FpA.provable, c1: FpA.provable }) {
       return FpU.from(a0 * b1 + a1 * b0);
     });
 
-    let sum_a0_a1 = new AlmostReducedSum(this.c0).add(this.c1);
-    let sum_b0_b1 = new AlmostReducedSum(rhs.c0).add(rhs.c1);
-    let sum_c1_a0b0_a1b1 = new UnreducedSum(c1).add(a0b0).add(a1b1);
+    // let sum_a0_a1 = new AlmostReducedSum(this.c0).add(this.c1);
+    let sum_a0_a1 = this.c0.add(this.c1).assertCanonical();
+    // let sum_b0_b1 = new AlmostReducedSum(rhs.c0).add(rhs.c1);
+    let sum_b0_b1 = rhs.c0.add(rhs.c1).assertCanonical();
+    // let sum_c1_a0b0_a1b1 = new UnreducedSum(c1).add(a0b0).add(a1b1);
+    let sum_c1_a0b0_a1b1 = c1.add(a0b0).add(a1b1).assertCanonical();
     assertMul(sum_a0_a1, sum_b0_b1, sum_c1_a0b0_a1b1);
 
     return Fp2.fromUnreduced({ c0, c1 });
@@ -121,11 +123,14 @@ class Fp2 extends Struct({ c0: FpA.provable, c1: FpA.provable }) {
       }
     );
 
-    let sum_a0_a1 = new AlmostReducedSum(this.c0).add(this.c1);
-    let diff_a0_a1 = new AlmostReducedSum(this.c0).sub(this.c1);
+    // let sum_a0_a1 = new AlmostReducedSum(this.c0).add(this.c1);
+    let sum_a0_a1 = this.c0.add(this.c1).assertCanonical();
+    // let diff_a0_a1 = new AlmostReducedSum(this.c0).sub(this.c1);
+    let diff_a0_a1 = this.c0.sub(this.c1).assertCanonical();
     assertMul(sum_a0_a1, diff_a0_a1, c0);
 
-    let sum_a0_a0 = new AlmostReducedSum(this.c0).add(this.c0);
+    // let sum_a0_a0 = new AlmostReducedSum(this.c0).add(this.c0);
+    let sum_a0_a0 = this.c0.add(this.c0).assertCanonical();
     assertMul(sum_a0_a0, this.c1, c1);
 
     return Fp2.fromUnreduced({ c0, c1 });
@@ -138,7 +143,8 @@ class Fp2 extends Struct({ c0: FpA.provable, c1: FpA.provable }) {
     // beta = -1
     t0 = t0.add(t1);
     // TODO this should be doable with 1 assertAlmostReduced + assertMul
-    let t1A = t0.assertAlmostReduced().inv().assertAlmostReduced();
+    // let t1A = t0.assertAlmostReduced().inv().assertAlmostReduced();
+    let t1A = t0.assertCanonical().inv().assertCanonical();
 
     const c0 = this.c0.mul(t1A);
     const c1 = this.c1.mul(t1A).neg();
@@ -157,8 +163,8 @@ class Fp2 extends Struct({ c0: FpA.provable, c1: FpA.provable }) {
   static fromJSON(json: any): Fp2 {
     let value = super.fromJSON(json);
     return new Fp2({
-        c0: FpA.provable.fromValue(value.c0), 
-        c1: FpA.provable.fromValue(value.c1)
+        c0: FpC.provable.fromValue(value.c0), 
+        c1: FpC.provable.fromValue(value.c1)
     })
   }
 }

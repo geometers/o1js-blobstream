@@ -7,8 +7,10 @@ ate_cnt = [
 
 line_cnt = 0 
 
-for i in range(len(ate_cnt) - 5, len(ate_cnt)): 
-# for i in range(1, len(ate_cnt) - 50): 
+# for i in range(1, len(ate_cnt) - 45): 
+# for i in range(len(ate_cnt) - 45, len(ate_cnt) - 26): 
+# for i in range(len(ate_cnt) - 26, len(ate_cnt) - 7): 
+for i in range(len(ate_cnt) - 7, len(ate_cnt)): 
     if ate_cnt[i] == 0: 
         line_cnt += 1 
     else: 

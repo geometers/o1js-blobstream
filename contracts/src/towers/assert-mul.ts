@@ -10,6 +10,15 @@ type ForeignFieldSum = ReturnType<typeof Gadgets.ForeignField.Sum>;
 
 // typed version of `Gadgets.ForeignField.assertMul()`
 
+// function assertMul(
+//   a: AlmostReducedSum | AlmostForeignField,
+//   b: AlmostReducedSum | AlmostForeignField,
+//   c: UnreducedSum | ForeignField
+// ) {
+//   assert(a.modulus === b.modulus && a.modulus === c.modulus);
+//   Gadgets.ForeignField.assertMul(a.value, b.value, c.value, a.modulus);
+// }
+
 function assertMul(
   a: AlmostReducedSum | AlmostForeignField,
   b: AlmostReducedSum | AlmostForeignField,
