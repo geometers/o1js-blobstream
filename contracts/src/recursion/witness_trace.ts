@@ -24,7 +24,7 @@ class WitnessTracker {
         })
     }
 
-    zkp1(input: Groth16Data): Groth16Data {
+    zkp0(input: Groth16Data): Groth16Data {
         const negA = input.negA; 
         const B = input.B; 
         const g = input.g;
@@ -79,7 +79,7 @@ class WitnessTracker {
         });
     }
 
-    zkp2(input: Groth16Data) {
+    zkp1(input: Groth16Data) {
         const negA = input.negA; 
         const B = input.B; 
         const g = input.g;
@@ -134,7 +134,7 @@ class WitnessTracker {
         });
     }
 
-    zkp3(input: Groth16Data) {
+    zkp2(input: Groth16Data) {
         const negA = input.negA; 
         const B = input.B; 
         const g = input.g;
@@ -190,7 +190,7 @@ class WitnessTracker {
         });
     }
     
-    zkp4(input: Groth16Data) {
+    zkp3(input: Groth16Data) {
         const negA = input.negA; 
         const B = input.B; 
         const g = input.g;
@@ -212,23 +212,6 @@ class WitnessTracker {
           let line_b = b_lines[line_cnt];
           line_b.assert_is_tangent(T);
           line_cnt += 1;
-
-
-        // console.log("=====================");
-        // console.log("Tx", T.x.c0.toBigInt()); 
-        // console.log("Tx", T.x.c1.toBigInt()); 
-        // console.log("Ty", T.y.c0.toBigInt()); 
-        // console.log("Ty", T.y.c1.toBigInt()); 
-        // console.log("=====================");
-
-        // console.log("=====================");
-        console.log("b.l.c0", line_b.lambda.c0.toBigInt()); 
-        console.log("b.l.c1", line_b.lambda.c1.toBigInt()); 
-        console.log("b.mu.c0", line_b.neg_mu.c0.toBigInt()); 
-        console.log("b.mu.c0", line_b.neg_mu.c1.toBigInt()); 
-        console.log("=====================");
-            // console.log("b", line_b.lambda);
-            // console.log("b", line_b.neg_mu);
     
           g[idx] = line_b.psi(a_cache);
           T = T.double_from_line(line_b.lambda);

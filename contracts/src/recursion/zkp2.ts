@@ -16,7 +16,7 @@ const zkp2 = ZkProgram({
     publicOutput: Field,
     methods: {
       compute: {
-        privateInputs: [Groth16Data, Provable.Array(G2Line, 25)],
+        privateInputs: [Groth16Data, Provable.Array(G2Line, 28)],
         async method(
             input: Field,
             wIn: Groth16Data, 
@@ -35,7 +35,7 @@ const zkp2 = ZkProgram({
             let idx = 0;
             let line_cnt = 0;
         
-            for (let i = ATE_LOOP_COUNT.length - 45; i < ATE_LOOP_COUNT.length - 26; i++) {
+            for (let i = ATE_LOOP_COUNT.length - 26; i < ATE_LOOP_COUNT.length - 7; i++) {
               idx = i - 1;
         
               let line_b = b_lines[line_cnt];
@@ -80,20 +80,6 @@ const zkp2 = ZkProgram({
       },
     },
   });
-
-// const zkp2 = ZkProgram({
-//   name: 'zkp2',
-//   publicInput: Field,
-//   publicOutput: Field,
-//   methods: {
-//     compute: {
-//       privateInputs: [Field],
-//       async method(publicInput: Field, privateInput: Field) {
-//         return publicInput.mul(privateInput).mul(Field(2));
-//       },
-//     },
-//   },
-// });
 
 const ZKP2Proof = ZkProgram.Proof(zkp2);
 export { ZKP2Proof, zkp2 }

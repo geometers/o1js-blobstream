@@ -1,42 +1,53 @@
 import {
     ZkProgram,
+    Field,
+    DynamicProof,
+    Proof,
+    VerificationKey,
+    Undefined,
+    verify,
     Provable,
+    Struct,
     Poseidon,
-    Field
+    CanonicalForeignField
   } from 'o1js';
-import { ATE_LOOP_COUNT, Fp2 } from '../towers/index.js';
+import { ATE_LOOP_COUNT, Fp12, Fp2, FpC } from '../towers/index.js';
+import { G1Affine, G2Affine } from '../ec/index.js';
 import { AffineCache } from '../lines/precompute.js';
 import { G2Line } from '../lines/index.js';
 import { Groth16Data } from './data.js';
-import fs from "fs";
+import { Fp } from '../towers/fp.js';
 
-
-const zkp4 = ZkProgram({
-    name: 'zkp4',
+// npm run build && node --max-old-space-size=65536 build/src/zkprograms/zkp0.js
+const zkp0 = ZkProgram({
+    name: 'zkp0',
     publicInput: Field,
     publicOutput: Field,
     methods: {
       compute: {
-        privateInputs: [Groth16Data, Provable.Array(G2Line, 11)],
+        privateInputs: [Provable.Array(G2Line, 27), Groth16Data],
         async method(
             input: Field,
+            b_lines: Array<G2Line>, 
             wIn: Groth16Data, 
-            b_lines: Array<G2Line>,
-        ) {        
+        ) {
             const inDigest = Poseidon.hashPacked(Groth16Data, wIn);
             inDigest.assertEquals(input);
 
-            const a_cache = new AffineCache(wIn.negA);
-
-            const B = wIn.B;
-            let T = wIn.T;
-            const negB = B.neg();
+            const negA = wIn.negA; 
+            const a_cache = new AffineCache(negA);
             let g = wIn.g;
+
+            // handle pair (A, B) as first point
+        
+            const B = wIn.B;
+            let T = new G2Affine({ x: B.x, y: B.y });
+            const negB = B.neg();
         
             let idx = 0;
             let line_cnt = 0;
         
-            for (let i = ATE_LOOP_COUNT.length - 7; i < ATE_LOOP_COUNT.length; i++) {
+            for (let i = 1; i < ATE_LOOP_COUNT.length - 45; i++) {
               idx = i - 1;
         
               let line_b = b_lines[line_cnt];
@@ -64,37 +75,9 @@ const zkp4 = ZkProgram({
                 T = T.add_from_line(line_b.lambda, negB);
               }
             }
-
-            let gamma_1s_input = fs.readFileSync('./src/towers/gamma_1s.json', 'utf8');
-            let parsed_gamma_1s: any[] = JSON.parse(gamma_1s_input);
-            let gamma_1s = parsed_gamma_1s.map(
-              (g: any): Fp2 => Fp2.fromJSON(g)
-            );
-
-            let neg_gamma_input = fs.readFileSync('./src/towers/neg_gamma.json', 'utf8');
-            let neg_gamma = Fp2.fromJSON(JSON.parse(neg_gamma_input));
-
-            // GAMMA_1S[1], GAMMA_1S[2], NEG_GAMMA_13
-            const piB = B.frobFromInputs(gamma_1s[1], gamma_1s[2]);
-            let line_b;
-
-            line_b = b_lines[line_cnt];
-            line_cnt += 1;
-            line_b.assert_is_line(T, piB);
-
-            idx += 1;
-            g[idx] = g[idx].sparse_mul(line_b.psi(a_cache));
-            T = T.add_from_line(line_b.lambda, piB);
-
-            let pi_2_B = piB.negFrobFromInputs(gamma_1s[1], neg_gamma);
-            line_b = b_lines[line_cnt];
-            line_b.assert_is_line(T, pi_2_B);
-
-            // idx += 1;
-            g[idx] = g[idx].sparse_mul(line_b.psi(a_cache));
-                          
+            
             const output =  new Groth16Data({
-                negA: wIn.negA, 
+                negA, 
                 B, 
                 C: wIn.C, 
                 PI: wIn.PI,
@@ -110,5 +93,27 @@ const zkp4 = ZkProgram({
     },
   });
 
-const ZKP4Proof = ZkProgram.Proof(zkp4);
-export { ZKP4Proof, zkp4 }
+// class CustomStruct extends Struct({
+//   a: Fp12, 
+//   b: Field
+// }) {};
+
+// const zkp1 = ZkProgram({
+//   name: 'zkp1',
+//   publicInput: Field,
+//   publicOutput: Field,
+//   methods: {
+//     compute: {
+//       privateInputs: [Field, FpC.provable],
+//       async method(publicInput: Field, privateInput: Field, c: FpC) {
+//         // return publicInput.mul(privateInput).mul(Poseidon.hashPacked(FpC, cs));
+//         // const fields = await c.toFields();
+//         return publicInput.mul(privateInput);
+//       },
+//     },
+//   },
+// });
+
+
+const ZKP0Proof = ZkProgram.Proof(zkp0);
+export { ZKP0Proof, zkp0 }

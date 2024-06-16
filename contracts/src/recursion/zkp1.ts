@@ -1,53 +1,41 @@
 import {
     ZkProgram,
-    Field,
-    DynamicProof,
-    Proof,
-    VerificationKey,
-    Undefined,
-    verify,
     Provable,
-    Struct,
     Poseidon,
-    CanonicalForeignField
+    Field
   } from 'o1js';
-import { ATE_LOOP_COUNT, Fp12, Fp2, FpC } from '../towers/index.js';
-import { G1Affine, G2Affine } from '../ec/index.js';
+import { ATE_LOOP_COUNT } from '../towers/index.js';
 import { AffineCache } from '../lines/precompute.js';
 import { G2Line } from '../lines/index.js';
 import { Groth16Data } from './data.js';
-import { Fp } from '../towers/fp.js';
 
-// npm run build && node --max-old-space-size=65536 build/src/zkprograms/zkp1.js
+
 const zkp1 = ZkProgram({
     name: 'zkp1',
     publicInput: Field,
     publicOutput: Field,
     methods: {
       compute: {
-        privateInputs: [Provable.Array(G2Line, 27), Groth16Data],
+        privateInputs: [Groth16Data, Provable.Array(G2Line, 25)],
         async method(
             input: Field,
-            b_lines: Array<G2Line>, 
             wIn: Groth16Data, 
-        ) {
+            b_lines: Array<G2Line>,
+        ) {        
             const inDigest = Poseidon.hashPacked(Groth16Data, wIn);
             inDigest.assertEquals(input);
 
-            const negA = wIn.negA; 
-            const a_cache = new AffineCache(negA);
-            let g = wIn.g;
+            const a_cache = new AffineCache(wIn.negA);
 
-            // handle pair (A, B) as first point
-        
             const B = wIn.B;
-            let T = new G2Affine({ x: B.x, y: B.y });
+            let T = wIn.T;
             const negB = B.neg();
+            let g = wIn.g;
         
             let idx = 0;
             let line_cnt = 0;
         
-            for (let i = 1; i < ATE_LOOP_COUNT.length - 45; i++) {
+            for (let i = ATE_LOOP_COUNT.length - 45; i < ATE_LOOP_COUNT.length - 26; i++) {
               idx = i - 1;
         
               let line_b = b_lines[line_cnt];
@@ -75,9 +63,9 @@ const zkp1 = ZkProgram({
                 T = T.add_from_line(line_b.lambda, negB);
               }
             }
-            
+                          
             const output =  new Groth16Data({
-                negA, 
+                negA: wIn.negA, 
                 B, 
                 C: wIn.C, 
                 PI: wIn.PI,
@@ -93,27 +81,19 @@ const zkp1 = ZkProgram({
     },
   });
 
-// class CustomStruct extends Struct({
-//   a: Fp12, 
-//   b: Field
-// }) {};
-
-// const zkp1 = ZkProgram({
-//   name: 'zkp1',
+// const zkp2 = ZkProgram({
+//   name: 'zkp2',
 //   publicInput: Field,
 //   publicOutput: Field,
 //   methods: {
 //     compute: {
-//       privateInputs: [Field, FpC.provable],
-//       async method(publicInput: Field, privateInput: Field, c: FpC) {
-//         // return publicInput.mul(privateInput).mul(Poseidon.hashPacked(FpC, cs));
-//         // const fields = await c.toFields();
-//         return publicInput.mul(privateInput);
+//       privateInputs: [Field],
+//       async method(publicInput: Field, privateInput: Field) {
+//         return publicInput.mul(privateInput).mul(Field(2));
 //       },
 //     },
 //   },
 // });
-
 
 const ZKP1Proof = ZkProgram.Proof(zkp1);
 export { ZKP1Proof, zkp1 }
