@@ -13,3 +13,6 @@ coverage
 keys
 
 groth16_cache
+
+src/recursion/vks
+src/recursion/proofs

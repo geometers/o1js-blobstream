@@ -14,7 +14,7 @@ import { Fp2 } from "../towers/fp2.js";
 import { FpC } from "../towers/fp.js";
 
 async function prove_zkp0() {
-    const vk0 = await VerificationKey.fromJSON(JSON.parse(fs.readFileSync(`./src/recursion/vks/vk0.json`, 'utf8')));
+    const vk0 = (await zkp0.compile()).verificationKey;
 
     const wt = new WitnessTracker();
     let in0 = wt.init(getNegA(), getB(), getC(), getPI(), get_c_hint(), make_w27());
@@ -29,7 +29,7 @@ async function prove_zkp0() {
 
 
 async function prove_zkp1() {
-    const vk1 = await VerificationKey.fromJSON(JSON.parse(fs.readFileSync(`./src/recursion/vks/vk1.json`, 'utf8')));
+    const vk1 = (await zkp1.compile()).verificationKey;
 
     const wt = new WitnessTracker();
     let in0 = wt.init(getNegA(), getB(), getC(), getPI(), get_c_hint(), make_w27());
@@ -46,7 +46,7 @@ async function prove_zkp1() {
 
 
 async function prove_zkp2() {
-    const vk2 = await VerificationKey.fromJSON(JSON.parse(fs.readFileSync(`./src/recursion/vks/vk2.json`, 'utf8')));
+    const vk2 = (await zkp2.compile()).verificationKey;
 
     const wt = new WitnessTracker();
     let in0 = wt.init(getNegA(), getB(), getC(), getPI(), get_c_hint(), make_w27());
@@ -63,7 +63,7 @@ async function prove_zkp2() {
 }
 
 async function prove_zkp3() {
-    const vk3 = await VerificationKey.fromJSON(JSON.parse(fs.readFileSync(`./src/recursion/vks/vk3.json`, 'utf8')));
+    const vk3 = (await zkp3.compile()).verificationKey;
 
     const wt = new WitnessTracker();
     let in0 = wt.init(getNegA(), getB(), getC(), getPI(), get_c_hint(), make_w27());
