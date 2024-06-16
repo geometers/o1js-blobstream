@@ -81,6 +81,7 @@ const zkp5 = ZkProgram({
             line_delta = delta_lines[line_cnt];
             g[idx] = g[idx].sparse_mul(line_delta.psi(c_cache));
 
+
             // START (PI, gamma)
 
             const pi_cache = new AffineCache(wIn.PI);

@@ -168,7 +168,7 @@ class WitnessTracker {
           (g: any): G2Line => G2Line.fromJSON(g)
         );
 
-        delta_lines = delta_lines.slice(0, 25);
+        // delta_lines = delta_lines.slice(0, 25);
         
         idx = 0;
         line_cnt = 0;
@@ -210,84 +210,361 @@ class WitnessTracker {
     
     zkp3(input: Groth16Data) {
       const c_cache = new AffineCache(input.C);
+      let g = input.g;
 
       let delta_lines_input = fs.readFileSync('./src/groth16/delta_lines.json', 'utf8');
       let parsed_delta_lines: any[] = JSON.parse(delta_lines_input);
       let delta_lines = parsed_delta_lines.map(
         (g: any): G2Line => G2Line.fromJSON(g)
       );
-
-      delta_lines.slice(25, 25 + 27);
-
-      const g = input.g;
-
+  
+      delta_lines = delta_lines.slice(25, 91);
+  
       let idx = 0;
       let line_cnt = 0;
-      for (let i = ATE_LOOP_COUNT.length - 47; i < ATE_LOOP_COUNT.length - 26; i++) {
-          idx = i - 1;
   
-          let line_b = delta_lines[line_cnt];
+      for (let i = ATE_LOOP_COUNT.length - 47; i < ATE_LOOP_COUNT.length - 26; i++) {
+        idx = i - 1;
+  
+        let line = delta_lines[line_cnt];
+        line_cnt += 1;
+  
+        g[idx] = g[idx].sparse_mul(line.psi(c_cache));
+  
+        if (ATE_LOOP_COUNT[i] == 1) {
+          let line = delta_lines[line_cnt];
           line_cnt += 1;
-    
-          g[idx] = g[idx].sparse_mul(line_b.psi(c_cache));
-    
-          if (ATE_LOOP_COUNT[i] == 1) {
-            let line_b = delta_lines[line_cnt];
-            line_cnt += 1;
-    
-            g[idx] = g[idx].sparse_mul(line_b.psi(c_cache));
-          }
+  
+          g[idx] = g[idx].sparse_mul(line.psi(c_cache));
+        }
 
-          if (ATE_LOOP_COUNT[i] == -1) {
-            let line_b = delta_lines[line_cnt];
-            line_cnt += 1;
-    
-            g[idx] = g[idx].sparse_mul(line_b.psi(c_cache));
-          }
+        if (ATE_LOOP_COUNT[i] == -1) {
+          let line = delta_lines[line_cnt];
+          line_cnt += 1;
+  
+          g[idx] = g[idx].sparse_mul(line.psi(c_cache));
+        }
       }
 
-        return new Groth16Data({
-            negA: input.negA, 
-            B: input.B, 
-            C: input.C, 
-            PI: input.PI,
-            g,
-            T: input.T,
-            c: input.c, 
-            w27: input.w27
-        });
+      return new Groth16Data({
+          negA: input.negA, 
+          B: input.B, 
+          C: input.C, 
+          PI: input.PI,
+          g,
+          T: input.T,
+          c: input.c, 
+          w27: input.w27
+      });
     }
 
-    zkp4(g: Array<Fp12>, C: G1Affine, delta_lines: Array<G2Line>): Array<Fp12> {
-      const c_cache = new AffineCache(C);
+    zkp4(input: Groth16Data) {
+      const c_cache = new AffineCache(input.C);
+      let g = input.g;
 
+      let delta_lines_input = fs.readFileSync('./src/groth16/delta_lines.json', 'utf8');
+      let parsed_delta_lines: any[] = JSON.parse(delta_lines_input);
+      let delta_lines = parsed_delta_lines.map(
+        (g: any): G2Line => G2Line.fromJSON(g)
+      );
+  
+      delta_lines = delta_lines.slice(25 + 27, 91);
+  
       let idx = 0;
       let line_cnt = 0;
-      for (let i = 1; i < ATE_LOOP_COUNT.length - 45; i++) {
+  
+      for (let i = ATE_LOOP_COUNT.length - 26; i < ATE_LOOP_COUNT.length - 8; i++) {
+        idx = i - 1;
+  
+        let line = delta_lines[line_cnt];
+        line_cnt += 1;
+  
+        g[idx] = g[idx].sparse_mul(line.psi(c_cache));
+  
+        if (ATE_LOOP_COUNT[i] == 1) {
+          let line = delta_lines[line_cnt];
+          line_cnt += 1;
+  
+          g[idx] = g[idx].sparse_mul(line.psi(c_cache));
+        }
+
+        if (ATE_LOOP_COUNT[i] == -1) {
+          let line = delta_lines[line_cnt];
+          line_cnt += 1;
+  
+          g[idx] = g[idx].sparse_mul(line.psi(c_cache));
+        }
+      }
+
+      return new Groth16Data({
+          negA: input.negA, 
+          B: input.B, 
+          C: input.C, 
+          PI: input.PI,
+          g,
+          T: input.T,
+          c: input.c, 
+          w27: input.w27
+      });
+    }
+
+    zkp5(input: Groth16Data) {
+      const c_cache = new AffineCache(input.C);
+      let g = input.g;
+
+      let delta_lines_input = fs.readFileSync('./src/groth16/delta_lines.json', 'utf8');
+      let parsed_delta_lines: any[] = JSON.parse(delta_lines_input);
+      let delta_lines = parsed_delta_lines.map(
+        (g: any): G2Line => G2Line.fromJSON(g)
+      );
+  
+      delta_lines = delta_lines.slice(25 + 27 + 26, 91);
+  
+      let idx = 0;
+      let line_cnt = 0;
+  
+      for (let i = ATE_LOOP_COUNT.length - 8; i < ATE_LOOP_COUNT.length; i++) {
+        idx = i - 1;
+  
+        let line = delta_lines[line_cnt];
+        line_cnt += 1;
+  
+        g[idx] = g[idx].sparse_mul(line.psi(c_cache));
+  
+        if (ATE_LOOP_COUNT[i] == 1) {
+          let line = delta_lines[line_cnt];
+          line_cnt += 1;
+  
+          g[idx] = g[idx].sparse_mul(line.psi(c_cache));
+        }
+
+        if (ATE_LOOP_COUNT[i] == -1) {
+          let line = delta_lines[line_cnt];
+          line_cnt += 1;
+  
+          g[idx] = g[idx].sparse_mul(line.psi(c_cache));
+        }
+      }
+
+      let line_delta;
+
+      line_delta = delta_lines[line_cnt];
+      line_cnt += 1;
+  
+      idx += 1;
+      g[idx] = g[idx].sparse_mul(line_delta.psi(c_cache));
+
+      line_delta = delta_lines[line_cnt];
+      g[idx] = g[idx].sparse_mul(line_delta.psi(c_cache));
+
+      // START (PI, gamma)
+
+      const pi_cache = new AffineCache(input.PI);
+
+      let gamma_lines_input = fs.readFileSync('./src/groth16/gamma_lines.json', 'utf8');
+      let parsed_gamma_lines: any[] = JSON.parse(gamma_lines_input);
+      const gamma_lines = parsed_gamma_lines.map(
+        (g: any): G2Line => G2Line.fromJSON(g)
+      );
+  
+      idx = 0;
+      line_cnt = 0;
+      for (let i = 1; i < ATE_LOOP_COUNT.length - 55; i++) {
           idx = i - 1;
   
-          let line_b = delta_lines[line_cnt];
+          let line = gamma_lines[line_cnt];
           line_cnt += 1;
     
-          g[idx] = g[idx].sparse_mul(line_b.psi(c_cache));
+          g[idx] = g[idx].sparse_mul(line.psi(pi_cache));
     
           if (ATE_LOOP_COUNT[i] == 1) {
-            let line_b = delta_lines[line_cnt];
+            let line = gamma_lines[line_cnt];
             line_cnt += 1;
     
-            g[idx] = g[idx].sparse_mul(line_b.psi(c_cache));
+            g[idx] = g[idx].sparse_mul(line.psi(pi_cache));
           }
 
           if (ATE_LOOP_COUNT[i] == -1) {
-            let line_b = delta_lines[line_cnt];
+            let line = gamma_lines[line_cnt];
             line_cnt += 1;
     
-            g[idx] = g[idx].sparse_mul(line_b.psi(c_cache));
+            g[idx] = g[idx].sparse_mul(line.psi(pi_cache));
+          }
+      }        
+
+      return new Groth16Data({
+          negA: input.negA, 
+          B: input.B, 
+          C: input.C, 
+          PI: input.PI,
+          g,
+          T: input.T,
+          c: input.c, 
+          w27: input.w27
+      });
+    }
+
+    zkp6(input: Groth16Data) {
+      const pi_cache = new AffineCache(input.PI);
+
+      let gamma_lines_input = fs.readFileSync('./src/groth16/gamma_lines.json', 'utf8');
+      let parsed_gamma_lines: any[] = JSON.parse(gamma_lines_input);
+      let gamma_lines = parsed_gamma_lines.map(
+        (g: any): G2Line => G2Line.fromJSON(g)
+      );
+      gamma_lines = gamma_lines.slice(14, 91);
+
+      const g = input.g;
+  
+      let idx = 0;
+      let line_cnt = 0;
+      for (let i = ATE_LOOP_COUNT.length - 55; i < ATE_LOOP_COUNT.length - 34; i++) {
+          idx = i - 1;
+  
+          let line = gamma_lines[line_cnt];
+          line_cnt += 1;
+    
+          g[idx] = g[idx].sparse_mul(line.psi(pi_cache));
+    
+          if (ATE_LOOP_COUNT[i] == 1) {
+            let line = gamma_lines[line_cnt];
+            line_cnt += 1;
+    
+            g[idx] = g[idx].sparse_mul(line.psi(pi_cache));
+          }
+
+          if (ATE_LOOP_COUNT[i] == -1) {
+            let line = gamma_lines[line_cnt];
+            line_cnt += 1;
+    
+            g[idx] = g[idx].sparse_mul(line.psi(pi_cache));
+          }
+      }
+                    
+
+      return new Groth16Data({
+          negA: input.negA, 
+          B: input.B, 
+          C: input.C, 
+          PI: input.PI,
+          g,
+          T: input.T,
+          c: input.c, 
+          w27: input.w27
+      });
+    }
+
+    zkp7(input: Groth16Data) {
+      const pi_cache = new AffineCache(input.PI);
+
+      let gamma_lines_input = fs.readFileSync('./src/groth16/gamma_lines.json', 'utf8');
+      let parsed_gamma_lines: any[] = JSON.parse(gamma_lines_input);
+      let gamma_lines = parsed_gamma_lines.map(
+        (g: any): G2Line => G2Line.fromJSON(g)
+      );
+      gamma_lines = gamma_lines.slice(14 + 27, 91);
+
+      const g = input.g;
+  
+      let idx = 0;
+      let line_cnt = 0;
+      for (let i = ATE_LOOP_COUNT.length - 34; i < ATE_LOOP_COUNT.length - 15; i++) {
+          idx = i - 1;
+  
+          let line = gamma_lines[line_cnt];
+          line_cnt += 1;
+    
+          g[idx] = g[idx].sparse_mul(line.psi(pi_cache));
+    
+          if (ATE_LOOP_COUNT[i] == 1) {
+            let line = gamma_lines[line_cnt];
+            line_cnt += 1;
+    
+            g[idx] = g[idx].sparse_mul(line.psi(pi_cache));
+          }
+
+          if (ATE_LOOP_COUNT[i] == -1) {
+            let line = gamma_lines[line_cnt];
+            line_cnt += 1;
+    
+            g[idx] = g[idx].sparse_mul(line.psi(pi_cache));
+          }
+      }
+                    
+
+      return new Groth16Data({
+          negA: input.negA, 
+          B: input.B, 
+          C: input.C, 
+          PI: input.PI,
+          g,
+          T: input.T,
+          c: input.c, 
+          w27: input.w27
+      });
+    }
+
+    zkp8(input: Groth16Data) {
+      const pi_cache = new AffineCache(input.PI);
+
+      let gamma_lines_input = fs.readFileSync('./src/groth16/gamma_lines.json', 'utf8');
+      let parsed_gamma_lines: any[] = JSON.parse(gamma_lines_input);
+      let gamma_lines = parsed_gamma_lines.map(
+        (g: any): G2Line => G2Line.fromJSON(g)
+      );
+      gamma_lines = gamma_lines.slice(14 + 27 + 27, 91);
+
+      const g = input.g;
+  
+      let idx = 0;
+      let line_cnt = 0;
+      for (let i = ATE_LOOP_COUNT.length - 15; i < ATE_LOOP_COUNT.length; i++) {
+          idx = i - 1;
+  
+          let line = gamma_lines[line_cnt];
+          line_cnt += 1;
+    
+          g[idx] = g[idx].sparse_mul(line.psi(pi_cache));
+    
+          if (ATE_LOOP_COUNT[i] == 1) {
+            let line = gamma_lines[line_cnt];
+            line_cnt += 1;
+    
+            g[idx] = g[idx].sparse_mul(line.psi(pi_cache));
+          }
+
+          if (ATE_LOOP_COUNT[i] == -1) {
+            let line = gamma_lines[line_cnt];
+            line_cnt += 1;
+    
+            g[idx] = g[idx].sparse_mul(line.psi(pi_cache));
           }
       }
 
-      return g
-  }
+      let line_gamma;
+
+      line_gamma = gamma_lines[line_cnt];
+      line_cnt += 1;
+  
+      idx += 1;
+      g[idx] = g[idx].sparse_mul(line_gamma.psi(pi_cache));
+      // idx += 1;
+  
+      line_gamma = gamma_lines[line_cnt];
+      g[idx] = g[idx].sparse_mul(line_gamma.psi(pi_cache));
+                    
+
+      return new Groth16Data({
+          negA: input.negA, 
+          B: input.B, 
+          C: input.C, 
+          PI: input.PI,
+          g,
+          T: input.T,
+          c: input.c, 
+          w27: input.w27
+      });
+    }
 }
 
 export { WitnessTracker }

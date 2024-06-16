@@ -76,7 +76,6 @@ const zkp8 = ZkProgram({
         
             idx += 1;
             g[idx] = g[idx].sparse_mul(line_gamma.psi(pi_cache));
-            // idx += 1;
         
             line_gamma = gamma_lines[line_cnt];
             g[idx] = g[idx].sparse_mul(line_gamma.psi(pi_cache));

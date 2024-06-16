@@ -4,7 +4,7 @@ import {
     Poseidon,
     Field
   } from 'o1js';
-import { ATE_LOOP_COUNT, Fp2 } from '../towers/index.js';
+import { ATE_LOOP_COUNT, Fp12, Fp2 } from '../towers/index.js';
 import { AffineCache } from '../lines/precompute.js';
 import { G2Line } from '../lines/index.js';
 import { Groth16Data } from './data.js';

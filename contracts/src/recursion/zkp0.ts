@@ -93,27 +93,6 @@ const zkp0 = ZkProgram({
     },
   });
 
-// class CustomStruct extends Struct({
-//   a: Fp12, 
-//   b: Field
-// }) {};
-
-// const zkp1 = ZkProgram({
-//   name: 'zkp1',
-//   publicInput: Field,
-//   publicOutput: Field,
-//   methods: {
-//     compute: {
-//       privateInputs: [Field, FpC.provable],
-//       async method(publicInput: Field, privateInput: Field, c: FpC) {
-//         // return publicInput.mul(privateInput).mul(Poseidon.hashPacked(FpC, cs));
-//         // const fields = await c.toFields();
-//         return publicInput.mul(privateInput);
-//       },
-//     },
-//   },
-// });
-
 
 const ZKP0Proof = ZkProgram.Proof(zkp0);
 export { ZKP0Proof, zkp0 }

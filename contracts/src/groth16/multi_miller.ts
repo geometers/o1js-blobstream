@@ -3,7 +3,7 @@ import { G2Line } from '../lines/index.js';
 import { G1Affine, G2Affine } from '../ec/index.js';
 import { ATE_LOOP_COUNT, Fp12, Fp2, Fp6 } from '../towers/index.js';
 import { AffineCache } from '../lines/precompute.js';
-import { Provable } from 'o1js';
+import { Poseidon, Provable } from 'o1js';
 
 class Groth16 {
   alpha_beta: Fp12;
@@ -50,6 +50,12 @@ class Groth16 {
       PI,
       C
     );
+
+    Provable.asProver(() => {
+      const gDigest = Poseidon.hashPacked(Provable.Array(Fp12, ATE_LOOP_COUNT.length), g); 
+      console.log("G DIGEST : "); 
+      console.log(gDigest.toBigInt());
+    });
 
     const c_inv = c.inverse();
     let f = c_inv;

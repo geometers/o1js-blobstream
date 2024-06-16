@@ -4,7 +4,7 @@ import {
     Poseidon,
     Field
   } from 'o1js';
-import { ATE_LOOP_COUNT, Fp2 } from '../towers/index.js';
+import { ATE_LOOP_COUNT, Fp12, Fp2 } from '../towers/index.js';
 import { AffineCache } from '../lines/precompute.js';
 import { G2Line } from '../lines/index.js';
 import { Groth16Data } from './data.js';
@@ -60,6 +60,7 @@ const zkp2 = ZkProgram({
             line_b.assert_is_line(T, pi_2_B);
 
             g[idx] = g[idx].sparse_mul(line_b.psi(a_cache));
+
 
             // start the pair (C, delta)
 

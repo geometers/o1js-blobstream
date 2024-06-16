@@ -25,7 +25,6 @@ const getDeltaSlice = (i: number): Array<G2Line> => {
     (g: any): G2Line => G2Line.fromJSON(g)
   );
 
-
   switch(i) {
       case 0:
           return delta_lines.slice(0, 25)
