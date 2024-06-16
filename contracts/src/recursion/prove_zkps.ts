@@ -18,6 +18,7 @@ import { zkp6 } from "./zkp6.js";
 import { zkp7 } from "./zkp7.js";
 import { zkp8 } from "./zkp8.js";
 import { ATE_LOOP_COUNT } from "../towers/consts.js";
+import { zkp9 } from "./zkp9.js";
 
 async function prove_zkp0() {
     const vk0 = (await zkp0.compile()).verificationKey;
@@ -200,6 +201,32 @@ async function prove_zkp8() {
     fs.writeFileSync('./src/recursion/vks/vk8.json', JSON.stringify(vk8), 'utf8');
 }
 
+async function prove_zkp9() {
+    const vk9 = (await zkp9.compile()).verificationKey;
+
+    const wt = new WitnessTracker();
+    let in0 = wt.init(getNegA(), getB(), getC(), getPI(), get_c_hint(), make_w27(), Field(0));
+    let in1 = wt.zkp0(in0);
+    let in2 = wt.zkp1(in1);
+    let in3 = wt.zkp2(in2);
+    let in4 = wt.zkp3(in3);
+    let in5 = wt.zkp4(in4);
+    let in6 = wt.zkp5(in5);
+    let in7 = wt.zkp6(in6);
+    let in8 = wt.zkp7(in7);
+
+    // TODO!!!!! add witness tracker methods!!!!!!
+
+    let cin9 = Poseidon.hashPacked(Groth16Data, in0);
+    const proof9 = await zkp9.compute(cin9, in0);
+
+    const valid = await verify(proof9, vk9); 
+    console.log("valid zkp9?: ", valid);
+
+    fs.writeFileSync('./src/recursion/proofs/layer0/zkp9.json', JSON.stringify(proof9), 'utf8');
+    fs.writeFileSync('./src/recursion/vks/vk9.json', JSON.stringify(vk9), 'utf8');
+}
+
 switch(process.argv[2]) {
     case 'zkp0':
         await prove_zkp0();
@@ -227,5 +254,8 @@ switch(process.argv[2]) {
         break;
     case 'zkp8':
         await prove_zkp8();
+        break;
+    case 'zkp9':
+        await prove_zkp9();
         break;
 }
