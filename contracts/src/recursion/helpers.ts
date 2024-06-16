@@ -2,18 +2,37 @@ import { G1Affine, G2Affine } from "../ec/index.js";
 import { computeLineCoeffs } from "../lines/coeffs.js";
 import { G2Line } from "../lines/index.js";
 import { FpC, Fp2, Fp6, Fp12 } from "../towers/index.js";
+import fs from "fs";
 
 const getBSlice = (i: number): Array<G2Line> => {
   const bLines = getBHardcodedLines();
   switch(i) {
       case 0:
-          return bLines.slice(0, 27)
+          return bLines.slice(0, 44)
       case 1:
-          return bLines.slice(27, 27 + 25)
+          return bLines.slice(44, 44 + 45)
       case 2:
-          return bLines.slice(27 + 25, 27 + 25 + 28)
-      case 3:
-          return bLines.slice(27 + 25 + 28, 27 + 25 + 28 + 9 + 2)
+          return bLines.slice(44 + 45, 44 + 45 + 2)
+  }
+
+  return []
+}
+
+const getDeltaSlice = (i: number): Array<G2Line> => {
+  let delta_lines_input = fs.readFileSync('./src/groth16/delta_lines.json', 'utf8');
+  let parsed_delta_lines: any[] = JSON.parse(delta_lines_input);
+  const delta_lines = parsed_delta_lines.map(
+    (g: any): G2Line => G2Line.fromJSON(g)
+  );
+
+
+  switch(i) {
+      case 0:
+          return delta_lines.slice(0, 25)
+      case 1:
+          return delta_lines.slice(25, 25 + 27)
+      case 2:
+          return delta_lines.slice(44 + 45, 44 + 45 + 2)
   }
 
   return []

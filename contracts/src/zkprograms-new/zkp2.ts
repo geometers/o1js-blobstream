@@ -89,11 +89,11 @@ const zkp2 = ZkProgram({
             let gamma_1s_input = fs.readFileSync('./src/towers/gamma_1s.json', 'utf8');
             let parsed_gamma_1s: any[] = JSON.parse(gamma_1s_input);
             let gamma_1s = parsed_gamma_1s.map(
-              (g: any): Fp2 => Fp2.fromJSON(g)
+              (g: any): Fp2 => Fp2.loadFromJson(g)
             );
 
             let neg_gamma_input = fs.readFileSync('./src/towers/neg_gamma.json', 'utf8');
-            let neg_gamma = Fp2.fromJSON(JSON.parse(neg_gamma_input));
+            let neg_gamma = Fp2.loadFromJson(JSON.parse(neg_gamma_input));
             
             // GAMMA_1S[1], GAMMA_1S[2], NEG_GAMMA_13
             const piB = B.frobFromInputs(gamma_1s[1], gamma_1s[2]);

@@ -25,7 +25,7 @@ const zkp0 = ZkProgram({
     publicOutput: Field,
     methods: {
       compute: {
-        privateInputs: [Provable.Array(G2Line, 27), Groth16Data],
+        privateInputs: [Provable.Array(G2Line, 44), Groth16Data],
         async method(
             input: Field,
             b_lines: Array<G2Line>, 
@@ -47,7 +47,7 @@ const zkp0 = ZkProgram({
             let idx = 0;
             let line_cnt = 0;
         
-            for (let i = 1; i < ATE_LOOP_COUNT.length - 45; i++) {
+            for (let i = 1; i < ATE_LOOP_COUNT.length - 32; i++) {
               idx = i - 1;
         
               let line_b = b_lines[line_cnt];

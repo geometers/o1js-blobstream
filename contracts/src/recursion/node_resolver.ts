@@ -17,9 +17,9 @@ const resolveLeafProof = async (index: number, side: LeftOrRight): Promise<ZkpPr
         const pLast = await ZkpProofLeft.fromJSON(JSON.parse(fs.readFileSync(`./src/recursion/proofs/layer0/zkp${NUM_OF_ZKPS}.json`, 'utf8')));
 
         if (side === LeftOrRight.LEFT) {
-            return ZkpProofLeft.dummy(pLast.publicInput, pLast.publicOutput, 0); 
+            return ZkpProofLeft.dummy(pLast.publicOutput, pLast.publicOutput, 0); 
         } else {
-            return ZkpProofRight.dummy(pLast.publicInput, pLast.publicOutput, 0);
+            return ZkpProofRight.dummy(pLast.publicOutput, pLast.publicOutput, 0);
         }
     }
 

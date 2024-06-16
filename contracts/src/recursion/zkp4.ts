@@ -1,18 +1,26 @@
 import {
     ZkProgram,
+    Field,
+    DynamicProof,
+    Proof,
+    VerificationKey,
+    Undefined,
+    verify,
     Provable,
+    Struct,
     Poseidon,
-    Field
+    CanonicalForeignField
   } from 'o1js';
-import { ATE_LOOP_COUNT, Fp2 } from '../towers/index.js';
+import { ATE_LOOP_COUNT, Fp12, Fp2, FpC } from '../towers/index.js';
+import { G1Affine, G2Affine } from '../ec/index.js';
 import { AffineCache } from '../lines/precompute.js';
 import { G2Line } from '../lines/index.js';
 import { Groth16Data } from './data.js';
+import { Fp } from '../towers/fp.js';
 import fs from "fs";
 
-
-const zkp3 = ZkProgram({
-    name: 'zkp3',
+const zkp4 = ZkProgram({
+    name: 'zkp4',
     publicInput: Field,
     publicOutput: Field,
     methods: {
@@ -20,8 +28,8 @@ const zkp3 = ZkProgram({
         privateInputs: [Groth16Data],
         async method(
             input: Field,
-            wIn: Groth16Data
-        ) {        
+            wIn: Groth16Data, 
+        ) {
             const inDigest = Poseidon.hashPacked(Groth16Data, wIn);
             inDigest.assertEquals(input);
 
@@ -34,12 +42,12 @@ const zkp3 = ZkProgram({
               (g: any): G2Line => G2Line.fromJSON(g)
             );
         
-            delta_lines = delta_lines.slice(25, 91);
+            delta_lines = delta_lines.slice(25 + 27, 91);
         
             let idx = 0;
             let line_cnt = 0;
         
-            for (let i = ATE_LOOP_COUNT.length - 47; i < ATE_LOOP_COUNT.length - 26; i++) {
+            for (let i = ATE_LOOP_COUNT.length - 26; i < ATE_LOOP_COUNT.length - 8; i++) {
               idx = i - 1;
         
               let line = delta_lines[line_cnt];
@@ -79,5 +87,7 @@ const zkp3 = ZkProgram({
     },
   });
 
-const ZKP3Proof = ZkProgram.Proof(zkp3);
-export { ZKP3Proof, zkp3 }
+
+
+const ZKP4Proof = ZkProgram.Proof(zkp4);
+export { ZKP4Proof, zkp4 }
