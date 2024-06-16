@@ -32,7 +32,7 @@ console.log("layers proof done");
 
 const nodeVk = (await node.compile()).verificationKey;
 
-const n1 = await node.compute(NodeProofLeft.fromProof(l1), layer1Vk, NodeProofRight.fromProof(l2), layer1Vk, nodeVk.hash, Field(2));
+const n1 = await node.compute(NodeProofLeft.fromProof(l1), layer1Vk, NodeProofRight.fromProof(l2), layer1Vk, Field(2));
 
 console.log("node proofs done");
 

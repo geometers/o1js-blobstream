@@ -1,4 +1,4 @@
-import { Bool, VerificationKey } from "o1js";
+import { Bool, Field, VerificationKey } from "o1js";
 import fs from "fs";
 import { NodeProofLeft, NodeProofRight, ZkpProofLeft, ZkpProofRight } from "../structs";
 import { layer1 } from "../compressor/layer1node";
@@ -63,26 +63,40 @@ const proveLayer1 = async (index: number) => {
     }
 
     const proof = await layer1.compute(piLeft, vkLeft, verifyLeft, piRight, vkRight, verifyRight);
-    fs.writeFileSync('./src/recursion/proofs/layer1/zkp4.json', JSON.stringify(proof), 'utf8');
+    fs.writeFileSync(`./src/recursion/proofs/layer1/l${index}.json`, JSON.stringify(proof), 'utf8');
 }
 
-
-const prove = async (layer: number, index: number) => {
-    if (layer === 1) {
-        proveLayer1(index);
-    }
+const proveLayer2 = async (index: number) => {
+    const layer1Vk = await VerificationKey.fromJSON(JSON.parse(fs.readFileSync(`./src/recursion/vks/layer1Vk.json`, 'utf8')));
+    await VerificationKey.fromJSON(JSON.parse(fs.readFileSync(`./src/recursion/vks/nodeVk.json`, 'utf8')));
 
     const leftIdx = index * 2; 
     const rightIdx = leftIdx + 1; 
 
-    const piLeft = await NodeProofLeft.fromJSON(JSON.parse(fs.readFileSync(`./src/recursion/proofs/layer${layer - 1}/n${leftIdx}.json`, 'utf8')));
-    const piRight = await NodeProofRight.fromJSON(JSON.parse(fs.readFileSync(`./src/recursion/proofs/layer${layer - 1}/n${rightIdx}.json`, 'utf8')));
+    const piLeft = await NodeProofLeft.fromJSON(JSON.parse(fs.readFileSync(`./src/recursion/proofs/layer1/l${leftIdx}.json`, 'utf8')));
+    const piRight = await NodeProofRight.fromJSON(JSON.parse(fs.readFileSync(`./src/recursion/proofs/layer1/l${rightIdx}.json`, 'utf8')));
 
-    const nodeVk = await VerificationKey.fromJSON(JSON.parse(fs.readFileSync(`./src/recursion/vks/nodeVk.json`, 'utf8')));
+    const proof = await node.compute(piLeft, layer1Vk, piRight, layer1Vk, Field(2));
+    fs.writeFileSync(`./src/recursion/proofs/layer2/n${index}.json`, JSON.stringify(proof), 'utf8');
+}
 
-    // // const proof = await node.compute(piLeft, nodeVk, verifyLeft, piRight, vkRight, verifyRight);
-    // const proof = await node.compute(piLeft, layer1Vk, piRight, layer1Vk, nodeVk.hash, Field(2));
-    // fs.writeFileSync('./src/recursion/proofs/layer1/zkp4.json', JSON.stringify(proof), 'utf8');
+const prove = async (layer: number, index: number) => {
+    if (layer === 1) {
+        proveLayer1(index);
+    } else if (layer === 2) {
+        proveLayer2(index);
+    } else {
+        const leftIdx = index * 2; 
+        const rightIdx = leftIdx + 1; 
+    
+        const nodeVk = await VerificationKey.fromJSON(JSON.parse(fs.readFileSync(`./src/recursion/vks/nodeVk.json`, 'utf8')));
+        
+        const piLeft = await NodeProofLeft.fromJSON(JSON.parse(fs.readFileSync(`./src/recursion/proofs/layer${layer - 1}/n${leftIdx}.json`, 'utf8')));
+        const piRight = await NodeProofRight.fromJSON(JSON.parse(fs.readFileSync(`./src/recursion/proofs/layer${layer - 1}/n${rightIdx}.json`, 'utf8')));
+
+        const proof = await node.compute(piLeft, nodeVk, piRight, nodeVk, Field(layer));
+        fs.writeFileSync(`./src/recursion/proofs/layer${layer}/n${index}.json`, JSON.stringify(proof), 'utf8');
+    }
 }
 
 prove(parseInt(process.argv[2]), parseInt(process.argv[3]))

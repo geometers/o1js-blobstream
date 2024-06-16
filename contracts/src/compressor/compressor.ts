@@ -7,13 +7,12 @@ const node = ZkProgram({
     publicOutput: SubtreeCarry,
     methods: {
       compute: {
-        privateInputs: [NodeProofLeft, VerificationKey, NodeProofRight, VerificationKey, Field, Field],
+        privateInputs: [NodeProofLeft, VerificationKey, NodeProofRight, VerificationKey, Field],
         async method(
             piLeft: NodeProofLeft, 
             vkLeft: VerificationKey, 
             piRight: NodeProofRight, 
             vkRight: VerificationKey, 
-            selfVkHash: Field, 
             layer: Field
         ) {
             piLeft.verify(vkLeft); 
