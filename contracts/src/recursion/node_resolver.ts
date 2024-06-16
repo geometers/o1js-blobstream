@@ -4,7 +4,7 @@ import { NodeProofLeft, NodeProofRight, ZkpProofLeft, ZkpProofRight } from "../s
 import { layer1 } from "../compressor/layer1node.js";
 import { node } from "../compressor/compressor.js";
 
-const NUM_OF_ZKPS = 4;
+const NUM_OF_ZKPS = 20;
 
 enum LeftOrRight {
     LEFT, 
@@ -24,8 +24,10 @@ const resolveLeafProof = async (index: number, side: LeftOrRight): Promise<ZkpPr
     }
 
     if (side === LeftOrRight.LEFT) {
+        console.log("reading zkp: ", index);
         return await ZkpProofLeft.fromJSON(JSON.parse(fs.readFileSync(`./src/recursion/proofs/layer0/zkp${index}.json`, 'utf8'))); 
     } else {
+        console.log("reading zkp: ", index);
         return await ZkpProofRight.fromJSON(JSON.parse(fs.readFileSync(`./src/recursion/proofs/layer0/zkp${index}.json`, 'utf8')));
     }
 }
@@ -36,6 +38,7 @@ const resolveLeafVk = async (index: number): Promise<VerificationKey> => {
         return await VerificationKey.fromJSON(JSON.parse(fs.readFileSync(`./src/recursion/vks/vk${0}.json`, 'utf8')));
     }
 
+    console.log("reading vk: ", index);
     return await VerificationKey.fromJSON(JSON.parse(fs.readFileSync(`./src/recursion/vks/vk${index}.json`, 'utf8')));
 }
 
@@ -86,6 +89,7 @@ const prove = async (layer: number, index: number) => {
     } else if (layer === 2) {
         proveLayer2(index);
     } else {
+        await node.compile();
         const leftIdx = index * 2; 
         const rightIdx = leftIdx + 1; 
     

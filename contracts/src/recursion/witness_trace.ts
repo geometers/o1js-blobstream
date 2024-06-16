@@ -5,9 +5,10 @@ import { G2Line } from "../lines/index.js";
 import { AffineCache } from "../lines/precompute.js";
 import { getBHardcodedLines, getBSlice } from "./helpers.js";
 import fs from "fs";
+import { Field } from "o1js";
 
 class WitnessTracker {
-    init(negA: G1Affine, B: G2Affine, C: G1Affine, PI: G1Affine, c: Fp12, w27: Fp12): Groth16Data {
+    init(negA: G1Affine, B: G2Affine, C: G1Affine, PI: G1Affine, c: Fp12, f: Fp12, shift: Field): Groth16Data {
         const g: Array<Fp12> = []; 
         for (let i = 0; i < ATE_LOOP_COUNT.length; i++) {
             g.push(Fp12.zero());
@@ -19,9 +20,10 @@ class WitnessTracker {
             PI, 
             C, 
             c, 
-            w27, 
+            f, 
             g, 
-            T: new G2Affine({ x: Fp2.zero(), y: Fp2.zero() })
+            T: new G2Affine({ x: Fp2.zero(), y: Fp2.zero() }), 
+            shift,
         })
     }
 
@@ -76,7 +78,8 @@ class WitnessTracker {
             g,
             T,
             c: input.c, 
-            w27: input.w27
+            f: input.f, 
+            shift: input.shift
         });
     }
 
@@ -131,13 +134,13 @@ class WitnessTracker {
             g,
             T,
             c: input.c, 
-            w27: input.w27
+            f: input.f, 
+            shift: input.shift
         });
     }
 
     zkp2(input: Groth16Data) {
         const negA = input.negA; 
-        const B = input.B; 
         const g = input.g;
 
         const a_cache = new AffineCache(negA);
@@ -155,9 +158,12 @@ class WitnessTracker {
         let idx = ATE_LOOP_COUNT.length - 1;
         g[idx] = line_b.psi(a_cache);
 
+        // do this in order to keep hashes consistent
+        const piB = input.B.frobenius();
+        T = T.add_from_line(line_b.lambda, piB);
+
         line_b = b_lines[line_cnt];
         g[idx] = g[idx].sparse_mul(line_b.psi(a_cache));
-
 
         // start (C, delta)
         const c_cache = new AffineCache(input.C);
@@ -204,7 +210,8 @@ class WitnessTracker {
             g,
             T,
             c: input.c, 
-            w27: input.w27
+            f: input.f, 
+            shift: input.shift
         });
     }
     
@@ -254,7 +261,8 @@ class WitnessTracker {
           g,
           T: input.T,
           c: input.c, 
-          w27: input.w27
+          f: input.f, 
+          shift: input.shift
       });
     }
 
@@ -304,7 +312,8 @@ class WitnessTracker {
           g,
           T: input.T,
           c: input.c, 
-          w27: input.w27
+          f: input.f, 
+          shift: input.shift
       });
     }
 
@@ -400,7 +409,8 @@ class WitnessTracker {
           g,
           T: input.T,
           c: input.c, 
-          w27: input.w27
+          f: input.f, 
+          shift: input.shift
       });
     }
 
@@ -450,7 +460,8 @@ class WitnessTracker {
           g,
           T: input.T,
           c: input.c, 
-          w27: input.w27
+          f: input.f, 
+          shift: input.shift
       });
     }
 
@@ -500,7 +511,8 @@ class WitnessTracker {
           g,
           T: input.T,
           c: input.c, 
-          w27: input.w27
+          f: input.f, 
+          shift: input.shift
       });
     }
 
@@ -562,7 +574,8 @@ class WitnessTracker {
           g,
           T: input.T,
           c: input.c, 
-          w27: input.w27
+          f: input.f, 
+          shift: input.shift
       });
     }
 }

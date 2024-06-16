@@ -125,7 +125,8 @@ const zkp5 = ZkProgram({
                 g,
                 T: wIn.T,
                 c: wIn.c, 
-                w27: wIn.w27
+                f: wIn.f, 
+                shift: wIn.shift
             });
 
             return Poseidon.hashPacked(Groth16Data, output);

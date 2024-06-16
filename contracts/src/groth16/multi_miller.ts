@@ -51,12 +51,6 @@ class Groth16 {
       C
     );
 
-    Provable.asProver(() => {
-      const gDigest = Poseidon.hashPacked(Provable.Array(Fp12, ATE_LOOP_COUNT.length), g); 
-      console.log("G DIGEST : "); 
-      console.log(gDigest.toBigInt());
-    });
-
     const c_inv = c.inverse();
     let f = c_inv;
 

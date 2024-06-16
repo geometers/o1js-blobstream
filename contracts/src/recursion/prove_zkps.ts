@@ -23,7 +23,7 @@ async function prove_zkp0() {
     const vk0 = (await zkp0.compile()).verificationKey;
 
     const wt = new WitnessTracker();
-    let in0 = wt.init(getNegA(), getB(), getC(), getPI(), get_c_hint(), make_w27());
+    let in0 = wt.init(getNegA(), getB(), getC(), getPI(), get_c_hint(), make_w27(), Field(0));
     let cin0 = Poseidon.hashPacked(Groth16Data, in0);
 
     const proof0 = await zkp0.compute(cin0, getBSlice(0), in0);
@@ -39,7 +39,7 @@ async function prove_zkp1() {
     const vk1 = (await zkp1.compile()).verificationKey;
 
     const wt = new WitnessTracker();
-    let in0 = wt.init(getNegA(), getB(), getC(), getPI(), get_c_hint(), make_w27());
+    let in0 = wt.init(getNegA(), getB(), getC(), getPI(), get_c_hint(), make_w27(), Field(0));
     let in1 = wt.zkp0(in0);
 
     let cin1 = Poseidon.hashPacked(Groth16Data, in1);
@@ -57,7 +57,7 @@ async function prove_zkp2() {
     const vk2 = (await zkp2.compile()).verificationKey;
 
     const wt = new WitnessTracker();
-    let in0 = wt.init(getNegA(), getB(), getC(), getPI(), get_c_hint(), make_w27());
+    let in0 = wt.init(getNegA(), getB(), getC(), getPI(), get_c_hint(), make_w27(), Field(0));
     let in1 = wt.zkp0(in0);
     let in2 = wt.zkp1(in1);
 
@@ -75,7 +75,7 @@ async function prove_zkp3() {
     const vk3 = (await zkp3.compile()).verificationKey;
 
     const wt = new WitnessTracker();
-    let in0 = wt.init(getNegA(), getB(), getC(), getPI(), get_c_hint(), make_w27());
+    let in0 = wt.init(getNegA(), getB(), getC(), getPI(), get_c_hint(), make_w27(), Field(0));
     let in1 = wt.zkp0(in0);
     let in2 = wt.zkp1(in1);
     let in3 = wt.zkp2(in2);
@@ -94,7 +94,7 @@ async function prove_zkp4() {
     const vk4 = (await zkp4.compile()).verificationKey;
 
     const wt = new WitnessTracker();
-    let in0 = wt.init(getNegA(), getB(), getC(), getPI(), get_c_hint(), make_w27());
+    let in0 = wt.init(getNegA(), getB(), getC(), getPI(), get_c_hint(), make_w27(), Field(0));
     let in1 = wt.zkp0(in0);
     let in2 = wt.zkp1(in1);
     let in3 = wt.zkp2(in2);
@@ -114,16 +114,12 @@ async function prove_zkp5() {
     const vk5 = (await zkp5.compile()).verificationKey;
 
     const wt = new WitnessTracker();
-    let in0 = wt.init(getNegA(), getB(), getC(), getPI(), get_c_hint(), make_w27());
+    let in0 = wt.init(getNegA(), getB(), getC(), getPI(), get_c_hint(), make_w27(), Field(0));
     let in1 = wt.zkp0(in0);
     let in2 = wt.zkp1(in1);
     let in3 = wt.zkp2(in2);
     let in4 = wt.zkp3(in3);
     let in5 = wt.zkp4(in4);
-
-    const gDigest = Poseidon.hashPacked(Provable.Array(Fp12, ATE_LOOP_COUNT.length), in5.g); 
-    console.log("G DIGEST entering zkp5 outside: "); 
-    console.log(gDigest.toBigInt());
 
     let cin5 = Poseidon.hashPacked(Groth16Data, in5);
     const proof5 = await zkp5.compute(cin5, in5);
@@ -139,7 +135,7 @@ async function prove_zkp6() {
     const vk6 = (await zkp6.compile()).verificationKey;
 
     const wt = new WitnessTracker();
-    let in0 = wt.init(getNegA(), getB(), getC(), getPI(), get_c_hint(), make_w27());
+    let in0 = wt.init(getNegA(), getB(), getC(), getPI(), get_c_hint(), make_w27(), Field(0));
     let in1 = wt.zkp0(in0);
     let in2 = wt.zkp1(in1);
     let in3 = wt.zkp2(in2);
@@ -161,7 +157,7 @@ async function prove_zkp7() {
     const vk7 = (await zkp7.compile()).verificationKey;
 
     const wt = new WitnessTracker();
-    let in0 = wt.init(getNegA(), getB(), getC(), getPI(), get_c_hint(), make_w27());
+    let in0 = wt.init(getNegA(), getB(), getC(), getPI(), get_c_hint(), make_w27(), Field(0));
     let in1 = wt.zkp0(in0);
     let in2 = wt.zkp1(in1);
     let in3 = wt.zkp2(in2);
@@ -184,7 +180,7 @@ async function prove_zkp8() {
     const vk8 = (await zkp8.compile()).verificationKey;
 
     const wt = new WitnessTracker();
-    let in0 = wt.init(getNegA(), getB(), getC(), getPI(), get_c_hint(), make_w27());
+    let in0 = wt.init(getNegA(), getB(), getC(), getPI(), get_c_hint(), make_w27(), Field(0));
     let in1 = wt.zkp0(in0);
     let in2 = wt.zkp1(in1);
     let in3 = wt.zkp2(in2);

@@ -10,7 +10,8 @@ class Groth16Data extends Struct({
     g: Provable.Array(Fp12, ATE_LOOP_COUNT.length),
     T: G2Affine, 
     c: Fp12, 
-    w27: Fp12
+    f: Fp12, 
+    shift: Field
 }) {}
 
 export { Groth16Data }

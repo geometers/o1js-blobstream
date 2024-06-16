@@ -61,7 +61,6 @@ const zkp2 = ZkProgram({
 
             g[idx] = g[idx].sparse_mul(line_b.psi(a_cache));
 
-
             // start the pair (C, delta)
 
             const C = wIn.C; 
@@ -106,7 +105,8 @@ const zkp2 = ZkProgram({
                 g,
                 T,
                 c: wIn.c, 
-                w27: wIn.w27
+                f: wIn.f, 
+                shift: wIn.shift
             });
 
             return Poseidon.hashPacked(Groth16Data, output);
