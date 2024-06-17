@@ -37,12 +37,18 @@ const buildTreeOfVks = (baseVksHashes: Array<Field>, layer1VkHash: Field, nodeVk
         let runningLayer: Array<Field> = []; 
         layer = layer.add(Field(1));
 
-        let [vkLeft, vkRight] = layer.equals(Field(2)) ? [layer1VkHash, layer1VkHash] : [nodeVkHash, nodeVkHash];
+        let [vkLeft, vkRight] = layer.equals(Field(2)).toBoolean() ? [layer1VkHash, layer1VkHash] : [nodeVkHash, nodeVkHash];
 
         for (let i = 0; i < layerHashes.length; i += 2) {
             const digest = Poseidon.hash([vkLeft, vkRight, layerHashes[i], layerHashes[i + 1], layer]);
             runningLayer.push(digest); 
         }
+
+        console.log('---------------')
+        runningLayer.forEach(h => {
+            console.log(h.toBigInt());
+        });
+        console.log('---------------')
 
         layerHashes = runningLayer.map(x=>Field.from(x));
     }

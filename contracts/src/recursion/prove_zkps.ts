@@ -29,7 +29,6 @@ import { zkp16 } from "./zkp16.js";
 import { zkp17 } from "./zkp17.js";
 import { zkp18 } from "./zkp18.js";
 
-console.log('init start')
 const wt = new WitnessTracker();
 let in0 = wt.init(getNegA(), getB(), getC(), getPI(), get_c_hint(), Fp12.one(), get_shift_power());
 let in1 = wt.zkp0(in0);
@@ -51,7 +50,6 @@ let in16 = wt.zkp15(in15);
 let in17 = wt.zkp16(in16);
 let in18 = wt.zkp17(in17);
 wt.zkp18(in18);
-console.log('init end')
 
 
 async function prove_zkp0() {

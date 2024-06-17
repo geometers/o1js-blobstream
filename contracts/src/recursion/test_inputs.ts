@@ -4,7 +4,6 @@ import { ATE_LOOP_COUNT, Fp12 } from "../towers/index.js";
 import { Poseidon, Provable } from "o1js";
 
 
-console.log('init start')
 const wt = new WitnessTracker();
 let in0 = wt.init(getNegA(), getB(), getC(), getPI(), get_c_hint(), Fp12.one(), get_shift_power());
 let in1 = wt.zkp0(in0);
@@ -26,6 +25,5 @@ let in16 = wt.zkp15(in15);
 let in17 = wt.zkp16(in16);
 let in18 = wt.zkp17(in17);
 wt.zkp18(in18);
-console.log('init end')
 
 console.log("proof 0 in: ", Poseidon.hashPacked(Provable.Array(Fp12, ATE_LOOP_COUNT.length), in0.g).toBigInt());

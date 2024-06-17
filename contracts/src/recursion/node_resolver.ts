@@ -4,7 +4,7 @@ import { NodeProofLeft, NodeProofRight, ZkpProofLeft, ZkpProofRight } from "../s
 import { layer1 } from "../compressor/layer1node.js";
 import { node } from "../compressor/compressor.js";
 
-const NUM_OF_ZKPS = 20;
+const NUM_OF_ZKPS = 19;
 
 enum LeftOrRight {
     LEFT, 
@@ -14,7 +14,7 @@ enum LeftOrRight {
 const resolveLeafProof = async (index: number, side: LeftOrRight): Promise<ZkpProofLeft | ZkpProofRight> => {
     // if index is gt than number of zkps just make dummy proof with last proof input/output
     if (index >= NUM_OF_ZKPS) {
-        const pLast = await ZkpProofLeft.fromJSON(JSON.parse(fs.readFileSync(`./src/recursion/proofs/layer0/zkp${NUM_OF_ZKPS}.json`, 'utf8')));
+        const pLast = await ZkpProofLeft.fromJSON(JSON.parse(fs.readFileSync(`./src/recursion/proofs/layer0/zkp${NUM_OF_ZKPS - 1}.json`, 'utf8')));
 
         if (side === LeftOrRight.LEFT) {
             return ZkpProofLeft.dummy(pLast.publicOutput, pLast.publicOutput, 0); 
@@ -24,10 +24,10 @@ const resolveLeafProof = async (index: number, side: LeftOrRight): Promise<ZkpPr
     }
 
     if (side === LeftOrRight.LEFT) {
-        console.log("reading zkp: ", index);
+        // console.log("reading zkp: ", index);
         return await ZkpProofLeft.fromJSON(JSON.parse(fs.readFileSync(`./src/recursion/proofs/layer0/zkp${index}.json`, 'utf8'))); 
     } else {
-        console.log("reading zkp: ", index);
+        // console.log("reading zkp: ", index);
         return await ZkpProofRight.fromJSON(JSON.parse(fs.readFileSync(`./src/recursion/proofs/layer0/zkp${index}.json`, 'utf8')));
     }
 }
@@ -38,7 +38,7 @@ const resolveLeafVk = async (index: number): Promise<VerificationKey> => {
         return await VerificationKey.fromJSON(JSON.parse(fs.readFileSync(`./src/recursion/vks/vk${0}.json`, 'utf8')));
     }
 
-    console.log("reading vk: ", index);
+    // console.log("reading vk: ", index);
     return await VerificationKey.fromJSON(JSON.parse(fs.readFileSync(`./src/recursion/vks/vk${index}.json`, 'utf8')));
 }
 
@@ -67,6 +67,7 @@ const proveLayer1 = async (index: number) => {
 
     const proof = await layer1.compute(piLeft, vkLeft, verifyLeft, piRight, vkRight, verifyRight);
     fs.writeFileSync(`./src/recursion/proofs/layer1/p${index}.json`, JSON.stringify(proof), 'utf8');
+    console.log(`layer: 1 node: ${index} written`);
 }
 
 const proveLayer2 = async (index: number) => {
@@ -81,6 +82,7 @@ const proveLayer2 = async (index: number) => {
 
     const proof = await node.compute(piLeft, layer1Vk, piRight, layer1Vk, Field(2));
     fs.writeFileSync(`./src/recursion/proofs/layer2/p${index}.json`, JSON.stringify(proof), 'utf8');
+    console.log(`layer: 2 node: ${index} written`);
 }
 
 const prove = async (layer: number, index: number) => {
@@ -100,6 +102,8 @@ const prove = async (layer: number, index: number) => {
 
         const proof = await node.compute(piLeft, nodeVk, piRight, nodeVk, Field(layer));
         fs.writeFileSync(`./src/recursion/proofs/layer${layer}/p${index}.json`, JSON.stringify(proof), 'utf8');
+    console.log(`layer: ${layer} node: ${index} written`);
+
     }
 }
 
