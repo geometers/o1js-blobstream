@@ -5,7 +5,7 @@ import { G2Line } from "../lines/index.js";
 import { AffineCache } from "../lines/precompute.js";
 import { getBHardcodedLines, getBSlice, get_alpha_beta, make_w27, make_w27_sq } from "./helpers.js";
 import fs from "fs";
-import { Field } from "o1js";
+import { Field, Poseidon, Provable } from "o1js";
 
 class WitnessTracker {
     init(negA: G1Affine, B: G2Affine, C: G1Affine, PI: G1Affine, c: Fp12, f: Fp12, shift: Field): Groth16Data {
@@ -41,6 +41,9 @@ class WitnessTracker {
     
         let idx = 0;
         let line_cnt = 0;
+
+        
+        console.log("starting: ", Poseidon.hashPacked(Provable.Array(Fp12, ATE_LOOP_COUNT.length), input.g).toBigInt());
     
         for (let i = 1; i < ATE_LOOP_COUNT.length - 32; i++) {
           idx = i - 1;
@@ -70,12 +73,14 @@ class WitnessTracker {
           }
         }
 
+        console.log("ending: ", Poseidon.hashPacked(Provable.Array(Fp12, ATE_LOOP_COUNT.length), g).toBigInt());
+
         return new Groth16Data({
             negA, 
             B: input.B, 
             C: input.C, 
             PI: input.PI,
-            g,
+            g: structuredClone(g),
             T,
             c: input.c, 
             f: input.f, 
@@ -131,7 +136,7 @@ class WitnessTracker {
             B: input.B, 
             C: input.C, 
             PI: input.PI,
-            g,
+            g: structuredClone(g),
             T,
             c: input.c, 
             f: input.f, 

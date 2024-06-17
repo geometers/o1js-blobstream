@@ -31,7 +31,7 @@ import { zkp18 } from "./zkp18.js";
 
 console.log('init start')
 const wt = new WitnessTracker();
-let in0 = wt.init(getNegA(), getB(), getC(), getPI(), get_c_hint(), make_w27(), get_shift_power());
+let in0 = wt.init(getNegA(), getB(), getC(), getPI(), get_c_hint(), Fp12.one(), get_shift_power());
 let in1 = wt.zkp0(in0);
 let in2 = wt.zkp1(in1);
 let in3 = wt.zkp2(in2);
@@ -55,15 +55,19 @@ console.log('init end')
 
 
 async function prove_zkp0() {
-    const vk0 = (await zkp0.compile()).verificationKey;
-    let cin0 = Poseidon.hashPacked(Groth16Data, in0);
+    // const vk0 = (await zkp0.compile()).verificationKey;
+    // let cin0 = Poseidon.hashPacked(Groth16Data, in0);
 
-    const proof0 = await zkp0.compute(cin0, getBSlice(0), in0);
-    const valid = await verify(proof0, vk0); 
-    console.log("valid zkp0?: ", valid);
+    // const proof0 = await zkp0.compute(cin0, getBSlice(0), in0);
+    // const valid = await verify(proof0, vk0); 
+    // console.log("valid zkp0?: ", valid);
 
-    fs.writeFileSync('./src/recursion/proofs/layer0/zkp0.json', JSON.stringify(proof0), 'utf8');
-    fs.writeFileSync('./src/recursion/vks/vk0.json', JSON.stringify(vk0), 'utf8');
+    console.log("proof 0 in: ", Poseidon.hashPacked(Provable.Array(Fp12, ATE_LOOP_COUNT.length), in0.g).toBigInt());
+    // console.log("proof 0 out: ", proof0.publicOutput.toBigInt());
+    // console.log("proof 1 in: ", Poseidon.hashPacked(Provable.Array(Fp12, ATE_LOOP_COUNT.length), in1.g).toBigInt());
+
+    // fs.writeFileSync('./src/recursion/proofs/layer0/zkp0.json', JSON.stringify(proof0), 'utf8');
+    // fs.writeFileSync('./src/recursion/vks/vk0.json', JSON.stringify(vk0), 'utf8');
 }
 
 
