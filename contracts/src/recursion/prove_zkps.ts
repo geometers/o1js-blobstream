@@ -56,9 +56,6 @@ console.log('init end')
 
 async function prove_zkp0() {
     const vk0 = (await zkp0.compile()).verificationKey;
-
-    const wt = new WitnessTracker();
-    let in0 = wt.init(getNegA(), getB(), getC(), getPI(), get_c_hint(), make_w27(), Field(0));
     let cin0 = Poseidon.hashPacked(Groth16Data, in0);
 
     const proof0 = await zkp0.compute(cin0, getBSlice(0), in0);
@@ -72,10 +69,6 @@ async function prove_zkp0() {
 
 async function prove_zkp1() {
     const vk1 = (await zkp1.compile()).verificationKey;
-
-    const wt = new WitnessTracker();
-    let in0 = wt.init(getNegA(), getB(), getC(), getPI(), get_c_hint(), make_w27(), Field(0));
-    let in1 = wt.zkp0(in0);
 
     let cin1 = Poseidon.hashPacked(Groth16Data, in1);
     const proof1 = await zkp1.compute(cin1, in1, getBSlice(1));
@@ -91,11 +84,6 @@ async function prove_zkp1() {
 async function prove_zkp2() {
     const vk2 = (await zkp2.compile()).verificationKey;
 
-    const wt = new WitnessTracker();
-    let in0 = wt.init(getNegA(), getB(), getC(), getPI(), get_c_hint(), make_w27(), Field(0));
-    let in1 = wt.zkp0(in0);
-    let in2 = wt.zkp1(in1);
-
     let cin2 = Poseidon.hashPacked(Groth16Data, in2);
     const proof2 = await zkp2.compute(cin2, in2, getBSlice(2));
 
@@ -108,12 +96,6 @@ async function prove_zkp2() {
 
 async function prove_zkp3() {
     const vk3 = (await zkp3.compile()).verificationKey;
-
-    const wt = new WitnessTracker();
-    let in0 = wt.init(getNegA(), getB(), getC(), getPI(), get_c_hint(), make_w27(), Field(0));
-    let in1 = wt.zkp0(in0);
-    let in2 = wt.zkp1(in1);
-    let in3 = wt.zkp2(in2);
 
     let cin3 = Poseidon.hashPacked(Groth16Data, in3);
     const proof3 = await zkp3.compute(cin3, in3);
@@ -128,13 +110,6 @@ async function prove_zkp3() {
 async function prove_zkp4() {
     const vk4 = (await zkp4.compile()).verificationKey;
 
-    const wt = new WitnessTracker();
-    let in0 = wt.init(getNegA(), getB(), getC(), getPI(), get_c_hint(), make_w27(), Field(0));
-    let in1 = wt.zkp0(in0);
-    let in2 = wt.zkp1(in1);
-    let in3 = wt.zkp2(in2);
-    let in4 = wt.zkp3(in3);
-
     let cin4 = Poseidon.hashPacked(Groth16Data, in4);
     const proof4 = await zkp4.compute(cin4, in4);
 
@@ -147,14 +122,6 @@ async function prove_zkp4() {
 
 async function prove_zkp5() {
     const vk5 = (await zkp5.compile()).verificationKey;
-
-    const wt = new WitnessTracker();
-    let in0 = wt.init(getNegA(), getB(), getC(), getPI(), get_c_hint(), make_w27(), Field(0));
-    let in1 = wt.zkp0(in0);
-    let in2 = wt.zkp1(in1);
-    let in3 = wt.zkp2(in2);
-    let in4 = wt.zkp3(in3);
-    let in5 = wt.zkp4(in4);
 
     let cin5 = Poseidon.hashPacked(Groth16Data, in5);
     const proof5 = await zkp5.compute(cin5, in5);
@@ -169,15 +136,6 @@ async function prove_zkp5() {
 async function prove_zkp6() {
     const vk6 = (await zkp6.compile()).verificationKey;
 
-    const wt = new WitnessTracker();
-    let in0 = wt.init(getNegA(), getB(), getC(), getPI(), get_c_hint(), make_w27(), Field(0));
-    let in1 = wt.zkp0(in0);
-    let in2 = wt.zkp1(in1);
-    let in3 = wt.zkp2(in2);
-    let in4 = wt.zkp3(in3);
-    let in5 = wt.zkp4(in4);
-    let in6 = wt.zkp5(in5);
-
     let cin6 = Poseidon.hashPacked(Groth16Data, in6);
     const proof6 = await zkp6.compute(cin6, in6);
 
@@ -190,16 +148,6 @@ async function prove_zkp6() {
 
 async function prove_zkp7() {
     const vk7 = (await zkp7.compile()).verificationKey;
-
-    const wt = new WitnessTracker();
-    let in0 = wt.init(getNegA(), getB(), getC(), getPI(), get_c_hint(), make_w27(), Field(0));
-    let in1 = wt.zkp0(in0);
-    let in2 = wt.zkp1(in1);
-    let in3 = wt.zkp2(in2);
-    let in4 = wt.zkp3(in3);
-    let in5 = wt.zkp4(in4);
-    let in6 = wt.zkp5(in5);
-    let in7 = wt.zkp6(in6);
 
     let cin7 = Poseidon.hashPacked(Groth16Data, in7);
     const proof7 = await zkp7.compute(cin7, in7);
@@ -214,17 +162,6 @@ async function prove_zkp7() {
 async function prove_zkp8() {
     const vk8 = (await zkp8.compile()).verificationKey;
 
-    const wt = new WitnessTracker();
-    let in0 = wt.init(getNegA(), getB(), getC(), getPI(), get_c_hint(), make_w27(), Field(0));
-    let in1 = wt.zkp0(in0);
-    let in2 = wt.zkp1(in1);
-    let in3 = wt.zkp2(in2);
-    let in4 = wt.zkp3(in3);
-    let in5 = wt.zkp4(in4);
-    let in6 = wt.zkp5(in5);
-    let in7 = wt.zkp6(in6);
-    let in8 = wt.zkp7(in7);
-
     let cin8 = Poseidon.hashPacked(Groth16Data, in8);
     const proof8 = await zkp8.compute(cin8, in8);
 
@@ -238,21 +175,8 @@ async function prove_zkp8() {
 async function prove_zkp9() {
     const vk9 = (await zkp9.compile()).verificationKey;
 
-    const wt = new WitnessTracker();
-    let in0 = wt.init(getNegA(), getB(), getC(), getPI(), get_c_hint(), make_w27(), Field(0));
-    let in1 = wt.zkp0(in0);
-    let in2 = wt.zkp1(in1);
-    let in3 = wt.zkp2(in2);
-    let in4 = wt.zkp3(in3);
-    let in5 = wt.zkp4(in4);
-    let in6 = wt.zkp5(in5);
-    let in7 = wt.zkp6(in6);
-    let in8 = wt.zkp7(in7);
-
-    // TODO!!!!! add witness tracker methods!!!!!!
-
-    let cin9 = Poseidon.hashPacked(Groth16Data, in0);
-    const proof9 = await zkp9.compute(cin9, in0);
+    let cin9 = Poseidon.hashPacked(Groth16Data, in9);
+    const proof9 = await zkp9.compute(cin9, in9);
 
     const valid = await verify(proof9, vk9); 
     console.log("valid zkp9?: ", valid);
@@ -264,13 +188,8 @@ async function prove_zkp9() {
 async function prove_zkp10() {
     const vk10 = (await zkp10.compile()).verificationKey;
 
-    const wt = new WitnessTracker();
-    let in0 = wt.init(getNegA(), getB(), getC(), getPI(), get_c_hint(), make_w27(), Field(0));
-
-    // TODO!!!!! add witness tracker methods!!!!!!
-
-    let cin10 = Poseidon.hashPacked(Groth16Data, in0);
-    const proof10 = await zkp10.compute(cin10, in0);
+    let cin10 = Poseidon.hashPacked(Groth16Data, in10);
+    const proof10 = await zkp10.compute(cin10, in10);
 
     const valid = await verify(proof10, vk10); 
     console.log("valid zkp10?: ", valid);
@@ -282,13 +201,8 @@ async function prove_zkp10() {
 async function prove_zkp11() {
     const vk11 = (await zkp11.compile()).verificationKey;
 
-    const wt = new WitnessTracker();
-    let in0 = wt.init(getNegA(), getB(), getC(), getPI(), get_c_hint(), make_w27(), Field(0));
-
-    // TODO!!!!! add witness tracker methods!!!!!!
-
-    let cin11 = Poseidon.hashPacked(Groth16Data, in0);
-    const proof11 = await zkp11.compute(cin11, in0);
+    let cin11 = Poseidon.hashPacked(Groth16Data, in11);
+    const proof11 = await zkp11.compute(cin11, in11);
 
     const valid = await verify(proof11, vk11); 
     console.log("valid zkp11?: ", valid);
@@ -300,13 +214,8 @@ async function prove_zkp11() {
 async function prove_zkp12() {
     const vk12 = (await zkp12.compile()).verificationKey;
 
-    const wt = new WitnessTracker();
-    let in0 = wt.init(getNegA(), getB(), getC(), getPI(), get_c_hint(), make_w27(), Field(0));
-
-    // TODO!!!!! add witness tracker methods!!!!!!
-
-    let cin12 = Poseidon.hashPacked(Groth16Data, in0);
-    const proof12 = await zkp12.compute(cin12, in0);
+    let cin12 = Poseidon.hashPacked(Groth16Data, in12);
+    const proof12 = await zkp12.compute(cin12, in12);
 
     const valid = await verify(proof12, vk12); 
     console.log("valid zkp12?: ", valid);
@@ -318,13 +227,8 @@ async function prove_zkp12() {
 async function prove_zkp13() {
     const vk13 = (await zkp13.compile()).verificationKey;
 
-    const wt = new WitnessTracker();
-    let in0 = wt.init(getNegA(), getB(), getC(), getPI(), get_c_hint(), make_w27(), Field(0));
-
-    // TODO!!!!! add witness tracker methods!!!!!!
-
-    let cin13 = Poseidon.hashPacked(Groth16Data, in0);
-    const proof13 = await zkp13.compute(cin13, in0);
+    let cin13 = Poseidon.hashPacked(Groth16Data, in13);
+    const proof13 = await zkp13.compute(cin13, in13);
 
     const valid = await verify(proof13, vk13); 
     console.log("valid zkp13?: ", valid);
@@ -336,13 +240,8 @@ async function prove_zkp13() {
 async function prove_zkp14() {
     const vk14 = (await zkp14.compile()).verificationKey;
 
-    const wt = new WitnessTracker();
-    let in0 = wt.init(getNegA(), getB(), getC(), getPI(), get_c_hint(), make_w27(), Field(0));
-
-    // TODO!!!!! add witness tracker methods!!!!!!
-
-    let cin14 = Poseidon.hashPacked(Groth16Data, in0);
-    const proof14 = await zkp14.compute(cin14, in0);
+    let cin14 = Poseidon.hashPacked(Groth16Data, in14);
+    const proof14 = await zkp14.compute(cin14, in14);
 
     const valid = await verify(proof14, vk14); 
     console.log("valid zkp14?: ", valid);
@@ -354,13 +253,8 @@ async function prove_zkp14() {
 async function prove_zkp15() {
     const vk15 = (await zkp15.compile()).verificationKey;
 
-    const wt = new WitnessTracker();
-    let in0 = wt.init(getNegA(), getB(), getC(), getPI(), get_c_hint(), make_w27(), Field(0));
-
-    // TODO!!!!! add witness tracker methods!!!!!!
-
-    let cin15 = Poseidon.hashPacked(Groth16Data, in0);
-    const proof15 = await zkp15.compute(cin15, in0);
+    let cin15 = Poseidon.hashPacked(Groth16Data, in15);
+    const proof15 = await zkp15.compute(cin15, in15);
 
     const valid = await verify(proof15, vk15); 
     console.log("valid zkp15?: ", valid);
@@ -372,13 +266,8 @@ async function prove_zkp15() {
 async function prove_zkp16() {
     const vk16 = (await zkp16.compile()).verificationKey;
 
-    const wt = new WitnessTracker();
-    let in0 = wt.init(getNegA(), getB(), getC(), getPI(), get_c_hint(), make_w27(), Field(0));
-
-    // TODO!!!!! add witness tracker methods!!!!!!
-
-    let cin16 = Poseidon.hashPacked(Groth16Data, in0);
-    const proof16 = await zkp16.compute(cin16, in0);
+    let cin16 = Poseidon.hashPacked(Groth16Data, in16);
+    const proof16 = await zkp16.compute(cin16, in16);
 
     const valid = await verify(proof16, vk16); 
     console.log("valid zkp16?: ", valid);
@@ -390,13 +279,8 @@ async function prove_zkp16() {
 async function prove_zkp17() {
     const vk17 = (await zkp17.compile()).verificationKey;
 
-    const wt = new WitnessTracker();
-    let in0 = wt.init(getNegA(), getB(), getC(), getPI(), get_c_hint(), make_w27(), Field(0));
-
-    // TODO!!!!! add witness tracker methods!!!!!!
-
-    let cin17 = Poseidon.hashPacked(Groth16Data, in0);
-    const proof17 = await zkp17.compute(cin17, in0);
+    let cin17 = Poseidon.hashPacked(Groth16Data, in17);
+    const proof17 = await zkp17.compute(cin17, in17);
 
     const valid = await verify(proof17, vk17); 
     console.log("valid zkp17?: ", valid);
@@ -408,13 +292,8 @@ async function prove_zkp17() {
 async function prove_zkp18() {
     const vk18 = (await zkp18.compile()).verificationKey;
 
-    const wt = new WitnessTracker();
-    let in0 = wt.init(getNegA(), getB(), getC(), getPI(), get_c_hint(), make_w27(), Field(0));
-
-    // TODO!!!!! add witness tracker methods!!!!!!
-
-    let cin18 = Poseidon.hashPacked(Groth16Data, in0);
-    const proof18 = await zkp18.compute(cin18, in0);
+    let cin18 = Poseidon.hashPacked(Groth16Data, in18);
+    const proof18 = await zkp18.compute(cin18, in18);
 
     const valid = await verify(proof18, vk18); 
     console.log("valid zkp18?: ", valid);
