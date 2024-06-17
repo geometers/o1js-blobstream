@@ -3,7 +3,7 @@ import { zkp0, ZKP0Proof } from "./zkp0.js";
 import { zkp1, ZKP1Proof } from "./zkp1.js";
 import { zkp2, ZKP2Proof } from "./zkp2.js";
 import { zkp3, ZKP3Proof } from "./zkp3.js";
-import { getB, getBHardcodedLines, getBSlice, getC, getNegA, getPI, get_c_hint, make_w27 } from "./helpers.js";
+import { getB, getBHardcodedLines, getBSlice, getC, getNegA, getPI, get_c_hint, get_shift_power, make_w27 } from "./helpers.js";
 import { WitnessTracker } from "./witness_trace.js";
 import fs from 'fs';
 import { Groth16Data } from "./data.js";
@@ -28,6 +28,31 @@ import { zkp15 } from "./zkp15.js";
 import { zkp16 } from "./zkp16.js";
 import { zkp17 } from "./zkp17.js";
 import { zkp18 } from "./zkp18.js";
+
+console.log('init start')
+const wt = new WitnessTracker();
+let in0 = wt.init(getNegA(), getB(), getC(), getPI(), get_c_hint(), make_w27(), get_shift_power());
+let in1 = wt.zkp0(in0);
+let in2 = wt.zkp1(in1);
+let in3 = wt.zkp2(in2);
+let in4 = wt.zkp3(in3);
+let in5 = wt.zkp4(in4);
+let in6 = wt.zkp5(in5);
+let in7 = wt.zkp6(in6);
+let in8 = wt.zkp7(in7);
+let in9 = wt.zkp8(in8);
+let in10 = wt.zkp9(in9);
+let in11 = wt.zkp10(in10);
+let in12 = wt.zkp11(in11);
+let in13 = wt.zkp12(in12);
+let in14 = wt.zkp13(in13);
+let in15 = wt.zkp14(in14);
+let in16 = wt.zkp15(in15);
+let in17 = wt.zkp16(in16);
+let in18 = wt.zkp17(in17);
+wt.zkp18(in18);
+console.log('init end')
+
 
 async function prove_zkp0() {
     const vk0 = (await zkp0.compile()).verificationKey;

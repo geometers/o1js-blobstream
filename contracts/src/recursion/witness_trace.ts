@@ -565,7 +565,6 @@ class WitnessTracker {
       line_gamma = gamma_lines[line_cnt];
       g[idx] = g[idx].sparse_mul(line_gamma.psi(pi_cache));
                     
-
       return new Groth16Data({
           negA: input.negA, 
           B: input.B, 
@@ -599,6 +598,18 @@ class WitnessTracker {
           f = f.mul(c);
         }
       }
+
+      return new Groth16Data({
+        negA: input.negA, 
+        B: input.B, 
+        C: input.C, 
+        PI: input.PI,
+        g,
+        T: input.T,
+        c: input.c, 
+        f, 
+        shift: input.shift
+      });
     }
 
     zkp10(input: Groth16Data) {
@@ -621,6 +632,18 @@ class WitnessTracker {
           f = f.mul(c);
         }
       }
+
+      return new Groth16Data({
+        negA: input.negA, 
+        B: input.B, 
+        C: input.C, 
+        PI: input.PI,
+        g,
+        T: input.T,
+        c: input.c, 
+        f, 
+        shift: input.shift
+      });
     }
 
     zkp11(input: Groth16Data) {
@@ -643,6 +666,18 @@ class WitnessTracker {
           f = f.mul(c);
         }
       }
+
+      return new Groth16Data({
+        negA: input.negA, 
+        B: input.B, 
+        C: input.C, 
+        PI: input.PI,
+        g,
+        T: input.T,
+        c: input.c, 
+        f, 
+        shift: input.shift
+      });
     }
 
     zkp12(input: Groth16Data) {
@@ -665,6 +700,18 @@ class WitnessTracker {
           f = f.mul(c);
         }
       }
+
+      return new Groth16Data({
+        negA: input.negA, 
+        B: input.B, 
+        C: input.C, 
+        PI: input.PI,
+        g,
+        T: input.T,
+        c: input.c, 
+        f, 
+        shift: input.shift
+      });
     }
 
     zkp13(input: Groth16Data) {
@@ -687,6 +734,18 @@ class WitnessTracker {
           f = f.mul(c);
         }
       }
+
+      return new Groth16Data({
+        negA: input.negA, 
+        B: input.B, 
+        C: input.C, 
+        PI: input.PI,
+        g,
+        T: input.T,
+        c: input.c, 
+        f, 
+        shift: input.shift
+      });
     }
 
     zkp14(input: Groth16Data) {
@@ -709,6 +768,18 @@ class WitnessTracker {
           f = f.mul(c);
         }
       }
+
+      return new Groth16Data({
+        negA: input.negA, 
+        B: input.B, 
+        C: input.C, 
+        PI: input.PI,
+        g,
+        T: input.T,
+        c: input.c, 
+        f, 
+        shift: input.shift
+      });
     }
 
     zkp15(input: Groth16Data) {
@@ -731,6 +802,18 @@ class WitnessTracker {
           f = f.mul(c);
         }
       }
+
+      return new Groth16Data({
+        negA: input.negA, 
+        B: input.B, 
+        C: input.C, 
+        PI: input.PI,
+        g,
+        T: input.T,
+        c: input.c, 
+        f, 
+        shift: input.shift
+      });
     }
 
     zkp16(input: Groth16Data) {
@@ -753,6 +836,18 @@ class WitnessTracker {
           f = f.mul(c);
         }
       }
+
+      return new Groth16Data({
+        negA: input.negA, 
+        B: input.B, 
+        C: input.C, 
+        PI: input.PI,
+        g,
+        T: input.T,
+        c: input.c, 
+        f, 
+        shift: input.shift
+      });
     }
 
     zkp17(input: Groth16Data) {
@@ -775,6 +870,18 @@ class WitnessTracker {
           f = f.mul(c);
         }
       }
+
+      return new Groth16Data({
+        negA: input.negA, 
+        B: input.B, 
+        C: input.C, 
+        PI: input.PI,
+        g,
+        T: input.T,
+        c: input.c, 
+        f, 
+        shift: input.shift
+      });
     }
 
     zkp18(input: Groth16Data) {
@@ -797,6 +904,9 @@ class WitnessTracker {
           f = f.mul(c);
         }
       }
+
+      idx += 1;
+      f = f.mul(g[idx]);
 
       let gamma_1s_input = fs.readFileSync('./src/towers/gamma_1s.json', 'utf8');
       let parsed_gamma_1s: any[] = JSON.parse(gamma_1s_input);
@@ -825,11 +935,11 @@ class WitnessTracker {
       let shift; 
       const shift_power = input.shift;
 
-      if (shift_power.equals(Field(0))) {
+      if (shift_power.equals(Field(0)).toBoolean()) {
         shift = Fp12.one();
-      } else if (shift_power.equals(Field(1))) {
+      } else if (shift_power.equals(Field(1)).toBoolean()) {
         shift = make_w27();
-      } else if (shift_power.equals(Field(2))) {
+      } else if (shift_power.equals(Field(2)).toBoolean()) {
         shift = make_w27_sq();
       } else {
         process.exit(1)
@@ -838,8 +948,6 @@ class WitnessTracker {
       f = f.mul(shift);
       f.assert_equals(Fp12.one());
     }
-
-
 }
 
 export { WitnessTracker }

@@ -72,8 +72,6 @@ class Groth16 {
     idx += 1;
     f = f.mul(g[idx]);
 
-    // f.display('f')
-
     f = f
       .mul(c_inv.frobenius_pow_p())
       .mul(c.frobenius_pow_p_squared())
@@ -82,8 +80,6 @@ class Groth16 {
 
     const shift = this.w27[shift_power];
     f = f.mul(shift);
-
-    // f.display("f");
 
     // let f = Fp12.one();
     f.assert_equals(Fp12.one());

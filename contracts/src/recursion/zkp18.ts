@@ -54,6 +54,9 @@ const zkp18 = ZkProgram({
               }
             }
 
+            idx += 1;
+            f = f.mul(g[idx]);
+
             let gamma_1s_input = fs.readFileSync('./src/towers/gamma_1s.json', 'utf8');
             let parsed_gamma_1s: any[] = JSON.parse(gamma_1s_input);
             let gamma_1s = parsed_gamma_1s.map(

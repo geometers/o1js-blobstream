@@ -1,3 +1,4 @@
+import { Field } from "o1js";
 import { G1Affine, G2Affine } from "../ec/index.js";
 import { computeLineCoeffs } from "../lines/coeffs.js";
 import { G2Line } from "../lines/index.js";
@@ -215,6 +216,10 @@ const make_w27_sq = () => {
   return w27.mul(w27);
 }
 
+const get_shift_power = () => {
+  return Field(2)
+}
+
 const get_alpha_beta = () => {
   const g00 =
   FpC.from(
@@ -283,4 +288,4 @@ const get_alpha_beta = () => {
   return new Fp12({ c0: g, c1: h });
 }
 
-export { getBSlice ,getBHardcodedLines, getNegA, getB, getC, getPI, get_c_hint, make_w27, get_alpha_beta, make_w27_sq }
+export { getBSlice ,getBHardcodedLines, getNegA, getB, getC, getPI, get_c_hint, make_w27, get_alpha_beta, make_w27_sq, get_shift_power }
