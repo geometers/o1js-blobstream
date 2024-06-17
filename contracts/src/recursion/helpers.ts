@@ -210,6 +210,11 @@ const make_w27 = () => {
   return new Fp12({ c0: g, c1: h });
 };
 
+const make_w27_sq = () => {
+  const w27 = make_w27(); 
+  return w27.mul(w27);
+}
+
 const get_alpha_beta = () => {
   const g00 =
   FpC.from(
@@ -278,4 +283,4 @@ const get_alpha_beta = () => {
   return new Fp12({ c0: g, c1: h });
 }
 
-export { getBSlice ,getBHardcodedLines, getNegA, getB, getC, getPI, get_c_hint, make_w27, get_alpha_beta }
+export { getBSlice ,getBHardcodedLines, getNegA, getB, getC, getPI, get_c_hint, make_w27, get_alpha_beta, make_w27_sq }

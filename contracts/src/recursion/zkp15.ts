@@ -19,10 +19,8 @@ import { Groth16Data } from './data.js';
 import { Fp } from '../towers/fp.js';
 import fs from "fs";
 
-
-//TODO: consider adding c_inv into the Groth16Data instead of inverting at each step
-const zkp9 = ZkProgram({
-    name: 'zkp9',
+const zkp15 = ZkProgram({
+    name: 'zkp15',
     publicInput: Field,
     publicOutput: Field,
     methods: {
@@ -38,11 +36,11 @@ const zkp9 = ZkProgram({
             const g = wIn.g;
             const c = wIn.c;
             const c_inv = c.inverse();
-            let f = c_inv;
+            let f = wIn.f;
         
             let idx = 0;
         
-            for (let i = 1; i < ATE_LOOP_COUNT.length - 57; i++) {
+            for (let i = ATE_LOOP_COUNT.length - 23; i < ATE_LOOP_COUNT.length - 16; i++) {
               idx = i - 1;
               f = f.square().mul(g[idx]);
         
@@ -75,5 +73,5 @@ const zkp9 = ZkProgram({
 
 
 
-const ZKP9Proof = ZkProgram.Proof(zkp9);
-export { ZKP9Proof, zkp9 }
+const ZKP15Proof = ZkProgram.Proof(zkp15);
+export { ZKP15Proof, zkp15 }

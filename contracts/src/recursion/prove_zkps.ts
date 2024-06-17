@@ -19,6 +19,15 @@ import { zkp7 } from "./zkp7.js";
 import { zkp8 } from "./zkp8.js";
 import { ATE_LOOP_COUNT } from "../towers/consts.js";
 import { zkp9 } from "./zkp9.js";
+import { zkp10 } from "./zkp10.js";
+import { zkp11 } from "./zkp11.js";
+import { zkp12 } from "./zkp12.js";
+import { zkp13 } from "./zkp13.js";
+import { zkp14 } from "./zkp14.js";
+import { zkp15 } from "./zkp15.js";
+import { zkp16 } from "./zkp16.js";
+import { zkp17 } from "./zkp17.js";
+import { zkp18 } from "./zkp18.js";
 
 async function prove_zkp0() {
     const vk0 = (await zkp0.compile()).verificationKey;
@@ -227,6 +236,169 @@ async function prove_zkp9() {
     fs.writeFileSync('./src/recursion/vks/vk9.json', JSON.stringify(vk9), 'utf8');
 }
 
+async function prove_zkp10() {
+    const vk10 = (await zkp10.compile()).verificationKey;
+
+    const wt = new WitnessTracker();
+    let in0 = wt.init(getNegA(), getB(), getC(), getPI(), get_c_hint(), make_w27(), Field(0));
+
+    // TODO!!!!! add witness tracker methods!!!!!!
+
+    let cin10 = Poseidon.hashPacked(Groth16Data, in0);
+    const proof10 = await zkp10.compute(cin10, in0);
+
+    const valid = await verify(proof10, vk10); 
+    console.log("valid zkp10?: ", valid);
+
+    fs.writeFileSync('./src/recursion/proofs/layer0/zkp10.json', JSON.stringify(proof10), 'utf8');
+    fs.writeFileSync('./src/recursion/vks/vk10.json', JSON.stringify(vk10), 'utf8');
+}
+
+async function prove_zkp11() {
+    const vk11 = (await zkp11.compile()).verificationKey;
+
+    const wt = new WitnessTracker();
+    let in0 = wt.init(getNegA(), getB(), getC(), getPI(), get_c_hint(), make_w27(), Field(0));
+
+    // TODO!!!!! add witness tracker methods!!!!!!
+
+    let cin11 = Poseidon.hashPacked(Groth16Data, in0);
+    const proof11 = await zkp11.compute(cin11, in0);
+
+    const valid = await verify(proof11, vk11); 
+    console.log("valid zkp11?: ", valid);
+
+    fs.writeFileSync('./src/recursion/proofs/layer0/zkp11.json', JSON.stringify(proof11), 'utf8');
+    fs.writeFileSync('./src/recursion/vks/vk11.json', JSON.stringify(vk11), 'utf8');
+}
+
+async function prove_zkp12() {
+    const vk12 = (await zkp12.compile()).verificationKey;
+
+    const wt = new WitnessTracker();
+    let in0 = wt.init(getNegA(), getB(), getC(), getPI(), get_c_hint(), make_w27(), Field(0));
+
+    // TODO!!!!! add witness tracker methods!!!!!!
+
+    let cin12 = Poseidon.hashPacked(Groth16Data, in0);
+    const proof12 = await zkp12.compute(cin12, in0);
+
+    const valid = await verify(proof12, vk12); 
+    console.log("valid zkp12?: ", valid);
+
+    fs.writeFileSync('./src/recursion/proofs/layer0/zkp12.json', JSON.stringify(proof12), 'utf8');
+    fs.writeFileSync('./src/recursion/vks/vk12.json', JSON.stringify(vk12), 'utf8');
+}
+
+async function prove_zkp13() {
+    const vk13 = (await zkp13.compile()).verificationKey;
+
+    const wt = new WitnessTracker();
+    let in0 = wt.init(getNegA(), getB(), getC(), getPI(), get_c_hint(), make_w27(), Field(0));
+
+    // TODO!!!!! add witness tracker methods!!!!!!
+
+    let cin13 = Poseidon.hashPacked(Groth16Data, in0);
+    const proof13 = await zkp13.compute(cin13, in0);
+
+    const valid = await verify(proof13, vk13); 
+    console.log("valid zkp13?: ", valid);
+
+    fs.writeFileSync('./src/recursion/proofs/layer0/zkp13.json', JSON.stringify(proof13), 'utf8');
+    fs.writeFileSync('./src/recursion/vks/vk13.json', JSON.stringify(vk13), 'utf8');
+}
+
+async function prove_zkp14() {
+    const vk14 = (await zkp14.compile()).verificationKey;
+
+    const wt = new WitnessTracker();
+    let in0 = wt.init(getNegA(), getB(), getC(), getPI(), get_c_hint(), make_w27(), Field(0));
+
+    // TODO!!!!! add witness tracker methods!!!!!!
+
+    let cin14 = Poseidon.hashPacked(Groth16Data, in0);
+    const proof14 = await zkp14.compute(cin14, in0);
+
+    const valid = await verify(proof14, vk14); 
+    console.log("valid zkp14?: ", valid);
+
+    fs.writeFileSync('./src/recursion/proofs/layer0/zkp14.json', JSON.stringify(proof14), 'utf8');
+    fs.writeFileSync('./src/recursion/vks/vk14.json', JSON.stringify(vk14), 'utf8');
+}
+
+async function prove_zkp15() {
+    const vk15 = (await zkp15.compile()).verificationKey;
+
+    const wt = new WitnessTracker();
+    let in0 = wt.init(getNegA(), getB(), getC(), getPI(), get_c_hint(), make_w27(), Field(0));
+
+    // TODO!!!!! add witness tracker methods!!!!!!
+
+    let cin15 = Poseidon.hashPacked(Groth16Data, in0);
+    const proof15 = await zkp15.compute(cin15, in0);
+
+    const valid = await verify(proof15, vk15); 
+    console.log("valid zkp15?: ", valid);
+
+    fs.writeFileSync('./src/recursion/proofs/layer0/zkp15.json', JSON.stringify(proof15), 'utf8');
+    fs.writeFileSync('./src/recursion/vks/vk15.json', JSON.stringify(vk15), 'utf8');
+}
+
+async function prove_zkp16() {
+    const vk16 = (await zkp16.compile()).verificationKey;
+
+    const wt = new WitnessTracker();
+    let in0 = wt.init(getNegA(), getB(), getC(), getPI(), get_c_hint(), make_w27(), Field(0));
+
+    // TODO!!!!! add witness tracker methods!!!!!!
+
+    let cin16 = Poseidon.hashPacked(Groth16Data, in0);
+    const proof16 = await zkp16.compute(cin16, in0);
+
+    const valid = await verify(proof16, vk16); 
+    console.log("valid zkp16?: ", valid);
+
+    fs.writeFileSync('./src/recursion/proofs/layer0/zkp16.json', JSON.stringify(proof16), 'utf8');
+    fs.writeFileSync('./src/recursion/vks/vk16.json', JSON.stringify(vk16), 'utf8');
+}
+
+async function prove_zkp17() {
+    const vk17 = (await zkp17.compile()).verificationKey;
+
+    const wt = new WitnessTracker();
+    let in0 = wt.init(getNegA(), getB(), getC(), getPI(), get_c_hint(), make_w27(), Field(0));
+
+    // TODO!!!!! add witness tracker methods!!!!!!
+
+    let cin17 = Poseidon.hashPacked(Groth16Data, in0);
+    const proof17 = await zkp17.compute(cin17, in0);
+
+    const valid = await verify(proof17, vk17); 
+    console.log("valid zkp17?: ", valid);
+
+    fs.writeFileSync('./src/recursion/proofs/layer0/zkp17.json', JSON.stringify(proof17), 'utf8');
+    fs.writeFileSync('./src/recursion/vks/vk17.json', JSON.stringify(vk17), 'utf8');
+}
+
+async function prove_zkp18() {
+    const vk18 = (await zkp18.compile()).verificationKey;
+
+    const wt = new WitnessTracker();
+    let in0 = wt.init(getNegA(), getB(), getC(), getPI(), get_c_hint(), make_w27(), Field(0));
+
+    // TODO!!!!! add witness tracker methods!!!!!!
+
+    let cin18 = Poseidon.hashPacked(Groth16Data, in0);
+    const proof18 = await zkp18.compute(cin18, in0);
+
+    const valid = await verify(proof18, vk18); 
+    console.log("valid zkp18?: ", valid);
+
+    fs.writeFileSync('./src/recursion/proofs/layer0/zkp18.json', JSON.stringify(proof18), 'utf8');
+    fs.writeFileSync('./src/recursion/vks/vk18.json', JSON.stringify(vk18), 'utf8');
+}
+
+
 switch(process.argv[2]) {
     case 'zkp0':
         await prove_zkp0();
@@ -257,5 +429,32 @@ switch(process.argv[2]) {
         break;
     case 'zkp9':
         await prove_zkp9();
+        break;
+    case 'zkp10':
+        await prove_zkp10();
+        break;
+    case 'zkp11':
+        await prove_zkp11();
+        break;
+    case 'zkp12':
+        await prove_zkp12();
+        break;
+    case 'zkp13':
+        await prove_zkp13();
+        break;
+    case 'zkp14':
+        await prove_zkp14();
+        break;
+    case 'zkp15':
+        await prove_zkp15();
+        break;
+    case 'zkp16':
+        await prove_zkp16();
+        break;
+    case 'zkp17':
+        await prove_zkp17();
+        break;
+    case 'zkp18':
+        await prove_zkp18();
         break;
 }
