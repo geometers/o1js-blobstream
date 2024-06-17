@@ -3,7 +3,7 @@ import { ATE_LOOP_COUNT, Fp12, Fp2 } from "../towers/index.js";
 import { Groth16Data } from "./data.js";
 import { G2Line } from "../lines/index.js";
 import { AffineCache } from "../lines/precompute.js";
-import { getBHardcodedLines, getBSlice } from "./helpers.js";
+import { getBHardcodedLines, getBSlice, get_alpha_beta, make_w27, make_w27_sq } from "./helpers.js";
 import fs from "fs";
 import { Field } from "o1js";
 
@@ -578,6 +578,268 @@ class WitnessTracker {
           shift: input.shift
       });
     }
+
+    zkp9(input: Groth16Data) {
+      const g = input.g;
+      const c = input.c;
+      const c_inv = c.inverse();
+      let f = c_inv;
+  
+      let idx = 0;
+  
+      for (let i = 1; i < ATE_LOOP_COUNT.length - 57; i++) {
+        idx = i - 1;
+        f = f.square().mul(g[idx]);
+  
+        if (ATE_LOOP_COUNT[i] == 1) {
+          f = f.mul(c_inv);
+        }
+  
+        if (ATE_LOOP_COUNT[i] == -1) {
+          f = f.mul(c);
+        }
+      }
+    }
+
+    zkp10(input: Groth16Data) {
+      const g = input.g;
+      const c = input.c;
+      const c_inv = c.inverse();
+      let f = input.f;
+  
+      let idx = 0;
+  
+      for (let i = ATE_LOOP_COUNT.length - 57; i < ATE_LOOP_COUNT.length - 50; i++) {
+        idx = i - 1;
+        f = f.square().mul(g[idx]);
+  
+        if (ATE_LOOP_COUNT[i] == 1) {
+          f = f.mul(c_inv);
+        }
+  
+        if (ATE_LOOP_COUNT[i] == -1) {
+          f = f.mul(c);
+        }
+      }
+    }
+
+    zkp11(input: Groth16Data) {
+      const g = input.g;
+      const c = input.c;
+      const c_inv = c.inverse();
+      let f = input.f;
+  
+      let idx = 0;
+  
+      for (let i = ATE_LOOP_COUNT.length - 50; i < ATE_LOOP_COUNT.length - 43; i++) {
+        idx = i - 1;
+        f = f.square().mul(g[idx]);
+  
+        if (ATE_LOOP_COUNT[i] == 1) {
+          f = f.mul(c_inv);
+        }
+  
+        if (ATE_LOOP_COUNT[i] == -1) {
+          f = f.mul(c);
+        }
+      }
+    }
+
+    zkp12(input: Groth16Data) {
+      const g = input.g;
+      const c = input.c;
+      const c_inv = c.inverse();
+      let f = input.f;
+  
+      let idx = 0;
+  
+      for (let i = ATE_LOOP_COUNT.length - 43; i < ATE_LOOP_COUNT.length - 36; i++) {
+        idx = i - 1;
+        f = f.square().mul(g[idx]);
+  
+        if (ATE_LOOP_COUNT[i] == 1) {
+          f = f.mul(c_inv);
+        }
+  
+        if (ATE_LOOP_COUNT[i] == -1) {
+          f = f.mul(c);
+        }
+      }
+    }
+
+    zkp13(input: Groth16Data) {
+      const g = input.g;
+      const c = input.c;
+      const c_inv = c.inverse();
+      let f = input.f;
+  
+      let idx = 0;
+  
+      for (let i = ATE_LOOP_COUNT.length - 36; i < ATE_LOOP_COUNT.length - 30; i++) {
+        idx = i - 1;
+        f = f.square().mul(g[idx]);
+  
+        if (ATE_LOOP_COUNT[i] == 1) {
+          f = f.mul(c_inv);
+        }
+  
+        if (ATE_LOOP_COUNT[i] == -1) {
+          f = f.mul(c);
+        }
+      }
+    }
+
+    zkp14(input: Groth16Data) {
+      const g = input.g;
+      const c = input.c;
+      const c_inv = c.inverse();
+      let f = input.f;
+  
+      let idx = 0;
+  
+      for (let i = ATE_LOOP_COUNT.length - 30; i < ATE_LOOP_COUNT.length - 23; i++) {
+        idx = i - 1;
+        f = f.square().mul(g[idx]);
+  
+        if (ATE_LOOP_COUNT[i] == 1) {
+          f = f.mul(c_inv);
+        }
+  
+        if (ATE_LOOP_COUNT[i] == -1) {
+          f = f.mul(c);
+        }
+      }
+    }
+
+    zkp15(input: Groth16Data) {
+      const g = input.g;
+      const c = input.c;
+      const c_inv = c.inverse();
+      let f = input.f;
+  
+      let idx = 0;
+  
+      for (let i = ATE_LOOP_COUNT.length - 23; i < ATE_LOOP_COUNT.length - 16; i++) {
+        idx = i - 1;
+        f = f.square().mul(g[idx]);
+  
+        if (ATE_LOOP_COUNT[i] == 1) {
+          f = f.mul(c_inv);
+        }
+  
+        if (ATE_LOOP_COUNT[i] == -1) {
+          f = f.mul(c);
+        }
+      }
+    }
+
+    zkp16(input: Groth16Data) {
+      const g = input.g;
+      const c = input.c;
+      const c_inv = c.inverse();
+      let f = input.f;
+  
+      let idx = 0;
+  
+      for (let i = ATE_LOOP_COUNT.length - 16; i < ATE_LOOP_COUNT.length - 9; i++) {
+        idx = i - 1;
+        f = f.square().mul(g[idx]);
+  
+        if (ATE_LOOP_COUNT[i] == 1) {
+          f = f.mul(c_inv);
+        }
+  
+        if (ATE_LOOP_COUNT[i] == -1) {
+          f = f.mul(c);
+        }
+      }
+    }
+
+    zkp17(input: Groth16Data) {
+      const g = input.g;
+      const c = input.c;
+      const c_inv = c.inverse();
+      let f = input.f;
+  
+      let idx = 0;
+  
+      for (let i = ATE_LOOP_COUNT.length - 9; i < ATE_LOOP_COUNT.length - 2; i++) {
+        idx = i - 1;
+        f = f.square().mul(g[idx]);
+  
+        if (ATE_LOOP_COUNT[i] == 1) {
+          f = f.mul(c_inv);
+        }
+  
+        if (ATE_LOOP_COUNT[i] == -1) {
+          f = f.mul(c);
+        }
+      }
+    }
+
+    zkp18(input: Groth16Data) {
+      const g = input.g;
+      const c = input.c;
+      const c_inv = c.inverse();
+      let f = input.f;
+  
+      let idx = 0;
+  
+      for (let i = ATE_LOOP_COUNT.length - 2; i < ATE_LOOP_COUNT.length; i++) {
+        idx = i - 1;
+        f = f.square().mul(g[idx]);
+  
+        if (ATE_LOOP_COUNT[i] == 1) {
+          f = f.mul(c_inv);
+        }
+  
+        if (ATE_LOOP_COUNT[i] == -1) {
+          f = f.mul(c);
+        }
+      }
+
+      let gamma_1s_input = fs.readFileSync('./src/towers/gamma_1s.json', 'utf8');
+      let parsed_gamma_1s: any[] = JSON.parse(gamma_1s_input);
+      let gamma_1s = parsed_gamma_1s.map(
+        (g: any): Fp2 => Fp2.loadFromJson(g)
+      );
+
+      let gamma_2s_input = fs.readFileSync('./src/towers/gamma_2s.json', 'utf8');
+      let parsed_gamma_2s: any[] = JSON.parse(gamma_2s_input);
+      let gamma_2s = parsed_gamma_2s.map(
+        (g: any): Fp2 => Fp2.loadFromJson(g)
+      );
+
+      let gamma_3s_input = fs.readFileSync('./src/towers/gamma_3s.json', 'utf8');
+      let parsed_gamma_3s: any[] = JSON.parse(gamma_3s_input);
+      let gamma_3s = parsed_gamma_3s.map(
+        (g: any): Fp2 => Fp2.loadFromJson(g)
+      );
+
+      f = f
+      .mul(c_inv.frobenius_pow_p_with_gammas(gamma_1s))
+      .mul(input.c.frobenius_pow_p_squared_with_gammas(gamma_2s))
+      .mul(c_inv.frobenius_pow_p_cubed_with_gammas(gamma_3s))
+      .mul(get_alpha_beta());
+
+      let shift; 
+      const shift_power = input.shift;
+
+      if (shift_power.equals(Field(0))) {
+        shift = Fp12.one();
+      } else if (shift_power.equals(Field(1))) {
+        shift = make_w27();
+      } else if (shift_power.equals(Field(2))) {
+        shift = make_w27_sq();
+      } else {
+        process.exit(1)
+      }
+
+      f = f.mul(shift);
+      f.assert_equals(Fp12.one());
+    }
+
+
 }
 
 export { WitnessTracker }
