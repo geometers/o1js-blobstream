@@ -88,8 +88,7 @@ const zkp0 = ZkProgram({
                 shift: wIn.shift
             });
 
-            return Poseidon.hashPacked(Provable.Array(Fp12, ATE_LOOP_COUNT.length), g);
-            // return Poseidon.hashPacked(Groth16Data, output);
+            return Poseidon.hashPacked(Groth16Data, output);
         },
       },
     },

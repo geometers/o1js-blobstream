@@ -30,7 +30,11 @@ class WitnessTracker {
     zkp0(input: Groth16Data): Groth16Data {
         const negA = input.negA; 
         const B = input.B; 
-        const g = input.g;
+
+        const g: Array<Fp12> = []; 
+        for (let i = 0; i < ATE_LOOP_COUNT.length; i++) {
+          g.push(input.g[i]);
+        }
 
         let b_lines = getBSlice(0);
 
@@ -42,9 +46,6 @@ class WitnessTracker {
         let idx = 0;
         let line_cnt = 0;
 
-        
-        console.log("starting: ", Poseidon.hashPacked(Provable.Array(Fp12, ATE_LOOP_COUNT.length), input.g).toBigInt());
-    
         for (let i = 1; i < ATE_LOOP_COUNT.length - 32; i++) {
           idx = i - 1;
     
@@ -73,14 +74,12 @@ class WitnessTracker {
           }
         }
 
-        console.log("ending: ", Poseidon.hashPacked(Provable.Array(Fp12, ATE_LOOP_COUNT.length), g).toBigInt());
-
         return new Groth16Data({
             negA, 
             B: input.B, 
             C: input.C, 
             PI: input.PI,
-            g: structuredClone(g),
+            g,
             T,
             c: input.c, 
             f: input.f, 
@@ -91,13 +90,18 @@ class WitnessTracker {
     zkp1(input: Groth16Data) {
         const negA = input.negA; 
         const B = input.B; 
-        const g = input.g;
+
+        const g: Array<Fp12> = []; 
+        for (let i = 0; i < ATE_LOOP_COUNT.length; i++) {
+          g.push(input.g[i]);
+        }
 
         const a_cache = new AffineCache(negA);
 
         let b_lines = getBSlice(1);
 
-        let T = input.T;
+        // let T = input.T;
+        let T = new G2Affine({ x: input.T.x, y: input.T.y });
         const negB = B.neg();
     
         let idx = 0;
@@ -136,7 +140,7 @@ class WitnessTracker {
             B: input.B, 
             C: input.C, 
             PI: input.PI,
-            g: structuredClone(g),
+            g,
             T,
             c: input.c, 
             f: input.f, 
@@ -146,13 +150,16 @@ class WitnessTracker {
 
     zkp2(input: Groth16Data) {
         const negA = input.negA; 
-        const g = input.g;
+        const g: Array<Fp12> = []; 
+        for (let i = 0; i < ATE_LOOP_COUNT.length; i++) {
+          g.push(input.g[i]);
+        }
 
         const a_cache = new AffineCache(negA);
 
         let b_lines = getBSlice(2);
 
-        let T = input.T;
+        let T = new G2Affine({ x: input.T.x, y: input.T.y });
 
         let line_cnt = 0;
         let line_b;
@@ -222,7 +229,10 @@ class WitnessTracker {
     
     zkp3(input: Groth16Data) {
       const c_cache = new AffineCache(input.C);
-      let g = input.g;
+      const g: Array<Fp12> = []; 
+      for (let i = 0; i < ATE_LOOP_COUNT.length; i++) {
+        g.push(input.g[i]);
+      }
 
       let delta_lines_input = fs.readFileSync('./src/groth16/delta_lines.json', 'utf8');
       let parsed_delta_lines: any[] = JSON.parse(delta_lines_input);
@@ -273,7 +283,10 @@ class WitnessTracker {
 
     zkp4(input: Groth16Data) {
       const c_cache = new AffineCache(input.C);
-      let g = input.g;
+      const g: Array<Fp12> = []; 
+      for (let i = 0; i < ATE_LOOP_COUNT.length; i++) {
+        g.push(input.g[i]);
+      }
 
       let delta_lines_input = fs.readFileSync('./src/groth16/delta_lines.json', 'utf8');
       let parsed_delta_lines: any[] = JSON.parse(delta_lines_input);
@@ -324,7 +337,10 @@ class WitnessTracker {
 
     zkp5(input: Groth16Data) {
       const c_cache = new AffineCache(input.C);
-      let g = input.g;
+      const g: Array<Fp12> = []; 
+      for (let i = 0; i < ATE_LOOP_COUNT.length; i++) {
+        g.push(input.g[i]);
+      }
 
       let delta_lines_input = fs.readFileSync('./src/groth16/delta_lines.json', 'utf8');
       let parsed_delta_lines: any[] = JSON.parse(delta_lines_input);
@@ -429,7 +445,10 @@ class WitnessTracker {
       );
       gamma_lines = gamma_lines.slice(14, 91);
 
-      const g = input.g;
+      const g: Array<Fp12> = []; 
+      for (let i = 0; i < ATE_LOOP_COUNT.length; i++) {
+        g.push(input.g[i]);
+      }
   
       let idx = 0;
       let line_cnt = 0;
@@ -480,7 +499,10 @@ class WitnessTracker {
       );
       gamma_lines = gamma_lines.slice(14 + 27, 91);
 
-      const g = input.g;
+      const g: Array<Fp12> = []; 
+      for (let i = 0; i < ATE_LOOP_COUNT.length; i++) {
+        g.push(input.g[i]);
+      }
   
       let idx = 0;
       let line_cnt = 0;
@@ -531,7 +553,10 @@ class WitnessTracker {
       );
       gamma_lines = gamma_lines.slice(14 + 27 + 27, 91);
 
-      const g = input.g;
+      const g: Array<Fp12> = []; 
+      for (let i = 0; i < ATE_LOOP_COUNT.length; i++) {
+        g.push(input.g[i]);
+      }
   
       let idx = 0;
       let line_cnt = 0;
@@ -584,10 +609,14 @@ class WitnessTracker {
     }
 
     zkp9(input: Groth16Data) {
-      const g = input.g;
+      const g: Array<Fp12> = []; 
+      for (let i = 0; i < ATE_LOOP_COUNT.length; i++) {
+        g.push(input.g[i]);
+      }
+
       const c = input.c;
       const c_inv = c.inverse();
-      let f = c_inv;
+      let f = new Fp12({ c0: c_inv.c0, c1: c_inv.c1 });
   
       let idx = 0;
   
@@ -618,10 +647,15 @@ class WitnessTracker {
     }
 
     zkp10(input: Groth16Data) {
-      const g = input.g;
+      const g: Array<Fp12> = []; 
+      for (let i = 0; i < ATE_LOOP_COUNT.length; i++) {
+        g.push(input.g[i]);
+      }
+      
       const c = input.c;
       const c_inv = c.inverse();
-      let f = input.f;
+
+      let f = new Fp12({ c0: input.f.c0, c1: input.f.c1 });
   
       let idx = 0;
   
@@ -652,10 +686,14 @@ class WitnessTracker {
     }
 
     zkp11(input: Groth16Data) {
-      const g = input.g;
+      const g: Array<Fp12> = []; 
+      for (let i = 0; i < ATE_LOOP_COUNT.length; i++) {
+        g.push(input.g[i]);
+      }
+
       const c = input.c;
       const c_inv = c.inverse();
-      let f = input.f;
+      let f = new Fp12({ c0: input.f.c0, c1: input.f.c1 });
   
       let idx = 0;
   
@@ -686,10 +724,14 @@ class WitnessTracker {
     }
 
     zkp12(input: Groth16Data) {
-      const g = input.g;
+      const g: Array<Fp12> = []; 
+      for (let i = 0; i < ATE_LOOP_COUNT.length; i++) {
+        g.push(input.g[i]);
+      }
+
       const c = input.c;
       const c_inv = c.inverse();
-      let f = input.f;
+      let f = new Fp12({ c0: input.f.c0, c1: input.f.c1 });
   
       let idx = 0;
   
@@ -720,10 +762,14 @@ class WitnessTracker {
     }
 
     zkp13(input: Groth16Data) {
-      const g = input.g;
+      const g: Array<Fp12> = []; 
+      for (let i = 0; i < ATE_LOOP_COUNT.length; i++) {
+        g.push(input.g[i]);
+      }
+
       const c = input.c;
       const c_inv = c.inverse();
-      let f = input.f;
+      let f = new Fp12({ c0: input.f.c0, c1: input.f.c1 });
   
       let idx = 0;
   
@@ -754,10 +800,14 @@ class WitnessTracker {
     }
 
     zkp14(input: Groth16Data) {
-      const g = input.g;
+      const g: Array<Fp12> = []; 
+      for (let i = 0; i < ATE_LOOP_COUNT.length; i++) {
+        g.push(input.g[i]);
+      }
+
       const c = input.c;
       const c_inv = c.inverse();
-      let f = input.f;
+      let f = new Fp12({ c0: input.f.c0, c1: input.f.c1 });
   
       let idx = 0;
   
@@ -788,10 +838,14 @@ class WitnessTracker {
     }
 
     zkp15(input: Groth16Data) {
-      const g = input.g;
+      const g: Array<Fp12> = []; 
+      for (let i = 0; i < ATE_LOOP_COUNT.length; i++) {
+        g.push(input.g[i]);
+      }
+
       const c = input.c;
       const c_inv = c.inverse();
-      let f = input.f;
+      let f = new Fp12({ c0: input.f.c0, c1: input.f.c1 });
   
       let idx = 0;
   
@@ -822,10 +876,14 @@ class WitnessTracker {
     }
 
     zkp16(input: Groth16Data) {
-      const g = input.g;
+      const g: Array<Fp12> = []; 
+      for (let i = 0; i < ATE_LOOP_COUNT.length; i++) {
+        g.push(input.g[i]);
+      }
+
       const c = input.c;
       const c_inv = c.inverse();
-      let f = input.f;
+      let f = new Fp12({ c0: input.f.c0, c1: input.f.c1 });
   
       let idx = 0;
   
@@ -856,10 +914,14 @@ class WitnessTracker {
     }
 
     zkp17(input: Groth16Data) {
-      const g = input.g;
+      const g: Array<Fp12> = []; 
+      for (let i = 0; i < ATE_LOOP_COUNT.length; i++) {
+        g.push(input.g[i]);
+      }
+
       const c = input.c;
       const c_inv = c.inverse();
-      let f = input.f;
+      let f = new Fp12({ c0: input.f.c0, c1: input.f.c1 });
   
       let idx = 0;
   
@@ -890,10 +952,14 @@ class WitnessTracker {
     }
 
     zkp18(input: Groth16Data) {
-      const g = input.g;
+      const g: Array<Fp12> = []; 
+      for (let i = 0; i < ATE_LOOP_COUNT.length; i++) {
+        g.push(input.g[i]);
+      }
+
       const c = input.c;
       const c_inv = c.inverse();
-      let f = input.f;
+      let f = new Fp12({ c0: input.f.c0, c1: input.f.c1 });
   
       let idx = 0;
   
