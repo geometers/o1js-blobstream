@@ -1,12 +1,27 @@
 #!/bin/bash -e
 
-# echo "Computing ZKPs 0-18..."
-# for i in `seq 0 18`; do
-#     # node build/src/recursion/prove_zkps.js zkp$(( 4*i )) 2>/dev/null >/dev/null &
-#     node build/src/recursion/prove_zkps.js zkp${i} 2>/dev/null >/dev/null &
-# done
+mkdir -p ./src/recursion/vks/
+mkdir -p ./src/recursion/proofs/
 
-# wait
+
+mkdir -p ./src/recursion/proofs/layer0
+mkdir -p ./src/recursion/proofs/layer1
+mkdir -p ./src/recursion/proofs/layer2
+mkdir -p ./src/recursion/proofs/layer3
+mkdir -p ./src/recursion/proofs/layer4
+mkdir -p ./src/recursion/proofs/layer5
+
+
+echo "Compiling recursion vks..."
+node build/src/recursion/compile_recursion_vks &
+wait 
+
+echo "Computing ZKPs 0-18..."
+for i in `seq 0 18`; do
+    node build/src/recursion/prove_zkps.js zkp${i} 2>/dev/null &
+done
+
+wait
 
 echo "Computed ZKPs 0-18..."
 

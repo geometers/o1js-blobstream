@@ -29,4 +29,4 @@ const nodeVk = await VerificationKey.fromJSON(JSON.parse(fs.readFileSync('./src/
 const baseVksHashes = [vk0, vk1, vk2, vk3, vk4, vk5, vk6, vk7, vk8, vk9, vk10, vk11, vk12, vk13, vk14, vk15, vk16, vk17, vk18];
 const root = await buildTreeOfVks(baseVksHashes, layer1Vk, nodeVk);
 
-// console.log(root.toBigInt());
+console.log(root.toBigInt());
