@@ -8,23 +8,24 @@ Roughly 350,00 for multi Miller loop computation and ~350,000 for proving that m
 based on techniques developed in "On proving pairings"[link].
 
 To run this circuit do the following: 
-    cd contracts 
-    npm run build && node --max-old-space-size=65536 build/src/groth16/multi_miller.js
+```bash
+cd contracts 
+npm run build && node --max-old-space-size=65536 build/src/groth16/multi_miller.js
+```
 
 However Mina programs are bounded by 64k constraints, thus computation is divided into smaller specialized circuits. 
 Those circuits are then interconnected with different recursion techniques introduced in: [PCD, Folding]. 
 
-2. 
-In the folder `zkprograms` there is a chain of 24 connected circuits where each circuit `i` does a specific part of verification and verifies circuit `i-1`. This approach comes with a significant computational overhead. 
+2. In the folder `zkprograms` there is a chain of 24 connected circuits where each circuit `i` does a specific part of verification and verifies circuit `i-1`. This approach comes with a significant computational overhead. 
 Namely, in order to prove circuit `i` this approach requires compiling all verifications `1..i-1` which can take up to `2` hours to prove all 24 programs. 
 In order to run circuit `i` do the following: 
-    cd contracts 
-    npm run build && node build/src/zkprograms/prove.js `zkpi` 
-
+```bash
+cd contracts 
+npm run build && node build/src/zkprograms/prove.js `zkpi` 
+```
 To mitigate this overhead we introduce the third approach. 
 
-3. 
-Instead of building recursive chain we build a recursive tree. 
+3. Instead of building recursive chain we build a recursive tree. 
 In the folder `recursion` there are 19 specialized circuits that prove specific parts of the verifier. 
 These circuits are leaves of the computational tree, or in other words that is `layer0` of our tree. 
 We then introduce two generic compressor circuits. 
@@ -39,6 +40,7 @@ In order to run this part we had to extend o1js with some custom features, thus 
 
 To run this part do the following: 
 
+```bash
 1. git clone https://github.com/o1-labs/o1js.git
 2. cd o1js
 3. git checkout feature-flag-fix 
@@ -47,6 +49,7 @@ To run this part do the following:
 5. cd ../contracts 
 6. npm run build 
 7. ./src/demo/run_example.sh  
+```
 
 
 
