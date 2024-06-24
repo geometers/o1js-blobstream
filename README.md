@@ -37,8 +37,9 @@ In the folder `recursion` there are 19 specialized circuits that prove specific 
 
     Finally, the root proof is then handed to the decider (verifier) which checks that whole recursion was carried correctly and constraints Groth16 public inputs. These circuits can be found in the folder `compression`.  
 
-    In order to run this part we had to extend o1js with some custom features, thus we need a local o1js version that supports tree compression.  
-To run this part do the following: 
+    In order to run this part we had to extend o1js with some custom features, thus we need a local o1js version that supports tree compression.  Note that the first run of this process is slower, since it builds the circuits for the first time and has no cache.
+
+    To run this part do the following: 
 
 ```bash
 git clone https://github.com/o1-labs/o1js.git
