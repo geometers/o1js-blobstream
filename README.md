@@ -17,7 +17,7 @@ npm run build
 node --max-old-space-size=65536 build/src/groth16/multi_miller.js
 ```
 
-    However, Mina programs are bounded by 64k constraints, so the computation is divided into smaller specialized circuits. Those circuits are then interconnected with different recursion techniques introduced in PCD. 
+However, Mina programs are bounded by 64k constraints, so the computation is divided into smaller specialized circuits. Those circuits are then interconnected with different recursion techniques introduced in PCD. 
 
 2. In the folder `zkprograms` there is a chain of 24 connected circuits where each circuit `i` does a specific part of verification and verifies circuit `i-1`. This approach comes with a significant computational overhead. 
 Namely, in order to prove circuit `i` this approach requires compiling all verifications `1..i-1` which can take up to `2` hours to prove all 24 programs. 
