@@ -46,7 +46,7 @@ To run this part do the following:
 3. git submodule update --init --recursive
 4. npm i && npm run build 
 5. cd ../contracts 
-6. npm run build 
+6. npm i && npm run build  
 7. ./src/demo/run_example.sh  
 ```
 
