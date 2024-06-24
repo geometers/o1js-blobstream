@@ -9,8 +9,10 @@ based on techniques developed in "On proving pairings"[link].
 
 To run this circuit do the following: 
 ```bash
-cd contracts 
-npm run build && node --max-old-space-size=65536 build/src/groth16/multi_miller.js
+cd contracts
+npm install
+npm run build
+node --max-old-space-size=65536 build/src/groth16/multi_miller.js
 ```
 
 However Mina programs are bounded by 64k constraints, thus computation is divided into smaller specialized circuits. 
@@ -20,8 +22,10 @@ Those circuits are then interconnected with different recursion techniques intro
 Namely, in order to prove circuit `i` this approach requires compiling all verifications `1..i-1` which can take up to `2` hours to prove all 24 programs. 
 In order to run circuit `i` do the following: 
 ```bash
-cd contracts 
-npm run build && node build/src/zkprograms/prove.js `zkpi` 
+cd contracts
+npm install
+npm run build
+i=1 && node build/src/zkprograms/prove.js `zkp$i` 
 ```
 To mitigate this overhead we introduce the third approach. 
 
@@ -41,13 +45,13 @@ In order to run this part we had to extend o1js with some custom features, thus 
 To run this part do the following: 
 
 ```bash
-1. git clone https://github.com/o1-labs/o1js.git
-2. cd o1js
-3. git submodule update --init --recursive
-4. npm i && npm run build 
-5. cd ../contracts 
-6. npm i && npm run build  
-7. ./src/demo/run_example.sh  
+git clone https://github.com/o1-labs/o1js.git
+cd o1js
+git submodule update --init --recursive
+npm install && npm run build 
+cd ../contracts 
+npm install && npm run build  
+./src/demo/run_example.sh  
 ```
 
 
