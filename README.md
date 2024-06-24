@@ -43,8 +43,7 @@ To run this part do the following:
 ```bash
 1. git clone https://github.com/o1-labs/o1js.git
 2. cd o1js
-3. git checkout feature-flag-fix 
-4. git submodule update --init --recursive
+3. git submodule update --init --recursive
 4. npm i && npm run build 
 5. cd ../contracts 
 6. npm run build 
