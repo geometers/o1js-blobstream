@@ -42,11 +42,7 @@ In the folder `recursion` there are 19 specialized circuits that prove specific 
     To run this part do the following: 
 
 ```bash
-git clone https://github.com/o1-labs/o1js.git
-cd o1js
-git submodule update --init --recursive
-npm install && npm run build 
-cd ../contracts 
+cd contracts 
 npm install && npm run build  
 ./src/demo/run_example.sh  
 ```

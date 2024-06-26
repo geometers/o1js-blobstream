@@ -23,7 +23,7 @@
     "lint": "npx eslint src/* --fix"
   },
   "dependencies": {
-    "o1js": "../o1js",
+    "o1js": "1.4.0",
     "typescript": "^5.4.5"
   },
   "devDependencies": {
