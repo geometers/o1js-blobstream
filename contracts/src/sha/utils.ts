@@ -3,11 +3,9 @@ import { FpC } from "../towers/index.js";
 
 
 const provableBn254BaseFieldToBytes = (x: FpC) => {
-    // prepend 2 zero bits to make it a multiple of 8 (256 bits)
+    // append 2 zero bits to make it a multiple of 8 (256 bits)
     let bits = [Bool(false), Bool(false)];
-    bits = bits.concat(x.toBits())
-
-    console.log(bits.length)
+    bits = x.toBits().concat(bits)
 
     const chunks: UInt8[] = [];
 
@@ -16,13 +14,9 @@ const provableBn254BaseFieldToBytes = (x: FpC) => {
         chunks.push(UInt8.Unsafe.fromField(chunk));
     }
 
-    return chunks;
+    return chunks.reverse();
 }
 
-const lhs = provableBn254BaseFieldToBytes(FpC.from(1n));
-const rhs = provableBn254BaseFieldToBytes(FpC.from(1n));
-
-let full = lhs.concat(rhs);
-console.log(full.length);
+export { provableBn254BaseFieldToBytes }
 
 

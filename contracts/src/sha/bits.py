@@ -24,4 +24,5 @@ bit_string = bit_string_8(gamma) + bit_string_8(vx)
 byte_data = bits_to_bytes(bit_string)
 
 sha256_hash = hashlib.sha256(byte_data).hexdigest()
-print(f"SHA-256: {int(sha256_hash, 16)}")
+# print(f"SHA-256: {int(sha256_hash, 16)}")
+print(f"SHA-256: {sha256_hash}")
