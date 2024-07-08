@@ -14,12 +14,11 @@ export function shaToFr(hashDigest: Bytes): FrC
         for (let j = 0; j < 8; j++) {
             // we skip last 2 bits
             if (i == 0 && j == 6) {
-                bit255 = bits[j].toBoolean() ? Bool(true) : Bool(false);
+                bit255 = bits[j];
             } else if (i == 0 && j == 7) {
-                bit256 = bits[j].toBoolean() ? Bool(true) : Bool(false);
+                bit256 = bits[j];
             } else {
-                const x = bits[j].toBoolean() ? Bool(true) : Bool(false);
-                shaBitRepr.push(x)
+                shaBitRepr.push(bits[j])
             }
         }
     }
