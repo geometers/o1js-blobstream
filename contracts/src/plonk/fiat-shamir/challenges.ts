@@ -1,6 +1,6 @@
 import { provableBn254BaseFieldToBytes, provableBn254ScalarFieldToBytes } from "../../sha/utils.js";
 import { FpC, FrC } from "../../towers/index.js";
-import { Bytes, Hash, Provable } from "o1js";
+import { Bytes, Hash, Provable, UInt8 } from "o1js";
 import { shaToFr } from "./sha_to_fr.js";
 import { Sp1PlonkVk, VK } from "../vk.js";
 import { Sp1PlonkProof, zeroProof } from "../proof.js";
@@ -25,8 +25,8 @@ const gammaSizeInBytes = () => {
 
 class BytesGamma extends Bytes(837) {} // output of gammaSizeInBytes()
 
-function squeezeGamma(proof: Sp1PlonkProof, pi0F: FrC, pi1F: FrC) {
-    const gamma_separator = FpC.from(0x67616d6d61); // TODO: we can read this from file
+function squeezeGamma(proof: Sp1PlonkProof, pi0F: FrC, pi1F: FrC): BytesGamma {
+    const gamma_separator = FpC.from(0x67616d6d61n); // TODO: we can read this from file
     let separator_bytes = provableBn254BaseFieldToBytes(gamma_separator); 
 
     // gamma is 39 bits, so we leave only 40 bits (to keep it multiple of 8)
@@ -118,6 +118,30 @@ function squeezeGamma(proof: Sp1PlonkProof, pi0F: FrC, pi1F: FrC) {
     return new BytesGamma(cm_bytes)
 }
 
+const sizeBetaBytes = () => {
+    let size = 0 
+    size += 4 // for beta_separator 
+
+    size += 32 // for bytes of gamma_hash
+
+    return size
+}
+
+class BytesBeta extends Bytes(36) {} // output of sizeBetaBytes()
+
+function squeezeBeta(gamma_hash: Bytes): BytesBeta {
+    const beta_separator = FpC.from(0x62657461n); // TODO: we can read this from file
+    let separator_bytes = provableBn254BaseFieldToBytes(beta_separator); 
+
+    // beta is 32 bits and we cut the rest (256 - 32) bits which is 28 bytes 
+    let cm_bytes = separator_bytes.slice(28, 32); 
+
+    cm_bytes = cm_bytes.concat(gamma_hash.bytes)
+    assert(cm_bytes.length === sizeBetaBytes())
+
+    return new BytesBeta(cm_bytes)
+}
+
 
 class BytesGammaSmall extends Bytes(5 + 32) {} 
 function deriveGamma(vc: FpC): BytesGamma { 
@@ -133,10 +157,6 @@ function deriveGamma(vc: FpC): BytesGamma {
     return new BytesGammaSmall(gamma_bytes.concat(vx_bytes))
 }
 
-function deriveBeta() {
-
-}
-
 function deriveAlpha() {
 
 }
@@ -148,13 +168,19 @@ function deriveZeta() {
 
 const proof: Sp1PlonkProof = zeroProof()
 
-const hash = Hash.SHA2_256.hash(squeezeGamma(proof, FrC.from(0n), FrC.from(0n)))
-console.log(hash.toHex())
-const gammaFr = shaToFr(hash)
+const gamma_hash = Hash.SHA2_256.hash(squeezeGamma(proof, FrC.from(0n), FrC.from(0n)))
+console.log(gamma_hash.toHex())
+const gammaFr = shaToFr(gamma_hash)
 console.log(gammaFr.toBigInt())
 
+const beta_hash = Hash.SHA2_256.hash(squeezeBeta(gamma_hash)); 
+console.log(beta_hash.toHex())
 
-export { deriveGamma }
+const betaFr = shaToFr(beta_hash)
+console.log(betaFr.toBigInt())
+
+
+export { squeezeGamma, squeezeBeta }
 
 // const vx = FpC.from(10627327753818917257580031743580923447218792977466576262416509126412843282369n)
 // let hash = Hash.SHA2_256.hash(deriveGamma(vx));
