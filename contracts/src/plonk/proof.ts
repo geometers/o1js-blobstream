@@ -1,6 +1,6 @@
 import { FpC, FrC } from "../towers/index.js"
 
-type PlonkSp1Proof = {
+type Sp1PlonkProof = {
     l_com_x: FpC
     l_com_y: FpC
     r_com_x: FpC
@@ -37,8 +37,8 @@ type PlonkSp1Proof = {
     bsb_commitments: FrC // still not sure about this
 }
 
-const zeroProof = () => {
-    const x: PlonkSp1Proof = {
+const zeroProof = (): Sp1PlonkProof => {
+    const x: Sp1PlonkProof = {
         l_com_x: FpC.from(0n),
         l_com_y: FpC.from(0n),
         r_com_x: FpC.from(0n),
@@ -66,10 +66,12 @@ const zeroProof = () => {
         qcp_at_zeta: FrC.from(0n),
         bsb_commitments: FrC.from(0n)
     }
+
+    return x
 }
 
-const randomProof = () => {
-    const x: PlonkSp1Proof = {
+const randomProof = (): Sp1PlonkProof => {
+    const x: Sp1PlonkProof = {
         l_com_x: FpC.random(),
         l_com_y: FpC.random(),
         r_com_x: FpC.random(),
@@ -101,4 +103,4 @@ const randomProof = () => {
     return x
 }
 
-export { PlonkSp1Proof, randomProof, zeroProof }
+export { Sp1PlonkProof, randomProof, zeroProof }

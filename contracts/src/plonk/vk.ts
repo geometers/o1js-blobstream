@@ -3,7 +3,47 @@ import { FpC, FrC } from "../towers/index.js";
 
 // taken from: https://github.com/succinctlabs/sp1-contracts/blob/main/contracts/src/v1.0.8-testnet/PlonkVerifier.sol
 
-const Sp1PlonkVk = {
+type Sp1PlonkVk = {
+    pub_inputs: FrC,
+    domain_size: FrC,
+    inv_domain_size: FrC,
+
+    omega: FrC,
+
+    ql_x: FpC,
+    ql_y: FpC,
+
+    qr_x: FpC,
+    qr_y: FpC,
+
+    qm_x: FpC,
+    qm_y: FpC,
+
+    qo_x: FpC,
+    qo_y: FpC,
+
+    qk_x: FpC,
+    qk_y: FpC,
+
+    qs1_x: FpC,
+    qs1_y: FpC,
+
+    qs2_x: FpC,
+    qs2_y: FpC,
+
+    qs3_x: FpC,
+    qs3_y: FpC,
+
+    coset_shift: FrC,
+
+    qcp_0_x: FpC,
+    qcp_0_y: FpC,
+
+    index_commit_api_0: FrC,
+    num_custom_gates: FrC
+}
+
+const VK: Sp1PlonkVk = {
     pub_inputs: FrC.from(2n),
     domain_size: FrC.from(67108864n),
     inv_domain_size: FrC.from(21888242545679039938882419398440172875981108180010270949818755658014750055173n),
@@ -42,3 +82,5 @@ const Sp1PlonkVk = {
     index_commit_api_0: FrC.from(32440323n),
     num_custom_gates: FrC.from(1n)
 }
+
+export { Sp1PlonkVk, VK } 
