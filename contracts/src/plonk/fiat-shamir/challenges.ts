@@ -149,6 +149,7 @@ function deriveZeta() {
 const proof: Sp1PlonkProof = zeroProof()
 
 const hash = Hash.SHA2_256.hash(squeezeGamma(proof, FrC.from(0n), FrC.from(0n)))
+console.log(hash.toHex())
 const gammaFr = shaToFr(hash)
 console.log(gammaFr.toBigInt())
 
