@@ -18,6 +18,18 @@ function deriveGamma(vc: FpC): BytesGamma {
     return new BytesGamma(gamma_bytes.concat(vx_bytes))
 }
 
+function deriveBeta() {
+
+}
+
+function deriveAlpha() {
+
+}
+
+function deriveZeta() {
+    
+}
+
 export { deriveGamma }
 
 const vx = FpC.from(10627327753818917257580031743580923447218792977466576262416509126412843282369n)
