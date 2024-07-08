@@ -25,4 +25,8 @@ byte_data = bits_to_bytes(bit_string)
 
 sha256_hash = hashlib.sha256(byte_data).hexdigest()
 # print(f"SHA-256: {int(sha256_hash, 16)}")
-print(f"SHA-256: {sha256_hash}")
+# print(f"SHA-256: {sha256_hash}")
+
+
+res = 41934624648789633692325845435058116789193741866735454986050232623745889205117
+print(int('0b' + bin(res)[4:], base=2))
