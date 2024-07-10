@@ -1,5 +1,5 @@
-import { FrC, powFr } from "../towers/fr.js"
-import { compute_alpha_square_lagrange_0, evalVanishing, fold_quotient } from "./plonk_utils.js"
+import { Fr, FrC, powFr } from "../towers/fr.js"
+import { compute_alpha_square_lagrange_0, evalVanishing, fold_quotient, pi_contribution } from "./plonk_utils.js"
 import { Sp1PlonkFiatShamir } from "./fiat-shamir/index.js"
 import { deserializeProof } from "./proof.js"
 import { VK } from "./vk.js";
@@ -29,3 +29,6 @@ const [hx, hy] = fold_quotient(proof.h0_x, proof.h0_y, proof.h1_x, proof.h1_y, p
 console.log("folded quotient x: ", hx.toBigInt())
 console.log("folded quotient y: ", hy.toBigInt())
 assertPointOnBn(hx.toBigInt(), hy.toBigInt())
+
+const pis = pi_contribution([FrC.from(1n), FrC.from(1n)], fs.zeta, zh_eval, VK.inv_domain_size, VK.omega)
+console.log("pis without custom gates: ", pis.toBigInt())
