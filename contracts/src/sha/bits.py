@@ -25,9 +25,11 @@ def bits_to_bytes(bits):
 # print(len(bit_string_8(0x616C706861)))
 # print(len(bin(0x616C706861)[2:]))
 
-zeta = 0x7a657461
-print(len(bit_string_8(zeta)))
-print(len(bin(zeta)[2:]))
+# zeta = 0x7a657461
+# print(len(bit_string_8(zeta)))
+# print(len(bin(zeta)[2:]))
+
+print(bin(67108864))
 
 # bit_string = bit_string_8(gamma) + bit_string_8(vx)
 # byte_data = bits_to_bytes(bit_string)

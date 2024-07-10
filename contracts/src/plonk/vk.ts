@@ -5,7 +5,7 @@ import { FpC, FrC } from "../towers/index.js";
 
 type Sp1PlonkVk = {
     pub_inputs: FrC,
-    domain_size: FrC,
+    domain_size: number[],
     inv_domain_size: FrC,
 
     omega: FrC,
@@ -45,7 +45,7 @@ type Sp1PlonkVk = {
 
 const VK: Sp1PlonkVk = {
     pub_inputs: FrC.from(2n),
-    domain_size: FrC.from(67108864n),
+    domain_size: [1].concat(Array(26).fill(0)), // 67108864 = 2^26,
     inv_domain_size: FrC.from(21888242545679039938882419398440172875981108180010270949818755658014750055173n),
 
     omega: FrC.from(7419588552507395652481651088034484897579724952953562618697845598160172257810n),

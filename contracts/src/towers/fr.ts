@@ -5,4 +5,20 @@ class FrU extends Fr.Unreduced {}
 class FrA extends Fr.AlmostReduced {}
 class FrC extends Fr.Canonical {}
 
-export { Fr, FrU, FrA, FrC };
+function powFr(x: FrC, exp: Array<number>) {
+    let r = Fr.from(x).assertCanonical()
+
+    const n = exp.length;
+    for (let i = 1; i < n; i++) {
+      r = r.mul(r).assertCanonical();
+
+      if (exp[i] == 1) {
+        r = r.mul(x).assertCanonical();
+      }
+
+    }
+
+    return r;
+}
+
+export { Fr, FrU, FrA, FrC, powFr };
