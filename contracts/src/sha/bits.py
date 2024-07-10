@@ -20,8 +20,14 @@ def bits_to_bytes(bits):
 # gamma = 0x62657461
 # vx = 10627327753818917257580031743580923447218792977466576262416509126412843282369
 
-print(bit_string_8(0x62657461))
-print(len(bit_string_8(0x62657461)))
+# print(bit_string_8(0x62657461))
+# print(len(bit_string_8(0x62657461)))
+# print(len(bit_string_8(0x616C706861)))
+# print(len(bin(0x616C706861)[2:]))
+
+zeta = 0x7a657461
+print(len(bit_string_8(zeta)))
+print(len(bin(zeta)[2:]))
 
 # bit_string = bit_string_8(gamma) + bit_string_8(vx)
 # byte_data = bits_to_bytes(bit_string)

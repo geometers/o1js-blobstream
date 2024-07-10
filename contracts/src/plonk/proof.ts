@@ -1,4 +1,9 @@
 import { FpC, FrC } from "../towers/index.js"
+import { ethers } from "ethers"
+import { assertPointOnBn, assertInBnField, numOfUin256s } from "./utils.js"
+import assert from "assert"
+
+const NUM_OF_UIN265s = 27
 
 type Sp1PlonkProof = {
     l_com_x: FpC
@@ -25,16 +30,20 @@ type Sp1PlonkProof = {
     grand_product_x: FpC
     grand_product_y: FpC 
 
-    grand_product_at_zeta: FrC 
+    grand_product_at_omega_zeta: FrC 
 
-    batch_at_zeta_x: FrC
-    batch_at_zeta_y: FrC
+    batch_opening_at_zeta_x: FpC
+    batch_opening_at_zeta_y: FpC
 
-    opening_at_zeta_omega_x: FpC
-    opening_at_zeta_omega_y: FpC
+    batch_opening_at_zeta_omega_x: FpC
+    batch_opening_at_zeta_omega_y: FpC
 
-    qcp_at_zeta: FrC
-    bsb_commitments: FrC // still not sure about this
+    qcp_0_at_zeta: FrC
+    // bsb_commitments: FrC // still not sure about this
+
+    // my guess from the assembly code 
+    qcp_0_wire_x: FpC
+    qcp_0_wire_y: FpC
 }
 
 const zeroProof = (): Sp1PlonkProof => {
@@ -58,13 +67,15 @@ const zeroProof = (): Sp1PlonkProof => {
         s2_at_zeta: FrC.from(0n),
         grand_product_x: FpC.from(0n),
         grand_product_y: FpC.from(0n),
-        grand_product_at_zeta: FrC.from(0n),
-        batch_at_zeta_x: FrC.from(0n),
-        batch_at_zeta_y: FrC.from(0n),
-        opening_at_zeta_omega_x: FpC.from(0n),
-        opening_at_zeta_omega_y: FpC.from(0n),
-        qcp_at_zeta: FrC.from(0n),
-        bsb_commitments: FrC.from(0n)
+        grand_product_at_omega_zeta: FrC.from(0n),
+        batch_opening_at_zeta_x: FpC.from(0n),
+        batch_opening_at_zeta_y: FpC.from(0n),
+        batch_opening_at_zeta_omega_x: FpC.from(0n),
+        batch_opening_at_zeta_omega_y: FpC.from(0n),
+        qcp_0_at_zeta: FrC.from(0n),
+
+        qcp_0_wire_x: FpC.from(0n),
+        qcp_0_wire_y: FpC.from(0n),
     }
 
     return x
@@ -91,16 +102,93 @@ const randomProof = (): Sp1PlonkProof => {
         s2_at_zeta: FrC.random(),
         grand_product_x: FpC.random(),
         grand_product_y: FpC.random(),
-        grand_product_at_zeta: FrC.random(),
-        batch_at_zeta_x: FrC.random(),
-        batch_at_zeta_y: FrC.random(),
-        opening_at_zeta_omega_x: FpC.random(),
-        opening_at_zeta_omega_y: FpC.random(),
-        qcp_at_zeta: FrC.random(),
-        bsb_commitments: FrC.random()
+        grand_product_at_omega_zeta: FrC.random(),
+        batch_opening_at_zeta_x: FpC.random(),
+        batch_opening_at_zeta_y: FpC.random(),
+        batch_opening_at_zeta_omega_x: FpC.random(),
+        batch_opening_at_zeta_omega_y: FpC.random(),
+        qcp_0_at_zeta: FrC.random(),
+
+        qcp_0_wire_x: FpC.random(),
+        qcp_0_wire_y: FpC.random(),
     }
 
     return x
 }
 
-export { Sp1PlonkProof, randomProof, zeroProof }
+const isValid = (decodedProof: bigint[]) => {
+    assert(decodedProof.length === NUM_OF_UIN265s);
+
+    assertPointOnBn(decodedProof[0], decodedProof[1]); // l
+    assertPointOnBn(decodedProof[2], decodedProof[3]); // r
+    assertPointOnBn(decodedProof[4], decodedProof[5]); // o
+
+    assertPointOnBn(decodedProof[6], decodedProof[7]); // h0
+    assertPointOnBn(decodedProof[8], decodedProof[9]); // h1
+    assertPointOnBn(decodedProof[10], decodedProof[11]); // h2
+
+    assertInBnField(decodedProof[12]) // l(z)
+    assertInBnField(decodedProof[13]) // r(z)
+    assertInBnField(decodedProof[14]) // o(z)
+
+    assertInBnField(decodedProof[15]) // s1(z)
+    assertInBnField(decodedProof[16]) // s2(z)
+
+    assertPointOnBn(decodedProof[17], decodedProof[18])  // grand_product,
+    assertInBnField(decodedProof[19]) // grand_product(w*z)
+
+
+    assertPointOnBn(decodedProof[20], decodedProof[21]) // batch_opening_at_zeta
+    assertPointOnBn(decodedProof[22], decodedProof[23]) // batch_opening_at_zeta_omega
+
+    assertInBnField(decodedProof[24]) // qcp_0(zeta)
+
+    assertPointOnBn(decodedProof[25], decodedProof[26]) // qcp_0_wire
+}
+
+const fromDecoded = (decodedProof: bigint[]): Sp1PlonkProof => {
+    isValid(decodedProof); 
+
+    return {
+        l_com_x: FpC.from(decodedProof[0]),
+        l_com_y: FpC.from(decodedProof[1]),
+        r_com_x: FpC.from(decodedProof[2]),
+        r_com_y: FpC.from(decodedProof[3]),
+        o_com_x: FpC.from(decodedProof[4]),
+        o_com_y: FpC.from(decodedProof[5]),
+        h0_x: FpC.from(decodedProof[6]),
+        h0_y: FpC.from(decodedProof[7]),
+        h1_x: FpC.from(decodedProof[8]),
+        h1_y: FpC.from(decodedProof[9]),
+        h2_x: FpC.from(decodedProof[10]),
+        h2_y: FpC.from(decodedProof[11]),
+        l_at_zeta: FrC.from(decodedProof[12]),
+        r_at_zeta: FrC.from(decodedProof[13]),
+        o_at_zeta: FrC.from(decodedProof[14]),
+        s1_at_zeta: FrC.from(decodedProof[15]),
+        s2_at_zeta: FrC.from(decodedProof[16]),
+        grand_product_x: FpC.from(decodedProof[17]),
+        grand_product_y: FpC.from(decodedProof[18]),
+        grand_product_at_omega_zeta: FrC.from(decodedProof[19]),
+        batch_opening_at_zeta_x: FpC.from(decodedProof[20]),
+        batch_opening_at_zeta_y: FpC.from(decodedProof[21]),
+        batch_opening_at_zeta_omega_x: FpC.from(decodedProof[22]),
+        batch_opening_at_zeta_omega_y: FpC.from(decodedProof[23]),
+        qcp_0_at_zeta: FrC.from(decodedProof[24]),
+        qcp_0_wire_x: FpC.from(decodedProof[25]),
+        qcp_0_wire_y: FpC.from(decodedProof[26])
+    }
+}
+
+const deserializeProof = (hexProof: string): Sp1PlonkProof => {
+    const defaultEncoder = ethers.AbiCoder.defaultAbiCoder()
+    const decodingPattern = Array(27).fill("uint256")
+
+    // skip 0x + first 2 bytes as in Sp1.Verifier
+    const shifted = "0x" + hexProof.slice(10); 
+    const decoded = defaultEncoder.decode(decodingPattern, shifted); 
+
+    return fromDecoded(decoded)
+}
+
+export { Sp1PlonkProof, randomProof, zeroProof, deserializeProof }
