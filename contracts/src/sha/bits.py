@@ -37,15 +37,3 @@ def bits_to_bytes(bits):
 # sha256_hash = hashlib.sha256(byte_data).hexdigest()
 # print(f"SHA-256: {int(sha256_hash, 16)}")
 # print(f"SHA-256: {sha256_hash}")
-
-a = 21
-b = 14 
-
-m = 7 
-
-assert((a * b) % m == (a % m) * (b % m))
-
-"""
-x = 2^255 + 2^254 + l, b < r
-(x * b) % r = ((2^255 % r)*b)%r + ((2^254 % r)*b)%r + (((l % r)% r)*b)%r 
-"""
