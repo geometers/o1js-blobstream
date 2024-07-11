@@ -1,5 +1,5 @@
 import { Fr, FrC, powFr } from "../towers/fr.js"
-import { compute_alpha_square_lagrange_0, evalVanishing, fold_quotient, pi_contribution } from "./plonk_utils.js"
+import { compute_alpha_square_lagrange_0, compute_commitment_linearized_polynomial, customPiLagrange, evalVanishing, fold_quotient, opening_of_linearized_polynomial, pi_contribution } from "./plonk_utils.js"
 import { Sp1PlonkFiatShamir } from "./fiat-shamir/index.js"
 import { deserializeProof } from "./proof.js"
 import { VK } from "./vk.js";
@@ -10,7 +10,14 @@ const hexProof = "0x801c66ac0adb18b19c32120abcaea2dfa6ebc07925a4c12abbb823ffa50a
 const proof = deserializeProof(hexProof)
 const fs = new Sp1PlonkFiatShamir()
 
-fs.squeezeGamma(proof, FrC.from(0n), FrC.from(0n))
+const programVk = "0x0097228875a04c12dda0a76b705856f1a99fd19613c0ba69b056f4c4d18921e5";
+const publicInputBytes =
+  "0x00000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000001a00000000000000000000000000000000000000000000000000000000000000120000000000000000000000000000000000000000000000000000000000006b850f8a2400913e58dbf3791e084b944e3859a8f3fd45a6212c1ce0fdb345936dd29000000000000000000000000000000000000000000000000000000000000008a9391e49308c85b6c50f3dbceb31e4d1d0719337a2ea4c724e9a7eba73f35432a000000000000000000000000000000000000000000000000000000000006b97c4211fff419575c75d2e880ca014c64276bccc917f0e9ea26c7a923ac78e83f32c3faaef208b30c5b2a1bec70f8b22f14099876952f7c6c1e904adae5642856e69124c226260e0798d54fda8fbae89cf0da84b1894912675c9f0552628caf3ae700000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000060000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
+
+const pi0 = FrC.from("0x0097228875a04c12dda0a76b705856f1a99fd19613c0ba69b056f4c4d18921e5")
+const pi1 = FrC.from("0x048e48f4b209e2dc6d92839ecba0e9321e83ea61ecb6430fc737b1e94c3fabbb")
+
+fs.squeezeGamma(proof, pi0, pi1)
 fs.squeezeBeta()
 fs.squeezeAlpha(proof)
 fs.squeezeZeta(proof)
@@ -31,12 +38,19 @@ console.log("folded quotient x: ", hx.toBigInt())
 console.log("folded quotient y: ", hy.toBigInt())
 assertPointOnBn(hx.toBigInt(), hy.toBigInt())
 
-const pis = pi_contribution([FrC.from(1n), FrC.from(1n)], fs.zeta, zh_eval, VK.inv_domain_size, VK.omega)
+const pis = pi_contribution([pi0, pi1], fs.zeta, zh_eval, VK.inv_domain_size, VK.omega)
 console.log("pis without custom gates: ", pis.toBigInt())
 
-const hfr = new HashFr(); 
+const l_pi_commit = customPiLagrange(fs.zeta, zh_eval, proof.qcp_0_wire_x, proof.qcp_0_wire_y, VK)
+console.log("l_pi_commit: ", l_pi_commit.toBigInt())
 
-const [b0, b1, low] = hfr.hash(proof.qcp_0_wire_x, proof.qcp_0_wire_y); 
-console.log(b0)
-console.log(b1)
-console.log(low)
+const pi = pis.add(l_pi_commit).assertCanonical(); 
+console.log("pi: ", pi.toBigInt())
+
+const linearised_opening = opening_of_linearized_polynomial(proof, fs.alpha, fs.beta, fs.gamma, pi, alpha_2_l0);
+console.log("linearised_opening: ", linearised_opening.toBigInt())
+
+const linearized_cm = compute_commitment_linearized_polynomial(VK, proof, fs.alpha, fs.beta, fs.gamma, fs.zeta, alpha_2_l0, hx, hy)
+console.log("lcm x: ", linearized_cm.x.toBigInt())
+console.log("lcm y: ", linearized_cm.y.toBigInt())
+assertPointOnBn(linearized_cm.x.toBigInt(), linearized_cm.y.toBigInt());

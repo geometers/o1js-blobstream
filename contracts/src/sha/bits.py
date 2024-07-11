@@ -37,3 +37,5 @@ def bits_to_bytes(bits):
 # sha256_hash = hashlib.sha256(byte_data).hexdigest()
 # print(f"SHA-256: {int(sha256_hash, 16)}")
 # print(f"SHA-256: {sha256_hash}")
+
+print((1 << 253) - 1)

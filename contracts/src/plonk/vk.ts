@@ -41,6 +41,11 @@ type Sp1PlonkVk = {
 
     index_commit_api_0: FrC,
     num_custom_gates: FrC
+
+
+    // LAGRANGE FOR CUSTOM GATES PUBLIC INPUTS
+    omega_pow_i: FrC, 
+    omega_pow_i_div_n: FrC
 }
 
 const VK: Sp1PlonkVk = {
@@ -80,7 +85,11 @@ const VK: Sp1PlonkVk = {
     qcp_0_y: FpC.from(5757719256900570664017938361173180574878811923841521668906048492539193870622n),
 
     index_commit_api_0: FrC.from(32440323n),
-    num_custom_gates: FrC.from(1n)
+    num_custom_gates: FrC.from(1n),
+
+    // LAGRANGE FOR CUSTOM GATES PUBLIC INPUTS 
+    omega_pow_i: FrC.from(15174808007818640786126860527240098588172000270512845465618945623147856003220n), 
+    omega_pow_i_div_n: FrC.from(19836172057011781442486617392326384681342057712180112888849802481636629672885n)
 }
 
 export { Sp1PlonkVk, VK } 

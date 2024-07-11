@@ -104,7 +104,7 @@ class HashFr extends Struct({
         });
     }
 
-    hash(x: FpC, y: FpC): string[] {
+    hash(x: FpC, y: FpC): FrC {
         let bytes: UInt8[] = Array.from({ length: 64 }, () => UInt8.from(0n)); 
         
         bytes = bytes.concat(provableBn254BaseFieldToBytes(x))
@@ -141,7 +141,7 @@ class HashFr extends Struct({
         let res = shl_123_modR(b1);
         const low = shr128(b2); 
         res = res.add(low).assertCanonical();
-        return [b0.toHex(), b1.toHex(), res.toBigInt().toString()]
+        return res
     }
 }
 
