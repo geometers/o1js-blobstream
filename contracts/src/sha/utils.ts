@@ -31,6 +31,10 @@ const provableBn254ScalarFieldToBytes = (x: FrC) => {
     return chunks.reverse();
 }
 
+const xorBytes = (x: UInt8[], y: UInt8[]) => {
+    
+}
+
 export { provableBn254BaseFieldToBytes, provableBn254ScalarFieldToBytes }
 
 

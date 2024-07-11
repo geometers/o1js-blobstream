@@ -29,7 +29,7 @@ def bits_to_bytes(bits):
 # print(len(bit_string_8(zeta)))
 # print(len(bin(zeta)[2:]))
 
-print(bin(67108864))
+# print(bin(67108864))
 
 # bit_string = bit_string_8(gamma) + bit_string_8(vx)
 # byte_data = bits_to_bytes(bit_string)
@@ -37,3 +37,7 @@ print(bin(67108864))
 # sha256_hash = hashlib.sha256(byte_data).hexdigest()
 # print(f"SHA-256: {int(sha256_hash, 16)}")
 # print(f"SHA-256: {sha256_hash}")
+
+print(19057224776225802641071030677579954245483422035744232041371721826216881379028^2796197206539394621570674196013786694437701275241563014464852526572922164718)
+
+print(2**85)
