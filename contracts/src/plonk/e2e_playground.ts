@@ -1,5 +1,5 @@
 import { Fr, FrC, powFr } from "../towers/fr.js"
-import { compute_alpha_square_lagrange_0, compute_commitment_linearized_polynomial, customPiLagrange, evalVanishing, fold_quotient, opening_of_linearized_polynomial, pi_contribution } from "./plonk_utils.js"
+import { compute_alpha_square_lagrange_0, compute_commitment_linearized_polynomial, customPiLagrange, evalVanishing, fold_quotient, fold_state, opening_of_linearized_polynomial, pi_contribution } from "./plonk_utils.js"
 import { Sp1PlonkFiatShamir } from "./fiat-shamir/index.js"
 import { deserializeProof } from "./proof.js"
 import { VK } from "./vk.js";
@@ -57,3 +57,8 @@ assertPointOnBn(lcm_x.toBigInt(), lcm_y.toBigInt());
 
 fs.squeezeGammaKzg(proof, VK, lcm_x, lcm_y, linearised_opening)
 console.log("kzg gamma: ", fs.gamma_kzg.toBigInt())
+
+const [cm_x, cm_y, opening] = fold_state(VK, proof, lcm_x, lcm_y, linearised_opening, fs.gamma_kzg);
+console.log("kzg cm x: ", cm_x.toBigInt())
+console.log("kzg cm y: ", cm_y.toBigInt())
+console.log("kzg opening: ", opening.toBigInt())

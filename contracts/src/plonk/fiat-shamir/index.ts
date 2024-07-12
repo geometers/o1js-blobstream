@@ -321,9 +321,6 @@ class Sp1PlonkFiatShamir extends Struct({
         cm_bytes = cm_bytes.concat(provableBn254ScalarFieldToBytes(proof.qcp_0_at_zeta));
         cm_bytes = cm_bytes.concat(provableBn254ScalarFieldToBytes(proof.grand_product_at_omega_zeta));
 
-        console.log(cm_bytes.length)
-        console.log(sizeGammaKzgBytes())
-
         this.gamma_kzg_digest = Hash.SHA2_256.hash(new BytesGammaKzg(cm_bytes));
         this.gamma_kzg = shaToFr(this.gamma_kzg_digest);
     }

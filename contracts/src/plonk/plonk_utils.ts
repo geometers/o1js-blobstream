@@ -198,3 +198,40 @@ function compute_commitment_linearized_polynomial_ec(proof: Sp1PlonkProof, vk: S
 
     return [linearized_cm.x.assertCanonical(), linearized_cm.y.assertCanonical()]
 }
+
+export function fold_state(vk: Sp1PlonkVk, proof: Sp1PlonkProof, lcm_x: FpC, lcm_y: FpC, lcm_opening: FrC, gamma_kzg: FrC): [FpC, FpC, FrC] {
+    // cm = [Linearised_polynomial]+γ[L] + γ²[R] + γ³[O] + γ⁴[S₁] +γ⁵[S₂] + ∑ᵢγ⁵⁺ⁱ[Pi_{i}]
+    // opening = Linearised_polynomial(ζ)+γ²L(ζ) + γ³R(ζ)+ γ⁴O(ζ) + γ⁵S₁(ζ) +γ⁶S₂(ζ) + ∑ᵢγ⁶⁺ⁱPi_{i}(ζ)
+
+    const gamma_2 = gamma_kzg.mul(gamma_kzg).assertCanonical(); 
+    const gamma_3 = gamma_kzg.mul(gamma_2).assertCanonical(); 
+    const gamma_4 = gamma_kzg.mul(gamma_3).assertCanonical(); 
+    const gamma_5 = gamma_kzg.mul(gamma_4).assertCanonical(); 
+    const gamma_6 = gamma_kzg.mul(gamma_5).assertCanonical(); 
+
+    const l = new bn254({x: proof.l_com_x, y: proof.l_com_y});
+    const r = new bn254({x: proof.r_com_x, y: proof.r_com_y});
+    const o = new bn254({x: proof.o_com_x, y: proof.o_com_y});
+    const s1 = new bn254({x: vk.qs1_x, y: vk.qs1_y});
+    const s2 = new bn254({x: vk.qs2_x, y: vk.qs2_y});
+    const qcp_0 = new bn254({x: vk.qcp_0_x, y: vk.qcp_0_y})
+    
+    let cm = new bn254({x: lcm_x, y: lcm_y});
+    let opening = FrC.from(lcm_opening).assertCanonical(); 
+
+    cm = cm.add(l.scale(gamma_kzg))
+    cm = cm.add(r.scale(gamma_2))
+    cm = cm.add(o.scale(gamma_3))
+    cm = cm.add(s1.scale(gamma_4))
+    cm = cm.add(s2.scale(gamma_5))
+    cm = cm.add(qcp_0.scale(gamma_6))
+
+    opening = proof.l_at_zeta.mul(gamma_kzg).add(opening).assertCanonical();
+    opening = proof.r_at_zeta.mul(gamma_2).add(opening).assertCanonical();
+    opening = proof.o_at_zeta.mul(gamma_3).add(opening).assertCanonical();
+    opening = proof.s1_at_zeta.mul(gamma_4).add(opening).assertCanonical();
+    opening = proof.s2_at_zeta.mul(gamma_5).add(opening).assertCanonical();
+    opening = proof.qcp_0_at_zeta.mul(gamma_6).add(opening).assertCanonical();
+
+    return [cm.x.assertCanonical(), cm.y.assertCanonical(), opening]
+}
