@@ -2,8 +2,9 @@ use ark_bn254::Fq12;
 
 pub mod constants;
 pub mod eth_root;
-pub mod utils;
+pub mod kzg;
 pub mod tonelli_shanks;
+pub mod utils;
 
 pub fn display_fq12(x: Fq12, label: &str) {
     println!("{}.g00: {}", label, x.c0.c0.c0);
@@ -24,17 +25,26 @@ pub fn display_fq12(x: Fq12, label: &str) {
 #[cfg(test)]
 mod tests {
     use ark_bn254::{Bn254, Fq12, Fq2, Fq6, Fr, G1Affine, G2Affine};
-    use ark_ec::{pairing::{MillerLoopOutput, Pairing}, AffineRepr};
+    use ark_ec::{
+        pairing::{MillerLoopOutput, Pairing},
+        AffineRepr,
+    };
+    use ark_ff::{Field, MontFp, One, Zero};
     use ark_std::rand::{rngs::StdRng, SeedableRng};
     use std::ops::Mul;
-    use ark_ff::{Field, MontFp, Zero, One};
 
-    use crate::{constants::{E, RESIDUE}, display_fq12, eth_root::eth_root, tonelli_shanks::TS, utils::{exp, sample_27th_root_of_unity}};
+    use crate::{
+        constants::{E, RESIDUE},
+        display_fq12,
+        eth_root::eth_root,
+        tonelli_shanks::TS,
+        utils::{exp, sample_27th_root_of_unity},
+    };
 
     fn get_alpha_beta() -> Fq12 {
         let g1 = G1Affine::generator();
         let g2 = G2Affine::generator();
-        
+
         let alpha = g1.mul(Fr::from(2u64));
         let beta = g2.mul(Fr::from(3u64));
 
@@ -58,11 +68,11 @@ mod tests {
 
         // alpha_beta = 6
 
-        // gamma = 9 
+        // gamma = 9
         // pi = 4
 
-        // delta = 10 
-        // c = -3 
+        // delta = 10
+        // c = -3
 
         // a = 4
         // b = 3
@@ -90,7 +100,6 @@ mod tests {
 
     #[test]
     fn output_from_o1js() {
-
         // f.g00:  17808378310914494803826030629014669552789301567630738137438947038982301798249n
         // f.g01:  18224720034675313042587862542545682637466951012991990948678157277636935734822n
         // f.g10:  16752173496591140244882921302297084240828046883221481486068704348659555575765n
@@ -112,8 +121,9 @@ mod tests {
         );
         let g0 = Fq2::new(g00, g01);
 
-        let g10 =
-            MontFp!("16752173496591140244882921302297084240828046883221481486068704348659555575765");
+        let g10 = MontFp!(
+            "16752173496591140244882921302297084240828046883221481486068704348659555575765"
+        );
         let g11 = MontFp!(
             "21838782079470542605885494506935176658465257168903739407027608887094810715340"
         );
@@ -135,19 +145,17 @@ mod tests {
             MontFp!("8684286590460568917985996458331664550956166778762178442512474069043150405994");
         let h0 = Fq2::new(h00, h01);
 
-        let h10 =
-            MontFp!("13224681622225280194787234255798462142826386922632880990161838692862694924819");
-        let h11 = MontFp!(
-            "1154534286581271292094913012522346169068110759790961245540647560288336368218"
+        let h10 = MontFp!(
+            "13224681622225280194787234255798462142826386922632880990161838692862694924819"
         );
+        let h11 =
+            MontFp!("1154534286581271292094913012522346169068110759790961245540647560288336368218");
         let h1 = Fq2::new(h10, h11);
 
-        let h20 = MontFp!(
-            "874182515937588562880579790073346860466167073115629405159962126631740016980"
-        );
-        let h21 = MontFp!(
-            "8023313088558458500716358711741090088290753117111893298405090264471882688888"
-        );
+        let h20 =
+            MontFp!("874182515937588562880579790073346860466167073115629405159962126631740016980");
+        let h21 =
+            MontFp!("8023313088558458500716358711741090088290753117111893298405090264471882688888");
         let h2 = Fq2::new(h20, h21);
 
         let h = Fq6::new(h0, h1, h2);
@@ -157,7 +165,7 @@ mod tests {
         let e = Bn254::final_exponentiation(x).unwrap();
         assert_eq!(e.0, Fq12::one());
 
-        // here we build the auxiliary witness 
+        // here we build the auxiliary witness
         let w27 = get_shift_factor();
 
         let mut eth_residue = Fq12::zero();
@@ -166,29 +174,29 @@ mod tests {
         for i in 0..3 {
             let tmp_shift = w27.pow(&[i as u64, 0, 0, 0]);
             let tmp_eth = x.0 * tmp_shift;
-    
+
             if exp(tmp_eth, &RESIDUE) == Fq12::one() {
                 println!("found at {}", i);
                 shift = tmp_shift;
                 // shift = tmp_shift;
                 eth_residue = tmp_eth;
-    
+
                 break;
             }
         }
-    
+
         // this roots can be hardcoded instead of sampling each time
         let rng = &mut StdRng::seed_from_u64(1232313u64);
         let w27 = sample_27th_root_of_unity(rng);
         let ts = TS { w: w27 };
-    
+
         let root = eth_root(eth_residue, ts);
         assert_eq!(exp(root, &E), eth_residue);
 
-        // mm * w^shift = c^e 
-        // mm * w^shift * c^(-e) = 1 
+        // mm * w^shift = c^e
+        // mm * w^shift * c^(-e) = 1
         let c = root.inverse().unwrap();
-        let res = x.0 * shift * exp(c, &E); 
+        let res = x.0 * shift * exp(c, &E);
         assert_eq!(res, Fq12::one());
     }
 }

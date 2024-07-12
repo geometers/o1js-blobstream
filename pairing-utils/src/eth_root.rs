@@ -7,7 +7,6 @@ use crate::{
     utils::exp,
 };
 
-
 // e = 6x + 2 + p - p^2 + p^3
 pub(crate) fn eth_root(y: Fq12, ts: TS) -> Fq12 {
     let c = exp(y, &U);
