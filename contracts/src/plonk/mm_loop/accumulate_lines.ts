@@ -48,7 +48,6 @@ class KZGLineAccumulator {
         }
     }
 
-
     let g2_line = g2_lines[line_cnt];
     line_cnt += 1;
 
@@ -89,11 +88,12 @@ class KZGLineAccumulator {
 
     let tau_line = tau_lines[line_cnt];
     line_cnt += 1;
+    idx += 1;
 
-    g.push(tau_line.psi(negB_cache));
+    g[idx] = g[idx].sparse_mul(tau_line.psi(negB_cache));
 
     tau_line = tau_lines[line_cnt];
-    g[g.length - 1] = g[g.length - 1].mul(tau_line.psi(negB_cache));
+    g[idx] = g[idx].sparse_mul(tau_line.psi(negB_cache));
 
     return g;
   }

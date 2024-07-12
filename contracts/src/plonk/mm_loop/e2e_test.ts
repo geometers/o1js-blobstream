@@ -5,21 +5,17 @@ import { Provable } from 'o1js';
 import { G1Affine } from '../../ec/index.js';
 import { Fp12 } from '../../towers/fp12.js';
 
-let A = make_A()
-let negB = make_negB();
 let w27 = make_w27();
-// let c = make_c();
 let w27_square = w27.mul(w27);
-
 
 const g2_lines = fs.readFileSync("./src/plonk/mm_loop/g2_lines.json", 'utf8');
 const tau_lines = fs.readFileSync("./src/plonk/mm_loop/tau_lines.json", 'utf8');
 const kzgP = new KZGPairing(g2_lines, tau_lines, w27, w27_square);
 
 function main() {
-  A = Provable.witness(G1Affine, () => A);
-  negB = Provable.witness(G1Affine, () => negB);
-  let c = Provable.witness(Fp12, make_c);
+  let A = Provable.witness(G1Affine, () => make_A());
+  let negB = Provable.witness(G1Affine, () => make_negB());
+  let c = Provable.witness(Fp12, () => make_c());
 
   kzgP.multiMillerLoop(A, negB, get_shift_power(), c);
 }

@@ -36,6 +36,18 @@ class KZGPairing {
   ) {
 		const g = KZGLineAccumulator.accumulate(this.g2_lines, this.tau_lines, A, negB);
 
+		// let mlo = Fp12.one();
+		// let mlo_idx = 0; 
+		// for (let i = 1; i < ATE_LOOP_COUNT.length; i++) {
+		// 		mlo_idx = i - 1;
+		// 		mlo = mlo.square().mul(g[mlo_idx]);
+		// }
+
+		// mlo_idx += 1;
+		// mlo = mlo.mul(g[mlo_idx]);
+
+		// mlo.display("mlo")
+
 		const c_inv = c.inverse();
 		let f = c_inv;
 
@@ -65,7 +77,7 @@ class KZGPairing {
 		const shift = this.w27[shift_power];
 		f = f.mul(shift);
 
-		f = Fp12.one();
+		// f = Fp12.one();
 		f.assert_equals(Fp12.one());
 	}
 }
