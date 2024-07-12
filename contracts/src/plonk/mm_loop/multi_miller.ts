@@ -28,25 +28,32 @@ class KZGPairing {
       this.w27 = [Fp12.one(), w27, w27_square];
   }
 
-  multiMillerLoop(
+	multiMillerLoop(
+		A: G1Affine,
+		negB: G1Affine,
+	): Fp12 {
+			const g = KZGLineAccumulator.accumulate(this.g2_lines, this.tau_lines, A, negB);
+
+			let mlo = Fp12.one();
+			let mlo_idx = 0; 
+			for (let i = 1; i < ATE_LOOP_COUNT.length; i++) {
+					mlo_idx = i - 1;
+					mlo = mlo.square().mul(g[mlo_idx]);
+			}
+
+			mlo_idx += 1;
+			mlo = mlo.mul(g[mlo_idx]);
+
+			return mlo
+	}
+
+  proveEqual(
       A: G1Affine,
       negB: G1Affine,
       shift_power: number,
       c: Fp12
   ) {
 		const g = KZGLineAccumulator.accumulate(this.g2_lines, this.tau_lines, A, negB);
-
-		// let mlo = Fp12.one();
-		// let mlo_idx = 0; 
-		// for (let i = 1; i < ATE_LOOP_COUNT.length; i++) {
-		// 		mlo_idx = i - 1;
-		// 		mlo = mlo.square().mul(g[mlo_idx]);
-		// }
-
-		// mlo_idx += 1;
-		// mlo = mlo.mul(g[mlo_idx]);
-
-		// mlo.display("mlo")
 
 		const c_inv = c.inverse();
 		let f = c_inv;

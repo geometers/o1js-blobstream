@@ -1,11 +1,10 @@
-import { FpC, FrC } from "../towers/index.js";
-import { powFr } from "../towers/fr.js";
-import { Sp1PlonkVk } from "./vk.js";
+import { FpC, FrC } from "../../towers/index.js";
+import { powFr } from "../../towers/fr.js";
+import { Sp1PlonkVk } from "../vk.js";
 import { ForeignCurve, Provable, assert } from "o1js";
-import { bn254 } from "../ec/g1.js";
+import { bn254 } from "../../ec/g1.js";
 import { HashFr } from "./hash_fr.js";
-import { Sp1PlonkProof } from "./proof.js";
-import { Sp1PlonkSrs } from "./srs.js";
+import { Sp1PlonkProof } from "../proof.js";
 
 function batch_eval_lagrange(z: FrC, zh_eval: FrC, domain_inv: FrC, w: FrC, num_of_lagrange_to_eval: number): FrC[] {
     const common = zh_eval.mul(domain_inv).assertCanonical(); 
@@ -237,7 +236,7 @@ export function fold_state(vk: Sp1PlonkVk, proof: Sp1PlonkProof, lcm_x: FpC, lcm
     return [cm.x.assertCanonical(), cm.y.assertCanonical(), opening]
 }
 
-export function preparePairing(srs: Sp1PlonkSrs, vk: Sp1PlonkVk, proof: Sp1PlonkProof, random: FrC, cm_x: FpC, cm_y: FpC, cm_opening: FrC, zeta: FrC): [FpC, FpC, FpC, FpC] {
+export function preparePairing(vk: Sp1PlonkVk, proof: Sp1PlonkProof, random: FrC, cm_x: FpC, cm_y: FpC, cm_opening: FrC, zeta: FrC): [FpC, FpC, FpC, FpC] {
 
     // quotients part
     let batch_shifted = new bn254({x: proof.batch_opening_at_zeta_omega_x, y: proof.batch_opening_at_zeta_omega_y});
@@ -253,7 +252,7 @@ export function preparePairing(srs: Sp1PlonkSrs, vk: Sp1PlonkVk, proof: Sp1Plonk
     folded_commitments = folded_commitments.add(gp.scale(random))
 
     // evals part
-    const gen = new bn254({x: srs.g1_gen_x, y: srs.g1_gen_y});
+    const gen = new bn254({x: vk.g1_gen_x, y: vk.g1_gen_y});
     let folded_evals = proof.grand_product_at_omega_zeta.mul(random).add(cm_opening).assertCanonical();
     const neg_folded_evals_on_curve = gen.scale(folded_evals).negate();
 

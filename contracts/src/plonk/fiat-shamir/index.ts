@@ -1,6 +1,6 @@
 import { Bytes, ForeignCurve, Hash, Provable, Struct, UInt8 } from "o1js";
 import { FpC, FrC } from "../../towers/index.js";
-import { Sp1PlonkProof, deserializeProof, zeroProof } from "../proof.js";
+import { Sp1PlonkProof, deserializeProof } from "../proof.js";
 import { provableBn254BaseFieldToBytes, provableBn254ScalarFieldToBytes } from "../../sha/utils.js";
 import { Sp1PlonkVk } from "../vk.js";
 import { shaToFr } from "./sha_to_fr.js";

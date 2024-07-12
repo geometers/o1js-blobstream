@@ -17,7 +17,7 @@ function main() {
   let negB = Provable.witness(G1Affine, () => make_negB());
   let c = Provable.witness(Fp12, () => make_c());
 
-  kzgP.multiMillerLoop(A, negB, get_shift_power(), c);
+  kzgP.proveEqual(A, negB, get_shift_power(), c);
 }
 
 

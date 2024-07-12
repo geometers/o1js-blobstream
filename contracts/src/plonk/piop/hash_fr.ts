@@ -1,6 +1,6 @@
 import { Bool, Bytes, Gadgets, Hash, Provable, Struct, UInt8 } from "o1js";
-import { FpC, FrC, FrU } from "../towers/index.js";
-import { provableBn254BaseFieldToBytes } from "../sha/utils.js";
+import { FpC, FrC, FrU } from "../../towers/index.js";
+import { provableBn254BaseFieldToBytes } from "../../sha/utils.js";
 
 class Bytes32 extends Bytes(32) {};
 class Bytes64 extends Bytes(64) {};
