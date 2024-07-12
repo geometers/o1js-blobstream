@@ -5,6 +5,7 @@ import { ForeignCurve, Provable, assert } from "o1js";
 import { bn254 } from "../ec/g1.js";
 import { HashFr } from "./hash_fr.js";
 import { Sp1PlonkProof } from "./proof.js";
+import { Sp1PlonkSrs } from "./srs.js";
 
 function batch_eval_lagrange(z: FrC, zh_eval: FrC, domain_inv: FrC, w: FrC, num_of_lagrange_to_eval: number): FrC[] {
     const common = zh_eval.mul(domain_inv).assertCanonical(); 
@@ -234,4 +235,41 @@ export function fold_state(vk: Sp1PlonkVk, proof: Sp1PlonkProof, lcm_x: FpC, lcm
     opening = proof.qcp_0_at_zeta.mul(gamma_6).add(opening).assertCanonical();
 
     return [cm.x.assertCanonical(), cm.y.assertCanonical(), opening]
+}
+
+export function preparePairing(srs: Sp1PlonkSrs, vk: Sp1PlonkVk, proof: Sp1PlonkProof, random: FrC, cm_x: FpC, cm_y: FpC, cm_opening: FrC, zeta: FrC): [FpC, FpC, FpC, FpC] {
+
+    // quotients part
+    let batch_shifted = new bn254({x: proof.batch_opening_at_zeta_omega_x, y: proof.batch_opening_at_zeta_omega_y});
+    let folded_quotients = new bn254({x: proof.batch_opening_at_zeta_x, y: proof.batch_opening_at_zeta_y}); 
+    folded_quotients = folded_quotients.add(batch_shifted.scale(random)); 
+
+    const neg_folded_q = folded_quotients.negate(); 
+
+    // commitment part
+    const gp = new bn254({x: proof.grand_product_x, y: proof.grand_product_y});
+
+    let folded_commitments = new bn254({x: cm_x, y: cm_y});
+    folded_commitments = folded_commitments.add(gp.scale(random))
+
+    // evals part
+    const gen = new bn254({x: srs.g1_gen_x, y: srs.g1_gen_y});
+    let folded_evals = proof.grand_product_at_omega_zeta.mul(random).add(cm_opening).assertCanonical();
+    const neg_folded_evals_on_curve = gen.scale(folded_evals).negate();
+
+    folded_commitments = folded_commitments.add(neg_folded_evals_on_curve)
+
+    // quotients g1 
+    const batch_opening_z = new bn254({x: proof.batch_opening_at_zeta_x, y: proof.batch_opening_at_zeta_y});
+    const batch_opening_omega_z = new bn254({x: proof.batch_opening_at_zeta_omega_x, y: proof.batch_opening_at_zeta_omega_y});
+
+    const zeta_omega = vk.omega.mul(zeta).assertCanonical();
+    const random_zeta_omega = random.mul(zeta_omega).assertCanonical();
+
+    let quotients_g1 = batch_opening_z.scale(zeta); 
+    quotients_g1 = quotients_g1.add(batch_opening_omega_z.scale(random_zeta_omega));
+
+    folded_commitments = folded_commitments.add(quotients_g1);
+
+    return [folded_commitments.x.assertCanonical(), folded_commitments.y.assertCanonical(), neg_folded_q.x.assertCanonical(), neg_folded_q.y.assertCanonical()]
 }

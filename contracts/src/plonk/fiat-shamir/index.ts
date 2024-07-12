@@ -4,6 +4,7 @@ import { Sp1PlonkProof, deserializeProof, zeroProof } from "../proof.js";
 import { provableBn254BaseFieldToBytes, provableBn254ScalarFieldToBytes } from "../../sha/utils.js";
 import { Sp1PlonkVk } from "../vk.js";
 import { shaToFr } from "./sha_to_fr.js";
+import { P } from "../../towers/consts.js";
 
 const gammaSizeInBytes = () => {
     let size = 0 
@@ -74,14 +75,23 @@ const sizeGammaKzgBytes = () => {
     return size
 }
 
+const sizeRandomBytes = () => {
+    let size = 0 
+
+    size += 4 * 2 * 32 // cm, batch, grand, batch shifted
+
+    size += 2 * 32 // zeta and gamma
+
+    return size
+}
+
 
 class BytesGamma extends Bytes(gammaSizeInBytes()) {}
 class BytesBeta extends Bytes(sizeBetaBytes()) {}
 class BytesAlpha extends Bytes(sizeAlphaBytes()) {}
 class BytesZeta extends Bytes(sizeZetaBytes()) {}
 class BytesGammaKzg extends Bytes(sizeGammaKzgBytes()) {}
-
-
+class BytesRandomKzg extends Bytes(sizeRandomBytes()) {}
 
 
 class Bytes32 extends Bytes(32) {}
@@ -323,6 +333,24 @@ class Sp1PlonkFiatShamir extends Struct({
 
         this.gamma_kzg_digest = Hash.SHA2_256.hash(new BytesGammaKzg(cm_bytes));
         this.gamma_kzg = shaToFr(this.gamma_kzg_digest);
+    }
+
+    squeezeRandomForKzg(proof: Sp1PlonkProof, cm_x: FpC, cm_y: FpC): FrC {
+        let cm_bytes = provableBn254BaseFieldToBytes(cm_x)
+        cm_bytes = cm_bytes.concat(provableBn254BaseFieldToBytes(cm_y))
+
+        cm_bytes = cm_bytes.concat(provableBn254BaseFieldToBytes(proof.batch_opening_at_zeta_x))
+        cm_bytes = cm_bytes.concat(provableBn254BaseFieldToBytes(proof.batch_opening_at_zeta_y))
+        cm_bytes = cm_bytes.concat(provableBn254BaseFieldToBytes(proof.grand_product_x))
+        cm_bytes = cm_bytes.concat(provableBn254BaseFieldToBytes(proof.grand_product_y))
+        cm_bytes = cm_bytes.concat(provableBn254BaseFieldToBytes(proof.batch_opening_at_zeta_omega_x))
+        cm_bytes = cm_bytes.concat(provableBn254BaseFieldToBytes(proof.batch_opening_at_zeta_omega_y))
+
+        cm_bytes = cm_bytes.concat(provableBn254ScalarFieldToBytes(this.zeta))
+        cm_bytes = cm_bytes.concat(provableBn254ScalarFieldToBytes(this.gamma_kzg))
+
+        const random_digest = Hash.SHA2_256.hash(new BytesRandomKzg(cm_bytes));
+        return shaToFr(random_digest)
     }
 
 }

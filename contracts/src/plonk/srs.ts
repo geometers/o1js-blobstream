@@ -1,0 +1,13 @@
+import { FpC } from "../towers/index.js"
+
+type Sp1PlonkSrs = {
+    g1_gen_x: FpC, 
+    g1_gen_y: FpC
+}
+
+const SRS: Sp1PlonkSrs = {
+    g1_gen_x: FpC.from(14312776538779914388377568895031746459131577658076416373430523308756343304251n),
+    g1_gen_y: FpC.from(11763105256161367503191792604679297387056316997144156930871823008787082098465n)
+}
+
+export { Sp1PlonkSrs, SRS }
