@@ -141,7 +141,7 @@ export function opening_of_linearized_polynomial(proof: Sp1PlonkProof, alpha: Fr
     return acc
 }
 
-export function compute_commitment_linearized_polynomial(vk: Sp1PlonkVk, proof: Sp1PlonkProof, alpha: FrC, beta: FrC, gamma: FrC, zeta: FrC, alpha_2_lagrange_0: FrC, fold_quotient_x: FpC, fold_quotient_y: FpC): ForeignCurve {
+export function compute_commitment_linearized_polynomial(vk: Sp1PlonkVk, proof: Sp1PlonkProof, alpha: FrC, beta: FrC, gamma: FrC, zeta: FrC, alpha_2_lagrange_0: FrC, fold_quotient_x: FpC, fold_quotient_y: FpC): [FpC, FpC] {
     // s₁ = α*Z(μζ)(l(ζ)+β*s₁(ζ)+γ)*(r(ζ)+β*s₂(ζ)+γ)*β
     // s₂ = -α*(l(ζ)+β*ζ+γ)*(r(ζ)+β*u*ζ+γ)*(o(ζ)+β*u²*ζ+γ) + α²*L₁(ζ)
 
@@ -167,7 +167,7 @@ export function compute_commitment_linearized_polynomial(vk: Sp1PlonkVk, proof: 
     return compute_commitment_linearized_polynomial_ec(proof, vk, s1, s2, fold_quotient_x, fold_quotient_y)
 }
 
-function compute_commitment_linearized_polynomial_ec(proof: Sp1PlonkProof, vk: Sp1PlonkVk, s1: FrC, s2: FrC, fold_quotient_x: FpC, fold_quotient_y: FpC): ForeignCurve {
+function compute_commitment_linearized_polynomial_ec(proof: Sp1PlonkProof, vk: Sp1PlonkVk, s1: FrC, s2: FrC, fold_quotient_x: FpC, fold_quotient_y: FpC): [FpC, FpC] {
     const ql = new bn254({x: vk.ql_x, y: vk.ql_y});
     const qr = new bn254({x: vk.qr_x, y: vk.qr_y});
     const qm = new bn254({x: vk.qm_x, y: vk.qm_y});
@@ -196,5 +196,5 @@ function compute_commitment_linearized_polynomial_ec(proof: Sp1PlonkProof, vk: S
     const neg_folded_q = new bn254({x: fold_quotient_x, y: fold_quotient_y}).negate();
     linearized_cm = linearized_cm.add(neg_folded_q)
 
-    return linearized_cm
+    return [linearized_cm.x.assertCanonical(), linearized_cm.y.assertCanonical()]
 }

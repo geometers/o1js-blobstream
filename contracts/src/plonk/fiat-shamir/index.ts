@@ -1,8 +1,8 @@
-import { Bytes, Hash, Provable, Struct, UInt8 } from "o1js";
+import { Bytes, ForeignCurve, Hash, Provable, Struct, UInt8 } from "o1js";
 import { FpC, FrC } from "../../towers/index.js";
 import { Sp1PlonkProof, deserializeProof, zeroProof } from "../proof.js";
 import { provableBn254BaseFieldToBytes, provableBn254ScalarFieldToBytes } from "../../sha/utils.js";
-import { VK } from "../vk.js";
+import { Sp1PlonkVk } from "../vk.js";
 import { shaToFr } from "./sha_to_fr.js";
 
 const gammaSizeInBytes = () => {
@@ -52,11 +52,35 @@ const sizeZetaBytes = () => {
     return size
 }
 
+const sizeGammaKzgBytes = () => {
+    let size = 0 
+
+    size += 5 // for gamma_separator
+    
+    size += 32 // for bytes of zeta_digest 
+
+    size += 1 * 2 * 32 // for linearized commitment 
+
+    size += 3 * 2 * 32 // for [l, r, o] commitments 
+
+    size += 2 * 2 * 32 // for [s1, s2] commitments 
+
+    size += 1 * 2 * 32 // for qcp_0 commitment 
+
+    size += 7 * 32 // for according openings of [linearized, l, r, o, s1, s2, qco_0] openings
+
+    size += 32 // for shifted grand product opening
+
+    return size
+}
+
 
 class BytesGamma extends Bytes(gammaSizeInBytes()) {}
 class BytesBeta extends Bytes(sizeBetaBytes()) {}
 class BytesAlpha extends Bytes(sizeAlphaBytes()) {}
 class BytesZeta extends Bytes(sizeZetaBytes()) {}
+class BytesGammaKzg extends Bytes(sizeGammaKzgBytes()) {}
+
 
 
 
@@ -93,7 +117,7 @@ class Sp1PlonkFiatShamir extends Struct({
         });
     }
 
-    squeezeGamma(proof: Sp1PlonkProof, pi0F: FrC, pi1F: FrC) {
+    squeezeGamma(proof: Sp1PlonkProof, pi0F: FrC, pi1F: FrC, vk: Sp1PlonkVk) {
         const gamma_separator = FpC.from(0x67616d6d61n); // TODO: we can read this from file
         let separator_bytes = provableBn254BaseFieldToBytes(gamma_separator); 
     
@@ -101,58 +125,58 @@ class Sp1PlonkFiatShamir extends Struct({
         // and we cut the rest (256 - 40) bits which is 27 bytes 
         let cm_bytes = separator_bytes.slice(27, 32); 
     
-        const s1x = provableBn254BaseFieldToBytes(VK.qs1_x);
+        const s1x = provableBn254BaseFieldToBytes(vk.qs1_x);
         cm_bytes = cm_bytes.concat(s1x);
     
-        const s1y = provableBn254BaseFieldToBytes(VK.qs1_y);
+        const s1y = provableBn254BaseFieldToBytes(vk.qs1_y);
         cm_bytes = cm_bytes.concat(s1y);
     
-        const s2x = provableBn254BaseFieldToBytes(VK.qs2_x);
+        const s2x = provableBn254BaseFieldToBytes(vk.qs2_x);
         cm_bytes = cm_bytes.concat(s2x);
     
-        const s2y = provableBn254BaseFieldToBytes(VK.qs2_y);
+        const s2y = provableBn254BaseFieldToBytes(vk.qs2_y);
         cm_bytes = cm_bytes.concat(s2y);
     
-        const s3x = provableBn254BaseFieldToBytes(VK.qs3_x);
+        const s3x = provableBn254BaseFieldToBytes(vk.qs3_x);
         cm_bytes = cm_bytes.concat(s3x);
     
-        const s3y = provableBn254BaseFieldToBytes(VK.qs3_y);
+        const s3y = provableBn254BaseFieldToBytes(vk.qs3_y);
         cm_bytes = cm_bytes.concat(s3y);
     
-        const qlx = provableBn254BaseFieldToBytes(VK.ql_x);
+        const qlx = provableBn254BaseFieldToBytes(vk.ql_x);
         cm_bytes = cm_bytes.concat(qlx);
     
-        const qly = provableBn254BaseFieldToBytes(VK.ql_y);
+        const qly = provableBn254BaseFieldToBytes(vk.ql_y);
         cm_bytes = cm_bytes.concat(qly);
     
-        const qrx = provableBn254BaseFieldToBytes(VK.qr_x);
+        const qrx = provableBn254BaseFieldToBytes(vk.qr_x);
         cm_bytes = cm_bytes.concat(qrx);
     
-        const qry = provableBn254BaseFieldToBytes(VK.qr_y);
+        const qry = provableBn254BaseFieldToBytes(vk.qr_y);
         cm_bytes = cm_bytes.concat(qry);
     
-        const qmx = provableBn254BaseFieldToBytes(VK.qm_x);
+        const qmx = provableBn254BaseFieldToBytes(vk.qm_x);
         cm_bytes = cm_bytes.concat(qmx);
     
-        const qmy = provableBn254BaseFieldToBytes(VK.qm_y);
+        const qmy = provableBn254BaseFieldToBytes(vk.qm_y);
         cm_bytes = cm_bytes.concat(qmy);
     
-        const qox = provableBn254BaseFieldToBytes(VK.qo_x);
+        const qox = provableBn254BaseFieldToBytes(vk.qo_x);
         cm_bytes = cm_bytes.concat(qox);
     
-        const qoy = provableBn254BaseFieldToBytes(VK.qo_y);
+        const qoy = provableBn254BaseFieldToBytes(vk.qo_y);
         cm_bytes = cm_bytes.concat(qoy);
     
-        const qkx = provableBn254BaseFieldToBytes(VK.qk_x);
+        const qkx = provableBn254BaseFieldToBytes(vk.qk_x);
         cm_bytes = cm_bytes.concat(qkx);
     
-        const qky = provableBn254BaseFieldToBytes(VK.qk_y);
+        const qky = provableBn254BaseFieldToBytes(vk.qk_y);
         cm_bytes = cm_bytes.concat(qky);
     
-        const qcp_0_x = provableBn254BaseFieldToBytes(VK.qcp_0_x);
+        const qcp_0_x = provableBn254BaseFieldToBytes(vk.qcp_0_x);
         cm_bytes = cm_bytes.concat(qcp_0_x);
     
-        const qcp_0_y = provableBn254BaseFieldToBytes(VK.qcp_0_y);
+        const qcp_0_y = provableBn254BaseFieldToBytes(vk.qcp_0_y);
         cm_bytes = cm_bytes.concat(qcp_0_y);
     
         // two public inputs
@@ -257,6 +281,51 @@ class Sp1PlonkFiatShamir extends Struct({
         
         this.zeta_digest = Hash.SHA2_256.hash(new BytesZeta(cm_bytes));
         this.zeta = shaToFr(this.zeta_digest);
+    }
+
+    squeezeGammaKzg(proof: Sp1PlonkProof, vk: Sp1PlonkVk, linearized_cm_x: FpC, linearized_cm_y: FpC, linearized_opening: FrC) {
+        const gamma_separator = FpC.from(0x67616d6d61n);
+        let separator_bytes = provableBn254BaseFieldToBytes(gamma_separator); 
+    
+        // gamma is 39 bits, so we leave only 40 bits (to keep it multiple of 8)
+        // and we cut the rest (256 - 40) bits which is 27 bytes 
+        let cm_bytes = separator_bytes.slice(27, 32); 
+
+        // note that here they compute challenge from zeta_reduced and not unreduced as before
+        cm_bytes = cm_bytes.concat(provableBn254ScalarFieldToBytes(this.zeta));
+
+        cm_bytes = cm_bytes.concat(provableBn254BaseFieldToBytes(linearized_cm_x));
+        cm_bytes = cm_bytes.concat(provableBn254BaseFieldToBytes(linearized_cm_y));
+
+        cm_bytes = cm_bytes.concat(provableBn254BaseFieldToBytes(proof.l_com_x));
+        cm_bytes = cm_bytes.concat(provableBn254BaseFieldToBytes(proof.l_com_y));
+        cm_bytes = cm_bytes.concat(provableBn254BaseFieldToBytes(proof.r_com_x));
+        cm_bytes = cm_bytes.concat(provableBn254BaseFieldToBytes(proof.r_com_y));
+        cm_bytes = cm_bytes.concat(provableBn254BaseFieldToBytes(proof.o_com_x));
+        cm_bytes = cm_bytes.concat(provableBn254BaseFieldToBytes(proof.o_com_y));
+
+        cm_bytes = cm_bytes.concat(provableBn254BaseFieldToBytes(vk.qs1_x));
+        cm_bytes = cm_bytes.concat(provableBn254BaseFieldToBytes(vk.qs1_y));
+        cm_bytes = cm_bytes.concat(provableBn254BaseFieldToBytes(vk.qs2_x));
+        cm_bytes = cm_bytes.concat(provableBn254BaseFieldToBytes(vk.qs2_y));
+
+        cm_bytes = cm_bytes.concat(provableBn254BaseFieldToBytes(vk.qcp_0_x));
+        cm_bytes = cm_bytes.concat(provableBn254BaseFieldToBytes(vk.qcp_0_y));
+
+        cm_bytes = cm_bytes.concat(provableBn254ScalarFieldToBytes(linearized_opening));
+        cm_bytes = cm_bytes.concat(provableBn254ScalarFieldToBytes(proof.l_at_zeta));
+        cm_bytes = cm_bytes.concat(provableBn254ScalarFieldToBytes(proof.r_at_zeta));
+        cm_bytes = cm_bytes.concat(provableBn254ScalarFieldToBytes(proof.o_at_zeta));
+        cm_bytes = cm_bytes.concat(provableBn254ScalarFieldToBytes(proof.s1_at_zeta));
+        cm_bytes = cm_bytes.concat(provableBn254ScalarFieldToBytes(proof.s2_at_zeta));
+        cm_bytes = cm_bytes.concat(provableBn254ScalarFieldToBytes(proof.qcp_0_at_zeta));
+        cm_bytes = cm_bytes.concat(provableBn254ScalarFieldToBytes(proof.grand_product_at_omega_zeta));
+
+        console.log(cm_bytes.length)
+        console.log(sizeGammaKzgBytes())
+
+        this.gamma_kzg_digest = Hash.SHA2_256.hash(new BytesGammaKzg(cm_bytes));
+        this.gamma_kzg = shaToFr(this.gamma_kzg_digest);
     }
 
 }

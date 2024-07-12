@@ -17,7 +17,7 @@ const publicInputBytes =
 const pi0 = FrC.from("0x0097228875a04c12dda0a76b705856f1a99fd19613c0ba69b056f4c4d18921e5")
 const pi1 = FrC.from("0x048e48f4b209e2dc6d92839ecba0e9321e83ea61ecb6430fc737b1e94c3fabbb")
 
-fs.squeezeGamma(proof, pi0, pi1)
+fs.squeezeGamma(proof, pi0, pi1, VK)
 fs.squeezeBeta()
 fs.squeezeAlpha(proof)
 fs.squeezeZeta(proof)
@@ -50,7 +50,10 @@ console.log("pi: ", pi.toBigInt())
 const linearised_opening = opening_of_linearized_polynomial(proof, fs.alpha, fs.beta, fs.gamma, pi, alpha_2_l0);
 console.log("linearised_opening: ", linearised_opening.toBigInt())
 
-const linearized_cm = compute_commitment_linearized_polynomial(VK, proof, fs.alpha, fs.beta, fs.gamma, fs.zeta, alpha_2_l0, hx, hy)
-console.log("lcm x: ", linearized_cm.x.toBigInt())
-console.log("lcm y: ", linearized_cm.y.toBigInt())
-assertPointOnBn(linearized_cm.x.toBigInt(), linearized_cm.y.toBigInt());
+const [lcm_x, lcm_y] = compute_commitment_linearized_polynomial(VK, proof, fs.alpha, fs.beta, fs.gamma, fs.zeta, alpha_2_l0, hx, hy)
+console.log("lcm x: ", lcm_x.toBigInt())
+console.log("lcm y: ", lcm_y.toBigInt())
+assertPointOnBn(lcm_x.toBigInt(), lcm_y.toBigInt());
+
+fs.squeezeGammaKzg(proof, VK, lcm_x, lcm_y, linearised_opening)
+console.log("kzg gamma: ", fs.gamma_kzg.toBigInt())
