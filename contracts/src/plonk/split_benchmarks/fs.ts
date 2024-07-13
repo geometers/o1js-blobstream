@@ -1,7 +1,7 @@
 import v8 from 'v8';
 import { Poseidon, Provable } from "o1js";
 import { Sp1PlonkProof, deserializeProof } from '../proof.js';
-import { Sp1PlonkFiatShamir } from '../fiat-shamir/index.js';
+import { Sp1PlonkFiatShamir } from "../fiat-shamir/index.js";
 import { VK } from '../vk.js';
 import { FrC } from '../../towers/fr.js';
 import { Accumulator } from '../accumulator.js';
@@ -12,9 +12,9 @@ let pi0 = FrC.from("0x0097228875a04c12dda0a76b705856f1a99fd19613c0ba69b056f4c4d1
 let pi1 = FrC.from("0x048e48f4b209e2dc6d92839ecba0e9321e83ea61ecb6430fc737b1e94c3fabbb")
 
 function main() {
-    let acc = Provable.witness(Accumulator, () => { 
+        let acc = Provable.witness(Accumulator, () => { 
         let proof = new Sp1PlonkProof(deserializeProof(hexProof))
-        let fs = new Sp1PlonkFiatShamir()
+        let fs = Sp1PlonkFiatShamir.empty()
         let state = new StateUntilPairing(empty(pi0, pi1))
 
         return new Accumulator({
@@ -26,7 +26,7 @@ function main() {
 
     Poseidon.hashPacked(Accumulator, acc);
 
-    const fs = new Sp1PlonkFiatShamir()
+    // const fs = Sp1PlonkFiatShamir.empty()
     // fs.squeezeGamma(proof, pi0, pi1, VK)
     // fs.squeezeBeta()
     // fs.squeezeAlpha(proof)

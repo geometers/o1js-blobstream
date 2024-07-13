@@ -13,7 +13,7 @@ class PlonkVerifierPIOP {
     }
 
     piop(proof: Sp1PlonkProof, pi0: FrC, pi1: FrC): [FpC, FpC, FpC, FpC] {
-        const fs = new Sp1PlonkFiatShamir()
+        const fs = Sp1PlonkFiatShamir.empty()
 
         fs.squeezeGamma(proof, pi0, pi1, this.VK)
         fs.squeezeBeta()
