@@ -19,6 +19,7 @@ const pi0 = FrC.from("0x0097228875a04c12dda0a76b705856f1a99fd19613c0ba69b056f4c4
 const pi1 = FrC.from("0x048e48f4b209e2dc6d92839ecba0e9321e83ea61ecb6430fc737b1e94c3fabbb")
 
 
+// ~110K - so we can probably split them into two circuits
 fs.squeezeGamma(proof, pi0, pi1, VK)
 fs.squeezeBeta()
 fs.squeezeAlpha(proof)
@@ -29,46 +30,58 @@ console.log("challenge beta: ", fs.beta.toBigInt())
 console.log("challenge alpha: ", fs.alpha.toBigInt())
 console.log("challenge zeta: ", fs.zeta.toBigInt())
 
+// very cheap
 const [zeta_pow_n, zh_eval] = evalVanishing(fs.zeta, VK)
 console.log("zh eval: ", zh_eval.toBigInt())
 
+// very cheap
 const alpha_2_l0 = compute_alpha_square_lagrange_0(zh_eval, fs.zeta, fs.alpha, VK); 
 console.log("alpha_squared_l0", alpha_2_l0.toBigInt())
 
+// ~60k
 const [hx, hy] = fold_quotient(proof.h0_x, proof.h0_y, proof.h1_x, proof.h1_y, proof.h2_x, proof.h2_y, fs.zeta, zeta_pow_n, zh_eval)
 console.log("folded quotient x: ", hx.toBigInt())
 console.log("folded quotient y: ", hy.toBigInt())
 assertPointOnBn(hx.toBigInt(), hy.toBigInt())
 
+// very cheap
 const pis = pi_contribution([pi0, pi1], fs.zeta, zh_eval, VK.inv_domain_size, VK.omega)
 console.log("pis without custom gates: ", pis.toBigInt())
 
+// ~32k
 const l_pi_commit = customPiLagrange(fs.zeta, zh_eval, proof.qcp_0_wire_x, proof.qcp_0_wire_y, VK)
 console.log("l_pi_commit: ", l_pi_commit.toBigInt())
 
 const pi = pis.add(l_pi_commit).assertCanonical(); 
 console.log("pi: ", pi.toBigInt())
 
+// very cheap
 const linearised_opening = opening_of_linearized_polynomial(proof, fs.alpha, fs.beta, fs.gamma, pi, alpha_2_l0);
 console.log("linearised_opening: ", linearised_opening.toBigInt())
 
+// ~ 135K - we have to split this into two functions
 const [lcm_x, lcm_y] = compute_commitment_linearized_polynomial(VK, proof, fs.alpha, fs.beta, fs.gamma, fs.zeta, alpha_2_l0, hx, hy)
 console.log("lcm x: ", lcm_x.toBigInt())
 console.log("lcm y: ", lcm_y.toBigInt())
 assertPointOnBn(lcm_x.toBigInt(), lcm_y.toBigInt());
 
+// ~66K - we might need to split this
 fs.squeezeGammaKzg(proof, VK, lcm_x, lcm_y, linearised_opening)
 console.log("kzg gamma: ", fs.gamma_kzg.toBigInt())
 
+
+// ~118K - split this also
 const [cm_x, cm_y, cm_opening] = fold_state(VK, proof, lcm_x, lcm_y, linearised_opening, fs.gamma_kzg);
 console.log("kzg cm x: ", cm_x.toBigInt())
 console.log("kzg cm y: ", cm_y.toBigInt())
 console.log("kzg opening: ", cm_opening.toBigInt())
 
 
+// ~33K
 const random = fs.squeezeRandomForKzg(proof, cm_x, cm_y)
 console.log("random for kzg: ", random.toBigInt())
 
+// ~100K split this
 const [kzg_cm_x, kzg_cm_y, neg_fq_x, neg_fq_y] = preparePairing(VK, proof, random, cm_x, cm_y, cm_opening, fs.zeta)
 console.log("kzg_cm_x: ", kzg_cm_x.toBigInt())
 console.log("kzg_cm_y: ", kzg_cm_y.toBigInt())
