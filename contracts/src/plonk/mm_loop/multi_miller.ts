@@ -3,6 +3,7 @@ import { G2Line } from '../../lines/index.js';
 import { G1Affine } from '../../ec/index.js';
 import { ATE_LOOP_COUNT, Fp12 } from '../../towers/index.js';
 import { KZGLineAccumulator } from './accumulate_lines.js';
+import { Field, Provable } from 'o1js';
 
 class KZGPairing {
     g2_lines: Array<G2Line>;
@@ -50,7 +51,7 @@ class KZGPairing {
   proveEqual(
       A: G1Affine,
       negB: G1Affine,
-      shift_power: number,
+      shift_power: Field,
       c: Fp12
   ) {
 		const g = KZGLineAccumulator.accumulate(this.g2_lines, this.tau_lines, A, negB);
@@ -81,7 +82,8 @@ class KZGPairing {
 			.mul(c.frobenius_pow_p_squared())
 			.mul(c_inv.frobenius_pow_p_cubed());
 
-		const shift = this.w27[shift_power];
+        const shift = Provable.switch([shift_power.equals(Field(0)), shift_power.equals(Field(1)), shift_power.equals(Field(2))], Fp12, [Fp12.one(), this.w27[1], this.w27[2]]);
+		// const shift = this.w27[shift_power];
 		f = f.mul(shift);
 
 		// f = Fp12.one();

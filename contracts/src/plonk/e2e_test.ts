@@ -2,11 +2,10 @@ import { Provable } from 'o1js';
 import v8 from 'v8';
 import { Sp1PlonkVerifier } from './verifier.js';
 import { VK } from './vk.js';
-import { get_shift_power, make_c, make_w27 } from './helpers.js';
+import { make_w27 } from './helpers.js';
 import fs from "fs"
 import { FrC } from '../towers/fr.js';
 import { Sp1PlonkProof, deserializeProof } from './proof.js';
-import { Fp12 } from '../towers/fp12.js';
 
 // TODO: add w27 and line paths into VK
 // TODO: initialize w27_square inside the constructor
@@ -25,9 +24,8 @@ function main() {
     let pi1 = Provable.witness(FrC.provable, () => FrC.from("0x048e48f4b209e2dc6d92839ecba0e9321e83ea61ecb6430fc737b1e94c3fabbb"))
 
     let proof = Provable.witness(Sp1PlonkProof, () => new Sp1PlonkProof(deserializeProof(hexProof)))
-    let c = Provable.witness(Fp12, () => make_c());
 
-    Verifier.verify(proof, pi0, pi1, get_shift_power(), c);
+    Verifier.verify(proof, pi0, pi1);
 }
 
 

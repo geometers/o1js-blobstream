@@ -4,7 +4,6 @@ import { Sp1PlonkProof, deserializeProof } from "../proof.js";
 import { provableBn254BaseFieldToBytes, provableBn254ScalarFieldToBytes } from "../../sha/utils.js";
 import { Sp1PlonkVk } from "../vk.js";
 import { shaToFr } from "./sha_to_fr.js";
-import { P } from "../../towers/consts.js";
 
 const gammaSizeInBytes = () => {
     let size = 0 

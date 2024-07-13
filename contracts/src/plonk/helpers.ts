@@ -1,7 +1,8 @@
+import { Field } from "o1js";
 import { Fp12, Fp2, Fp6, FpC } from "../towers/index.js";
 
 const get_shift_power = () => {
-    return 1
+    return Field.from(1n)
 }
 
 const make_w27 = () => {

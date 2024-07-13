@@ -20,13 +20,13 @@ class Sp1PlonkVerifier {
         this.kzgP = new KZGPairing(g2_lines, tau_lines, w27, w27_square)
     }
 
-    verify(proof: Sp1PlonkProof, pi0: FrC, pi1: FrC, shift_power: number, c: Fp12) {
+    verify(proof: Sp1PlonkProof, pi0: FrC, pi1: FrC) {
         const [kzg_cm_x, kzg_cm_y, neg_fq_x, neg_fq_y] = this.piopV.piop(proof, pi0, pi1)
 
         const A = new G1Affine({ x: kzg_cm_x, y: kzg_cm_y });
         const negB = new G1Affine({ x: neg_fq_x, y: neg_fq_y });
 
-        this.kzgP.proveEqual(A, negB, shift_power, c);
+        this.kzgP.proveEqual(A, negB, proof.shift_power, proof.c);
     }
 }
 

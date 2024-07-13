@@ -1,8 +1,9 @@
-import { FpC, FrC } from "../towers/index.js"
+import { Fp12, FpC, FrC } from "../towers/index.js"
 import { ethers } from "ethers"
 import { assertPointOnBn, assertInBnField, numOfUin256s } from "./utils.js"
 import assert from "assert"
-import { Struct } from "o1js"
+import { Field, Struct } from "o1js"
+import { get_shift_power, make_c } from "./helpers.js"
 
 const NUM_OF_UIN265s = 27
 
@@ -45,6 +46,10 @@ class Sp1PlonkProof extends Struct({
     // my guess from the assembly code 
     qcp_0_wire_x: FpC.provable,
     qcp_0_wire_y: FpC.provable,
+
+    // pairing aux witness 
+    c: Fp12, 
+    shift_power: Field
 }) {
     deserialize(hexProof: string) {
         const defaultEncoder = ethers.AbiCoder.defaultAbiCoder()
@@ -97,6 +102,9 @@ type ProofType = {
     // my guess from the assembly code 
     qcp_0_wire_x: FpC
     qcp_0_wire_y: FpC
+
+    c: Fp12, 
+    shift_power: Field
 }
 
 // const zeroProof = (): Sp1PlonkProof => {
@@ -229,7 +237,11 @@ const fromDecoded = (decodedProof: bigint[]): ProofType => {
         batch_opening_at_zeta_omega_y: FpC.from(decodedProof[23]),
         qcp_0_at_zeta: FrC.from(decodedProof[24]),
         qcp_0_wire_x: FpC.from(decodedProof[25]),
-        qcp_0_wire_y: FpC.from(decodedProof[26])
+        qcp_0_wire_y: FpC.from(decodedProof[26]),
+
+        // pairing stuff 
+        c: make_c(), 
+        shift_power: get_shift_power(),
     }
 }
 
