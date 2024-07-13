@@ -9,6 +9,14 @@ class Accumulator extends Struct({
     proof: Sp1PlonkProof, 
     fs: Sp1PlonkFiatShamir, 
     state: StateUntilPairing
-}) {}
+}) {
+    deepClone() {
+        return new Accumulator({
+            proof: this.proof, 
+            fs: this.fs.deepClone(), 
+            state: this.state
+        })
+    }
+}
 
 export { Accumulator }

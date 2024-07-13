@@ -4,10 +4,9 @@ import {
     Poseidon,
   } from 'o1js';
 import { Accumulator } from '../accumulator.js';
-import { VK } from '../vk.js';
 
-const zkp0 = ZkProgram({
-    name: 'zkp0',
+const zkp1 = ZkProgram({
+    name: 'zkp1',
     publicInput: Field,
     publicOutput: Field,
     methods: {
@@ -20,15 +19,15 @@ const zkp0 = ZkProgram({
             const inDigest = Poseidon.hashPacked(Accumulator, acc);
             inDigest.assertEquals(input);
 
-            acc.fs.squeezeGamma(acc.proof, acc.state.pi0, acc.state.pi1, VK)
-            acc.fs.squeezeBeta()
+            acc.fs.squeezeAlpha(acc.proof)
+            acc.fs.squeezeZeta(acc.proof)
 
             return Poseidon.hashPacked(Accumulator, acc);
         },
       },
     },
-  });
+});
 
 
-const ZKP0Proof = ZkProgram.Proof(zkp0);
-export { ZKP0Proof, zkp0 }
+const ZKP1Proof = ZkProgram.Proof(zkp1);
+export { ZKP1Proof, zkp1 }

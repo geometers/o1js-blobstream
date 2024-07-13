@@ -1,4 +1,4 @@
-import { Field, Poseidon, Provable, VerificationKey, verify } from "o1js";
+import { Field, Poseidon, Provable, VerificationKey, assert, verify } from "o1js";
 import { zkp0, ZKP0Proof } from "./zkp0.js";
 import fs from "fs"
 import { FrC } from "../../towers/fr.js";
@@ -6,6 +6,8 @@ import { Sp1PlonkProof, deserializeProof } from "../proof.js";
 import { Sp1PlonkFiatShamir } from "../fiat-shamir/index.js";
 import { StateUntilPairing, empty } from "../state.js";
 import { Accumulator } from "../accumulator.js";
+import { VK } from "../vk.js";
+import { zkp1 } from "./zkp1.js";
 
 // const wt = new WitnessTracker();
 // let in0 = wt.init(getNegA(), getB(), getC(), getPI(), get_c_hint(), Fp12.one(), get_shift_power());
@@ -47,8 +49,6 @@ const make_acc = () => {
     return acc
 }
 
-
-
 async function prove_zkp0() {
     const vk0 = (await zkp0.compile()).verificationKey;
     const acc = make_acc();
@@ -58,22 +58,46 @@ async function prove_zkp0() {
     const valid = await verify(proof0, vk0); 
     console.log("valid zkp0?: ", valid);
 
-    fs.writeFileSync('./src/recursion/proofs/layer0/zkp0.json', JSON.stringify(proof0), 'utf8');
-    fs.writeFileSync('./src/recursion/vks/vk0.json', JSON.stringify(vk0), 'utf8');
+    // make sure that state is correctly updated 
+    // TODO: this will be moved to the witness tracker
+    {
+        acc.fs.squeezeGamma(acc.proof, acc.state.pi0, acc.state.pi1, VK)
+        acc.fs.squeezeBeta()
+
+        const next_acc = acc.deepClone()
+
+        let cout0 = Poseidon.hashPacked(Accumulator, next_acc);
+        cout0.assertEquals(proof0.publicOutput)
+    }
+
+    fs.writeFileSync('./src/plonk/recursion/proofs/layer0/zkp0.json', JSON.stringify(proof0), 'utf8');
+    fs.writeFileSync('./src/plonk/recursion/vks/vk0.json', JSON.stringify(vk0), 'utf8');
 }
 
-// async function prove_zkp1() {
-//     const vk1 = (await zkp1.compile()).verificationKey;
+async function prove_zkp1() {
+    const vk1 = (await zkp1.compile()).verificationKey;
 
-//     let cin1 = Poseidon.hashPacked(Groth16Data, in1);
-//     const proof1 = await zkp1.compute(cin1, in1, getBSlice(1));
+    const acc = make_acc();
+    acc.fs.squeezeGamma(acc.proof, acc.state.pi0, acc.state.pi1, VK)
+    acc.fs.squeezeBeta()
 
-//     const valid = await verify(proof1, vk1); 
-//     console.log("valid zkp1?: ", valid);
+    let cin1 = Poseidon.hashPacked(Accumulator, acc);
+    const proof1 = await zkp1.compute(cin1, acc);
 
-//     fs.writeFileSync('./src/recursion/proofs/layer0/zkp1.json', JSON.stringify(proof1), 'utf8');
-//     fs.writeFileSync('./src/recursion/vks/vk1.json', JSON.stringify(vk1), 'utf8');
-// }
+    const valid = await verify(proof1, vk1); 
+    console.log("valid zkp1?: ", valid);
+
+    const next_acc = acc.deepClone(); 
+
+    next_acc.fs.squeezeAlpha(next_acc.proof)
+    next_acc.fs.squeezeZeta(next_acc.proof)
+
+    let cout1 = Poseidon.hashPacked(Accumulator, next_acc);
+    cout1.assertEquals(proof1.publicOutput)
+
+    fs.writeFileSync('./src/recursion/proofs/layer0/zkp1.json', JSON.stringify(proof1), 'utf8');
+    fs.writeFileSync('./src/recursion/vks/vk1.json', JSON.stringify(vk1), 'utf8');
+}
 
 
 // async function prove_zkp2() {
@@ -302,9 +326,9 @@ switch(process.argv[2]) {
     case 'zkp0':
         await prove_zkp0();
         break;
-    // case 'zkp1':
-    //     await prove_zkp1();
-    //     break;
+    case 'zkp1':
+        await prove_zkp1();
+        break;
     // case 'zkp2':
     //     await prove_zkp2();
     //     break;
