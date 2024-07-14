@@ -14,7 +14,7 @@ class Accumulator extends Struct({
         return new Accumulator({
             proof: this.proof, 
             fs: this.fs.deepClone(), 
-            state: this.state
+            state: this.state.deepClone()
         })
     }
 }

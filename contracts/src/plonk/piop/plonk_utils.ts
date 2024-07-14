@@ -199,6 +199,72 @@ function compute_commitment_linearized_polynomial_ec(proof: Sp1PlonkProof, vk: S
     return [linearized_cm.x.assertCanonical(), linearized_cm.y.assertCanonical()]
 }
 
+// NOW split compute_commitment_linearized_polynomial_ec
+
+
+// 56296 constraints
+export function compute_commitment_linearized_polynomial_split_0(proof: Sp1PlonkProof, vk: Sp1PlonkVk): [FpC, FpC] {
+    const ql = new bn254({x: vk.ql_x, y: vk.ql_y});
+    const qr = new bn254({x: vk.qr_x, y: vk.qr_y});
+    const qm = new bn254({x: vk.qm_x, y: vk.qm_y});
+
+    let linearized_cm = ql.scale(proof.l_at_zeta);
+    linearized_cm = linearized_cm.add(qr.scale(proof.r_at_zeta));
+
+    const rl = proof.l_at_zeta.mul(proof.r_at_zeta).assertCanonical(); 
+    linearized_cm = linearized_cm.add(qm.scale(rl));
+
+    return [linearized_cm.x.assertCanonical(), linearized_cm.y.assertCanonical()]
+}
+
+// 58489 constraints
+export function compute_commitment_linearized_polynomial_split_1(lcm_x: FpC, lcm_y: FpC, proof: Sp1PlonkProof, vk: Sp1PlonkVk, beta: FrC, gamma: FrC, alpha: FrC): [FpC, FpC] {
+    let linearized_cm = new bn254({x: lcm_x, y: lcm_y});
+    const qo = new bn254({x: vk.qo_x, y: vk.qo_y});
+    const qk = new bn254({x: vk.qk_x, y: vk.qk_y});
+
+    linearized_cm = linearized_cm.add(qo.scale(proof.o_at_zeta));
+    linearized_cm = linearized_cm.add(qk);
+
+    const qcp_0 = new bn254({x: proof.qcp_0_wire_x, y: proof.qcp_0_wire_y});
+    linearized_cm = linearized_cm.add(qcp_0.scale(proof.qcp_0_at_zeta));
+
+    // s₁ = α*Z(μζ)(l(ζ)+β*s₁(ζ)+γ)*(r(ζ)+β*s₂(ζ)+γ)*β
+    // (l(ζ)+β*s₁(ζ)+γ)
+    let p1 = proof.s1_at_zeta.mul(beta).assertCanonical().add(gamma).add(proof.l_at_zeta).assertCanonical(); 
+    // (r(ζ)+β*s2(ζ)+γ)
+    let p2 = proof.s2_at_zeta.mul(beta).assertCanonical().add(gamma).add(proof.r_at_zeta).assertCanonical(); 
+    let s1 = p1.mul(p2).assertCanonical().mul(beta).assertCanonical().mul(alpha).assertCanonical().mul(proof.grand_product_at_omega_zeta).assertCanonical(); 
+
+    const s3 = new bn254({x: vk.qs3_x, y: vk.qs3_y});
+    linearized_cm = linearized_cm.add(s3.scale(s1));
+
+    return [linearized_cm.x.assertCanonical(), linearized_cm.y.assertCanonical()]
+}
+
+// 21285 constraints
+export function compute_commitment_linearized_polynomial_split_2(lcm_x: FpC, lcm_y: FpC, proof: Sp1PlonkProof, vk: Sp1PlonkVk, beta: FrC, gamma: FrC, alpha: FrC, zeta: FrC, alpha_2_lagrange_0: FrC, fold_quotient_x: FpC, fold_quotient_y: FpC): [FpC, FpC] {
+    let linearized_cm = new bn254({x: lcm_x, y: lcm_y});
+
+    // s₁ = α*Z(μζ)(l(ζ)+β*s₁(ζ)+γ)*(r(ζ)+β*s₂(ζ)+γ)*β
+    // (l(ζ)+β*ζ+γ)
+    let r1 = zeta.mul(beta).assertCanonical().add(proof.l_at_zeta).add(gamma).assertCanonical(); 
+    // (r(ζ)+β*u*ζ+γ)
+    let r2 = beta.mul(vk.coset_shift).assertCanonical().mul(zeta).assertCanonical().add(proof.r_at_zeta).add(gamma).assertCanonical();
+    // (o(ζ)+β*u²*ζ+γ)
+    let r3 = beta.mul(vk.coset_shift).assertCanonical().mul(vk.coset_shift).assertCanonical().mul(zeta).assertCanonical().add(proof.o_at_zeta).add(gamma).assertCanonical();
+    let s2 = alpha.mul(r1).assertCanonical().mul(r2).assertCanonical().mul(r3).neg().add(alpha_2_lagrange_0).assertCanonical(); 
+
+    const grand_product = new bn254({x: proof.grand_product_x, y: proof.grand_product_y}); 
+    linearized_cm = linearized_cm.add(grand_product.scale(s2));
+
+    const neg_folded_q = new bn254({x: fold_quotient_x, y: fold_quotient_y}).negate();
+    linearized_cm = linearized_cm.add(neg_folded_q)
+
+    return [linearized_cm.x.assertCanonical(), linearized_cm.y.assertCanonical()]
+}
+
+
 export function fold_state(vk: Sp1PlonkVk, proof: Sp1PlonkProof, lcm_x: FpC, lcm_y: FpC, lcm_opening: FrC, gamma_kzg: FrC): [FpC, FpC, FrC] {
     // cm = [Linearised_polynomial]+γ[L] + γ²[R] + γ³[O] + γ⁴[S₁] +γ⁵[S₂] + ∑ᵢγ⁵⁺ⁱ[Pi_{i}]
     // opening = Linearised_polynomial(ζ)+γ²L(ζ) + γ³R(ζ)+ γ⁴O(ζ) + γ⁵S₁(ζ) +γ⁶S₂(ζ) + ∑ᵢγ⁶⁺ⁱPi_{i}(ζ)

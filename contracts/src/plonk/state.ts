@@ -36,7 +36,42 @@ class StateUntilPairing extends Struct({
     // g: Provable.Array(Fp12, ATE_LOOP_COUNT.length), 
     // f: Fp12
 
-}) {}
+}) 
+{
+    deepClone() {
+        return new StateUntilPairing({
+            pi0: FrC.from(this.pi0.toBigInt()), 
+            pi1: FrC.from(this.pi1.toBigInt()), 
+    
+            zeta_pow_n: FrC.from(this.zeta_pow_n.toBigInt()),
+            zh_eval: FrC.from(this.zh_eval.toBigInt()),
+        
+            alpha_2_l0: FrC.from(this.alpha_2_l0.toBigInt()),
+        
+            hx: FpC.from(this.hx.toBigInt()), 
+            hy: FpC.from(this.hy.toBigInt()), 
+        
+            pi: FrC.from(this.pi.toBigInt()), // public inputs contribution
+        
+            linearized_opening: FrC.from(this.linearized_opening.toBigInt()), 
+        
+            lcm_x: FpC.from(this.lcm_x.toBigInt()), 
+            lcm_y: FpC.from(this.lcm_y.toBigInt()), 
+        
+            cm_x: FpC.from(this.cm_x.toBigInt()), 
+            cm_y: FpC.from(this.cm_y.toBigInt()), 
+        
+            cm_opening: FrC.from(this.cm_opening.toBigInt()), 
+        
+            kzg_random: FrC.from(this.kzg_random.toBigInt()), 
+        
+            kzg_cm_x: FpC.from(this.kzg_cm_x.toBigInt()), 
+            kzg_cm_y: FpC.from(this.kzg_cm_y.toBigInt()), 
+            neg_fq_x: FpC.from(this.neg_fq_x.toBigInt()), 
+            neg_fq_y: FpC.from(this.neg_fq_y.toBigInt()),
+        })
+    }
+}
 
 type StateUntilPairingType = {
     pi0: FrC, 
