@@ -1,4 +1,3 @@
-import fs from 'fs';
 import { G2Line } from '../../lines/index.js';
 import { G1Affine } from '../../ec/index.js';
 import { ATE_LOOP_COUNT, Fp12 } from '../../towers/index.js';
@@ -14,7 +13,6 @@ class KZGPairing {
       g2_lines: string,
       tau_lines: string,
       w27: Fp12,
-      w27_square: Fp12
   ) {
       let parsed_g2_lines: any[] = JSON.parse(g2_lines);
       this.g2_lines = parsed_g2_lines.map(
@@ -26,7 +24,7 @@ class KZGPairing {
         (g: any): G2Line => G2Line.fromJSON(g)
       );
 
-      this.w27 = [Fp12.one(), w27, w27_square];
+      this.w27 = [Fp12.one(), w27, w27.mul(w27)];
   }
 
 	multiMillerLoop(

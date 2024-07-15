@@ -1,5 +1,6 @@
 import { G1Affine } from "../ec/index.js";
 import { Fp12, FrC } from "../towers/index.js";
+import { make_w27 } from "./helpers.js";
 import { KZGPairing } from "./mm_loop/multi_miller.js";
 import { PlonkVerifierPIOP } from "./piop/piop.js";
 import { Sp1PlonkProof } from "./proof.js";
@@ -13,11 +14,10 @@ class Sp1PlonkVerifier {
         VK: Sp1PlonkVk, 
         g2_lines: string,
         tau_lines: string,
-        w27: Fp12,
-        w27_square: Fp12
     ) {
+        let w27 = make_w27()
         this.piopV = new PlonkVerifierPIOP(VK)
-        this.kzgP = new KZGPairing(g2_lines, tau_lines, w27, w27_square)
+        this.kzgP = new KZGPairing(g2_lines, tau_lines, w27)
     }
 
     verify(proof: Sp1PlonkProof, pi0: FrC, pi1: FrC) {

@@ -41,9 +41,6 @@ class Sp1PlonkProof extends Struct({
     batch_opening_at_zeta_omega_y: FpC.provable,
 
     qcp_0_at_zeta: FrC.provable,
-    // bsb_commitments: FrC.provable // still not sure about this
-
-    // my guess from the assembly code 
     qcp_0_wire_x: FpC.provable,
     qcp_0_wire_y: FpC.provable,
 
@@ -97,9 +94,6 @@ type ProofType = {
     batch_opening_at_zeta_omega_y: FpC
 
     qcp_0_at_zeta: FrC
-    // bsb_commitments: FrC // still not sure about this
-
-    // my guess from the assembly code 
     qcp_0_wire_x: FpC
     qcp_0_wire_y: FpC
 
@@ -107,75 +101,6 @@ type ProofType = {
     shift_power: Field
 }
 
-// const zeroProof = (): Sp1PlonkProof => {
-//     const x: Sp1PlonkProof = {
-//         l_com_x: FpC.from(0n),
-//         l_com_y: FpC.from(0n),
-//         r_com_x: FpC.from(0n),
-//         r_com_y: FpC.from(0n),
-//         o_com_x: FpC.from(0n),
-//         o_com_y: FpC.from(0n),
-//         h0_x: FpC.from(0n),
-//         h0_y: FpC.from(0n),
-//         h1_x: FpC.from(0n),
-//         h1_y: FpC.from(0n),
-//         h2_x: FpC.from(0n),
-//         h2_y: FpC.from(0n),
-//         l_at_zeta: FrC.from(0n),
-//         r_at_zeta: FrC.from(0n),
-//         o_at_zeta: FrC.from(0n),
-//         s1_at_zeta: FrC.from(0n),
-//         s2_at_zeta: FrC.from(0n),
-//         grand_product_x: FpC.from(0n),
-//         grand_product_y: FpC.from(0n),
-//         grand_product_at_omega_zeta: FrC.from(0n),
-//         batch_opening_at_zeta_x: FpC.from(0n),
-//         batch_opening_at_zeta_y: FpC.from(0n),
-//         batch_opening_at_zeta_omega_x: FpC.from(0n),
-//         batch_opening_at_zeta_omega_y: FpC.from(0n),
-//         qcp_0_at_zeta: FrC.from(0n),
-
-//         qcp_0_wire_x: FpC.from(0n),
-//         qcp_0_wire_y: FpC.from(0n),
-//     }
-
-//     return x
-// }
-
-// const randomProof = (): Sp1PlonkProof => {
-//     const x: Sp1PlonkProof = {
-//         l_com_x: FpC.random(),
-//         l_com_y: FpC.random(),
-//         r_com_x: FpC.random(),
-//         r_com_y: FpC.random(),
-//         o_com_x: FpC.random(),
-//         o_com_y: FpC.random(),
-//         h0_x: FpC.random(),
-//         h0_y: FpC.random(),
-//         h1_x: FpC.random(),
-//         h1_y: FpC.random(),
-//         h2_x: FpC.random(),
-//         h2_y: FpC.random(),
-//         l_at_zeta: FrC.random(),
-//         r_at_zeta: FrC.random(),
-//         o_at_zeta: FrC.random(),
-//         s1_at_zeta: FrC.random(),
-//         s2_at_zeta: FrC.random(),
-//         grand_product_x: FpC.random(),
-//         grand_product_y: FpC.random(),
-//         grand_product_at_omega_zeta: FrC.random(),
-//         batch_opening_at_zeta_x: FpC.random(),
-//         batch_opening_at_zeta_y: FpC.random(),
-//         batch_opening_at_zeta_omega_x: FpC.random(),
-//         batch_opening_at_zeta_omega_y: FpC.random(),
-//         qcp_0_at_zeta: FrC.random(),
-
-//         qcp_0_wire_x: FpC.random(),
-//         qcp_0_wire_y: FpC.random(),
-//     }
-
-//     return x
-// }
 
 const isValid = (decodedProof: bigint[]) => {
     assert(decodedProof.length === NUM_OF_UIN265s);
@@ -208,7 +133,7 @@ const isValid = (decodedProof: bigint[]) => {
 }
 
 const fromDecoded = (decodedProof: bigint[]): ProofType => {
-    // isValid(decodedProof); 
+    isValid(decodedProof); 
 
     return {
         l_com_x: FpC.from(decodedProof[0]),
