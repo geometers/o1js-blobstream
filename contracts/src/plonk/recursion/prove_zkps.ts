@@ -22,6 +22,9 @@ import { zkp12 } from "./zkp12.js";
 import { get_shift_power, make_c } from "../helpers.js";
 import { zkp13 } from "./zkp13.js";
 import { KzgAccumulator } from "../../kzg/structs.js";
+import { zkp15 } from "./zkp15.js";
+import { zkp14 } from "./zkp14.js";
+import { zkp16 } from "./zkp16.js";
 
 
 const make_acc = () => {
@@ -243,44 +246,44 @@ async function prove_zkp13() {
     fs.writeFileSync('./src/plonk/recursion/vks/vk13.json', JSON.stringify(vk13), 'utf8');
 }
 
-// async function prove_zkp14() {
-//     const vk14 = (await zkp14.compile()).verificationKey;
+async function prove_zkp14() {
+    const vk14 = (await zkp14.compile()).verificationKey;
 
-//     let cin14 = Poseidon.hashPacked(Groth16Data, in14);
-//     const proof14 = await zkp14.compute(cin14, in14);
+    let cin14 = Poseidon.hashPacked(KzgAccumulator, acc_13);
+    const proof14 = await zkp14.compute(cin14, acc_13, line_hashes);
 
-//     const valid = await verify(proof14, vk14); 
-//     console.log("valid zkp14?: ", valid);
+    const valid = await verify(proof14, vk14); 
+    console.log("valid zkp14?: ", valid);
 
-//     fs.writeFileSync('./src/plonk/recursion/proofs/layer0/zkp14.json', JSON.stringify(proof14), 'utf8');
-//     fs.writeFileSync('./src/plonk/recursion/vks/vk14.json', JSON.stringify(vk14), 'utf8');
-// }
+    fs.writeFileSync('./src/plonk/recursion/proofs/layer0/zkp14.json', JSON.stringify(proof14), 'utf8');
+    fs.writeFileSync('./src/plonk/recursion/vks/vk14.json', JSON.stringify(vk14), 'utf8');
+}
 
-// async function prove_zkp15() {
-//     const vk15 = (await zkp15.compile()).verificationKey;
+async function prove_zkp15() {
+    const vk15 = (await zkp15.compile()).verificationKey;
 
-//     let cin15 = Poseidon.hashPacked(Groth16Data, in15);
-//     const proof15 = await zkp15.compute(cin15, in15);
+    let cin15 = Poseidon.hashPacked(KzgAccumulator, acc_13);
+    const proof15 = await zkp15.compute(cin15, acc_13, line_hashes);
 
-//     const valid = await verify(proof15, vk15); 
-//     console.log("valid zkp15?: ", valid);
+    const valid = await verify(proof15, vk15); 
+    console.log("valid zkp15?: ", valid);
 
-//     fs.writeFileSync('./src/plonk/recursion/proofs/layer0/zkp15.json', JSON.stringify(proof15), 'utf8');
-//     fs.writeFileSync('./src/plonk/recursion/vks/vk15.json', JSON.stringify(vk15), 'utf8');
-// }
+    fs.writeFileSync('./src/plonk/recursion/proofs/layer0/zkp15.json', JSON.stringify(proof15), 'utf8');
+    fs.writeFileSync('./src/plonk/recursion/vks/vk15.json', JSON.stringify(vk15), 'utf8');
+}
 
-// async function prove_zkp16() {
-//     const vk16 = (await zkp16.compile()).verificationKey;
+async function prove_zkp16() {
+    const vk16 = (await zkp16.compile()).verificationKey;
 
-//     let cin16 = Poseidon.hashPacked(Groth16Data, in16);
-//     const proof16 = await zkp16.compute(cin16, in16);
+    let cin16 = Poseidon.hashPacked(KzgAccumulator, acc_13);
+    const proof16 = await zkp16.compute(cin16, acc_13, line_hashes);
 
-//     const valid = await verify(proof16, vk16); 
-//     console.log("valid zkp16?: ", valid);
+    const valid = await verify(proof16, vk16); 
+    console.log("valid zkp16?: ", valid);
 
-//     fs.writeFileSync('./src/plonk/recursion/proofs/layer0/zkp16.json', JSON.stringify(proof16), 'utf8');
-//     fs.writeFileSync('./src/plonk/recursion/vks/vk16.json', JSON.stringify(vk16), 'utf8');
-// }
+    fs.writeFileSync('./src/plonk/recursion/proofs/layer0/zkp16.json', JSON.stringify(proof16), 'utf8');
+    fs.writeFileSync('./src/plonk/recursion/vks/vk16.json', JSON.stringify(vk16), 'utf8');
+}
 
 // async function prove_zkp17() {
 //     const vk17 = (await zkp17.compile()).verificationKey;
@@ -352,15 +355,15 @@ switch(process.argv[2]) {
     case 'zkp13':
         await prove_zkp13();
         break;
-    // case 'zkp14':
-    //     await prove_zkp14();
-    //     break;
-    // case 'zkp15':
-    //     await prove_zkp15();
-    //     break;
-    // case 'zkp16':
-    //     await prove_zkp16();
-    //     break;
+    case 'zkp14':
+        await prove_zkp14();
+        break;
+    case 'zkp15':
+        await prove_zkp15();
+        break;
+    case 'zkp16':
+        await prove_zkp16();
+        break;
     // case 'zkp17':
     //     await prove_zkp17();
     //     break;

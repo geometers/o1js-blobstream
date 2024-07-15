@@ -4,7 +4,7 @@ import {
     Poseidon,
     Provable,
   } from 'o1js';
-import { ArrayListHasher, KzgAccumulator, KzgProof, KzgState } from '../../kzg/structs.js';
+import { ArrayListHasher, KzgAccumulator } from '../../kzg/structs.js';
 import { Fp12 } from '../../towers/fp12.js';
 import fs from "fs";
 import { ATE_LOOP_COUNT } from '../../towers/consts.js';
@@ -49,7 +49,7 @@ const zkp14 = ZkProgram({
             let line_cnt = 0;
 
             let g;
-            for (let i = 1; i < ATE_LOOP_COUNT.length; i++) {
+            for (let i = ATE_LOOP_COUNT.length - 46; i < ATE_LOOP_COUNT.length - 26; i++) {
                 idx = i - 1; 
         
                 let g_line = g2_lines[line_cnt]; 
@@ -70,17 +70,6 @@ const zkp14 = ZkProgram({
 
                 lines_hashes[idx] = Poseidon.hashPacked(Fp12, g);
             }
-
-            // let g2_line = g2_lines[line_cnt];
-            // line_cnt += 1;
-            // idx += 1;
-        
-            // g = g2_line.psi(a_cache);
-        
-            // g2_line = g2_lines[line_cnt];
-            // g = g.sparse_mul(g2_line.psi(a_cache));
-
-            // lines_hashes[idx] = Poseidon.hashPacked(Fp12, g);
 
             let new_lines_hashes_digest = ArrayListHasher.hash(lines_hashes);
             acc.state.lines_hashes_digest = new_lines_hashes_digest;

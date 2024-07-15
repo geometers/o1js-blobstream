@@ -4,7 +4,7 @@ import {
     Poseidon,
     Provable,
   } from 'o1js';
-import { ArrayListHasher, KzgAccumulator, KzgProof, KzgState } from '../../kzg/structs.js';
+import { ArrayListHasher, KzgAccumulator } from '../../kzg/structs.js';
 import { Fp12 } from '../../towers/fp12.js';
 import fs from "fs";
 import { ATE_LOOP_COUNT } from '../../towers/consts.js';
@@ -24,8 +24,8 @@ const tau_lines = parsed_tau_lines.map(
   (g: any): G2Line => G2Line.fromJSON(g)
 );
 
-const zkp13 = ZkProgram({
-    name: 'zkp13',
+const zkp15 = ZkProgram({
+    name: 'zkp15',
     publicInput: Field,
     publicOutput: Field,
     methods: {
@@ -49,7 +49,7 @@ const zkp13 = ZkProgram({
             let line_cnt = 0;
 
             let g;
-            for (let i = 1; i < ATE_LOOP_COUNT.length - 46; i++) {
+            for (let i = ATE_LOOP_COUNT.length - 26; i < ATE_LOOP_COUNT.length - 6; i++) {
                 idx = i - 1; 
         
                 let g_line = g2_lines[line_cnt]; 
@@ -81,5 +81,5 @@ const zkp13 = ZkProgram({
 });
 
 
-const ZKP13Proof = ZkProgram.Proof(zkp13);
-export { ZKP13Proof, zkp13 }
+const ZKP15Proof = ZkProgram.Proof(zkp15);
+export { ZKP15Proof, zkp15 }
