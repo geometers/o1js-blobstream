@@ -54,7 +54,7 @@ class KZGLineAccumulator {
     g.push(g2_line.psi(a_cache));
 
     g2_line = g2_lines[line_cnt];
-    g[g.length - 1] = g[g.length - 1].mul(g2_line.psi(a_cache));
+    g[g.length - 1] = g[g.length - 1].sparse_mul(g2_line.psi(a_cache));
 
     // handle pair (negB, [tau])
 

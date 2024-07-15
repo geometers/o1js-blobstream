@@ -4,8 +4,11 @@ import {
     Poseidon,
   } from 'o1js';
 import { Accumulator } from '../accumulator.js';
-import { preparePairing_0, preparePairing_1 } from '../piop/plonk_utils.js';
+import { preparePairing_1 } from '../piop/plonk_utils.js';
 import { VK } from '../vk.js';
+import { G1Affine } from '../../ec/index.js';
+import { ArrayListHasher, KzgAccumulator, KzgProof, KzgState } from '../../kzg/structs.js';
+import { Fp12 } from '../../towers/fp12.js';
 
 const zkp12 = ZkProgram({
     name: 'zkp12',
@@ -13,10 +16,12 @@ const zkp12 = ZkProgram({
     publicOutput: Field,
     methods: {
       compute: {
-        privateInputs: [Accumulator],
+        privateInputs: [Accumulator, Field, Fp12],
         async method(
             input: Field,
-            acc: Accumulator
+            acc: Accumulator, 
+            shift_power: Field, 
+            c: Fp12, 
         ) {
             const inDigest = Poseidon.hashPacked(Accumulator, acc);
             inDigest.assertEquals(input);
@@ -30,10 +35,27 @@ const zkp12 = ZkProgram({
                 acc.fs.zeta
             )
 
-            acc.state.kzg_cm_x = kzg_cm_x; 
-            acc.state.kzg_cm_y = kzg_cm_y; 
+            const A = new G1Affine({ x: kzg_cm_x, y: kzg_cm_y });
+            const negB = new G1Affine({ x: acc.state.neg_fq_x, y: acc.state.neg_fq_y });
 
-            return Poseidon.hashPacked(Accumulator, acc);
+            let kzgProof = new KzgProof({
+                A, 
+                negB, 
+                shift_power, 
+                c
+            })
+
+            let kzgState = new KzgState({
+                f: c.inverse(), 
+                lines_hashes_digest: ArrayListHasher.empty()
+            })
+
+            let kzgAccumulator = new KzgAccumulator({
+                proof: kzgProof, 
+                state: kzgState
+            })
+
+            return Poseidon.hashPacked(KzgAccumulator, kzgAccumulator);
         },
       },
     },

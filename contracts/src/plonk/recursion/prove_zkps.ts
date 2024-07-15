@@ -19,6 +19,9 @@ import { zkp9 } from "./zkp9.js";
 import { zkp10 } from "./zkp10.js";
 import { zkp11 } from "./zkp11.js";
 import { zkp12 } from "./zkp12.js";
+import { get_shift_power, make_c } from "../helpers.js";
+import { zkp13 } from "./zkp13.js";
+import { KzgAccumulator } from "../../kzg/structs.js";
 
 
 const make_acc = () => {
@@ -54,8 +57,7 @@ const acc_9 = wt.zkp8();
 const acc_10 = wt.zkp9();
 const acc_11 = wt.zkp10();
 const acc_12 = wt.zkp11();
-const acc_13 = wt.zkp12();
-
+let [acc_13, line_hashes] = wt.zkp12(get_shift_power(), make_c());
 
 
 async function prove_zkp0() {
@@ -219,7 +221,7 @@ async function prove_zkp12() {
     const vk12 = (await zkp12.compile()).verificationKey;
 
     let cin12 = Poseidon.hashPacked(Accumulator, acc_12);
-    const proof12 = await zkp12.compute(cin12, acc_12);
+    const proof12 = await zkp12.compute(cin12, acc_12, get_shift_power(), make_c());
 
     const valid = await verify(proof12, vk12); 
     console.log("valid zkp12?: ", valid);
@@ -228,18 +230,18 @@ async function prove_zkp12() {
     fs.writeFileSync('./src/plonk/recursion/vks/vk12.json', JSON.stringify(vk12), 'utf8');
 }
 
-// async function prove_zkp13() {
-//     const vk13 = (await zkp13.compile()).verificationKey;
+async function prove_zkp13() {
+    const vk13 = (await zkp13.compile()).verificationKey;
 
-//     let cin13 = Poseidon.hashPacked(Groth16Data, in13);
-//     const proof13 = await zkp13.compute(cin13, in13);
+    let cin13 = Poseidon.hashPacked(KzgAccumulator, acc_13);
+    const proof13 = await zkp13.compute(cin13, acc_13, line_hashes);
 
-//     const valid = await verify(proof13, vk13); 
-//     console.log("valid zkp13?: ", valid);
+    const valid = await verify(proof13, vk13); 
+    console.log("valid zkp13?: ", valid);
 
-//     fs.writeFileSync('./src/plonk/recursion/proofs/layer0/zkp13.json', JSON.stringify(proof13), 'utf8');
-//     fs.writeFileSync('./src/plonk/recursion/vks/vk13.json', JSON.stringify(vk13), 'utf8');
-// }
+    fs.writeFileSync('./src/plonk/recursion/proofs/layer0/zkp13.json', JSON.stringify(proof13), 'utf8');
+    fs.writeFileSync('./src/plonk/recursion/vks/vk13.json', JSON.stringify(vk13), 'utf8');
+}
 
 // async function prove_zkp14() {
 //     const vk14 = (await zkp14.compile()).verificationKey;
@@ -347,9 +349,9 @@ switch(process.argv[2]) {
     case 'zkp12':
         await prove_zkp12();
         break;
-    // case 'zkp13':
-    //     await prove_zkp13();
-    //     break;
+    case 'zkp13':
+        await prove_zkp13();
+        break;
     // case 'zkp14':
     //     await prove_zkp14();
     //     break;

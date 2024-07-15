@@ -1,9 +1,15 @@
+import { Field } from "o1js";
+import { ArrayListHasher, KzgAccumulator, KzgProof, KzgState } from "../../kzg/structs.js";
 import { Accumulator } from "../accumulator.js"
 import { compute_alpha_square_lagrange_0, compute_commitment_linearized_polynomial_split_0, compute_commitment_linearized_polynomial_split_1, compute_commitment_linearized_polynomial_split_2, customPiLagrange, evalVanishing, fold_quotient, fold_state_0, fold_state_1, fold_state_2, opening_of_linearized_polynomial, pi_contribution, preparePairing_0, preparePairing_1 } from "../piop/plonk_utils.js";
 import { VK } from "../vk.js";
+import { G1Affine } from "../../ec/index.js";
+import { Fp12 } from "../../towers/fp12.js";
 
 class WitnessTracker {
-    acc: Accumulator 
+    acc: Accumulator
+    kzg: KzgAccumulator
+    line_hashes: Array<Field> 
 
     constructor(acc: Accumulator) {
         this.acc = acc.deepClone(); 
@@ -170,7 +176,7 @@ class WitnessTracker {
         return this.acc.deepClone(); 
     }
 
-    zkp12(): Accumulator {
+    zkp12(shift_power: Field, c: Fp12): [KzgAccumulator, Array<Field>] {
         const [kzg_cm_x, kzg_cm_y] = preparePairing_1(
             VK, 
             this.acc.proof, 
@@ -183,7 +189,29 @@ class WitnessTracker {
         this.acc.state.kzg_cm_x = kzg_cm_x; 
         this.acc.state.kzg_cm_y = kzg_cm_y;
 
-        return this.acc.deepClone(); 
+        const A = new G1Affine({ x: kzg_cm_x, y: kzg_cm_y });
+        const negB = new G1Affine({ x: this.acc.state.neg_fq_x, y: this.acc.state.neg_fq_y });
+
+        let kzgProof = new KzgProof({
+            A, 
+            negB, 
+            shift_power, 
+            c
+        })
+
+        let kzgState = new KzgState({
+            f: c.inverse(), 
+            lines_hashes_digest: ArrayListHasher.empty()
+        })
+
+        let kzgAccumulator = new KzgAccumulator({
+            proof: kzgProof, 
+            state: kzgState
+        });
+
+        this.line_hashes = new Array(ArrayListHasher.n).fill(Field(0n))
+        this.kzg = kzgAccumulator.deepClone();
+        return [this.kzg.deepClone(), [...this.line_hashes]]; 
     }
 }
 
