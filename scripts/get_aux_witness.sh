@@ -2,7 +2,7 @@
 
 set -e
 
-source ./scripts/.mlo_env
+source ./scripts/.env
 cd ./contracts
 NODE_SCRIPT="./build/src/plonk/serialize_mlo.js"
 
