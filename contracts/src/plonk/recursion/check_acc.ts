@@ -34,8 +34,18 @@ const acc_4 = wt.zkp3();
 const acc_5 = wt.zkp4();
 const acc_6 = wt.zkp5();
 const acc_7 = wt.zkp6();
+const acc_8 = wt.zkp7();
+const acc_9 = wt.zkp8();
+const acc_10 = wt.zkp9();
+const acc_11 = wt.zkp10();
+const acc_12 = wt.zkp11();
+const acc_13 = wt.zkp12();
 
-console.log(Poseidon.hashPacked(Accumulator, acc_7).toBigInt())
 
-console.log("lcm x: ", acc_7.state.lcm_x.toBigInt())
-console.log("lcm y: ", acc_7.state.lcm_y.toBigInt())
+console.log(Poseidon.hashPacked(Accumulator, acc_13).toBigInt())
+
+console.log("kzg_cm_x: ", acc_13.state.kzg_cm_x.toBigInt())
+console.log("kzg_cm_y: ", acc_13.state.kzg_cm_y.toBigInt())
+console.log("neg fq x: ", acc_13.state.neg_fq_x.toBigInt())
+console.log("neg fq y: ", acc_13.state.neg_fq_y.toBigInt())
+

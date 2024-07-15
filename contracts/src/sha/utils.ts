@@ -1,4 +1,4 @@
-import { Bool, Field, UInt8 } from "o1js";
+import { Bool, Field, UInt8, Provable } from "o1js";
 import { FpC, FrC } from "../towers/index.js";
 
 const provableBn254BaseFieldToBytes = (x: FpC) => {
@@ -28,13 +28,32 @@ const provableBn254ScalarFieldToBytes = (x: FrC) => {
         chunks.push(UInt8.Unsafe.fromField(chunk));
     }
 
-    return chunks.reverse();
+    return chunks.reverse();    
 }
 
-const xorBytes = (x: UInt8[], y: UInt8[]) => {
-    
+function bytesToWord(wordBytes: UInt8[]): Field {
+    return wordBytes.reduce((acc, byte, idx) => {
+      const shift = 1n << BigInt(8 * idx);
+      return acc.add(byte.value.mul(shift));
+    }, Field.from(0));
 }
 
-export { provableBn254BaseFieldToBytes, provableBn254ScalarFieldToBytes }
+function wordToBytes(word: Field, bytesPerWord = 8): UInt8[] {
+    let bytes = Provable.witness(Provable.Array(UInt8, bytesPerWord), () => {
+      let w = word.toBigInt();
+      return Array.from({ length: bytesPerWord }, (_, k) =>
+        UInt8.from((w >> BigInt(8 * k)) & 0xffn)
+      );
+    });
+  
+    // check decomposition
+    bytesToWord(bytes).assertEquals(word);
+  
+    return bytes;
+  }
+
+
+
+export { provableBn254BaseFieldToBytes, provableBn254ScalarFieldToBytes, wordToBytes, bytesToWord }
 
 

@@ -225,7 +225,7 @@ print(get_padding(s))
 print(len(pad_741(s)))
 bits = pad_741(s)
 byte_array = bits_to_bytearray(bits)
-print(byte_array)
+print(byte_array.hex())
 # print(list(byte_array))
 
 # print(pad_741(s))

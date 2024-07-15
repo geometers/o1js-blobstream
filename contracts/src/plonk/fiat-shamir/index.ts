@@ -1,11 +1,41 @@
-import { Bytes, UInt8 } from "o1js";
+import { Bytes, Gadgets, UInt8, UInt32, Provable } from "o1js";
 import { FrC } from "../../towers/index.js";
 import { Hash, Struct } from "o1js";
 import { FpC } from "../../towers/index.js";
 import { Sp1PlonkProof } from "../proof.js";
-import { provableBn254BaseFieldToBytes, provableBn254ScalarFieldToBytes } from "../../sha/utils.js";
+import { bytesToWord, provableBn254BaseFieldToBytes, provableBn254ScalarFieldToBytes, wordToBytes } from "../../sha/utils.js";
 import { Sp1PlonkVk } from "../vk.js";
 import { shaToFr } from "./sha_to_fr.js";
+
+const Bytes741Padding = [
+    UInt8.from(0x80n), 
+    UInt8.from(0), 
+    UInt8.from(0), 
+    UInt8.from(0), 
+    UInt8.from(0), 
+    UInt8.from(0), 
+    UInt8.from(0), 
+    UInt8.from(0), 
+    UInt8.from(0), 
+    UInt8.from(0), 
+    UInt8.from(0), 
+    UInt8.from(0), 
+    UInt8.from(0), 
+    UInt8.from(0), 
+    UInt8.from(0), 
+    UInt8.from(0), 
+    UInt8.from(0), 
+    UInt8.from(0), 
+    UInt8.from(0), 
+    UInt8.from(0), 
+    UInt8.from(0), 
+    UInt8.from(0), 
+    UInt8.from(0), 
+    UInt8.from(0), 
+    UInt8.from(0), 
+    UInt8.from(0x17n), 
+    UInt8.from(0x28n), 
+]
 
 const gammaSizeInBytes = () => {
     let size = 0 
@@ -390,6 +420,90 @@ class Sp1PlonkFiatShamir extends Struct({
 
         const random_digest = Hash.SHA2_256.hash(new BytesRandomKzg(cm_bytes));
         return shaToFr(random_digest);
+    }
+
+    // just delay digest to fr 
+    // TODO: make this a generic function for all challenges
+    gammaKzgDigest_part0(proof: Sp1PlonkProof, vk: Sp1PlonkVk, linearized_cm_x: FpC, linearized_cm_y: FpC, linearized_opening: FrC) {
+        const gamma_separator = FpC.from(0x67616d6d61n);
+        let separator_bytes = provableBn254BaseFieldToBytes(gamma_separator);
+
+        // gamma is 39 bits, so we leave only 40 bits (to keep it multiple of 8)
+        // and we cut the rest (256 - 40) bits which is 27 bytes 
+        let cm_bytes = separator_bytes.slice(27, 32);
+
+        // note that here they compute challenge from zeta_reduced and not unreduced as before
+        cm_bytes = cm_bytes.concat(provableBn254ScalarFieldToBytes(this.zeta));
+
+        cm_bytes = cm_bytes.concat(provableBn254BaseFieldToBytes(linearized_cm_x));
+        cm_bytes = cm_bytes.concat(provableBn254BaseFieldToBytes(linearized_cm_y));
+
+        cm_bytes = cm_bytes.concat(provableBn254BaseFieldToBytes(proof.l_com_x));
+        cm_bytes = cm_bytes.concat(provableBn254BaseFieldToBytes(proof.l_com_y));
+        cm_bytes = cm_bytes.concat(provableBn254BaseFieldToBytes(proof.r_com_x));
+        cm_bytes = cm_bytes.concat(provableBn254BaseFieldToBytes(proof.r_com_y));
+        cm_bytes = cm_bytes.concat(provableBn254BaseFieldToBytes(proof.o_com_x));
+        cm_bytes = cm_bytes.concat(provableBn254BaseFieldToBytes(proof.o_com_y));
+
+        cm_bytes = cm_bytes.concat(provableBn254BaseFieldToBytes(vk.qs1_x));
+        cm_bytes = cm_bytes.concat(provableBn254BaseFieldToBytes(vk.qs1_y));
+        cm_bytes = cm_bytes.concat(provableBn254BaseFieldToBytes(vk.qs2_x));
+        cm_bytes = cm_bytes.concat(provableBn254BaseFieldToBytes(vk.qs2_y));
+
+        cm_bytes = cm_bytes.concat(provableBn254BaseFieldToBytes(vk.qcp_0_x));
+        cm_bytes = cm_bytes.concat(provableBn254BaseFieldToBytes(vk.qcp_0_y));
+
+        cm_bytes = cm_bytes.concat(provableBn254ScalarFieldToBytes(linearized_opening));
+        cm_bytes = cm_bytes.concat(provableBn254ScalarFieldToBytes(proof.l_at_zeta));
+        cm_bytes = cm_bytes.concat(provableBn254ScalarFieldToBytes(proof.r_at_zeta));
+        cm_bytes = cm_bytes.concat(provableBn254ScalarFieldToBytes(proof.o_at_zeta));
+        cm_bytes = cm_bytes.concat(provableBn254ScalarFieldToBytes(proof.s1_at_zeta));
+        cm_bytes = cm_bytes.concat(provableBn254ScalarFieldToBytes(proof.s2_at_zeta));
+        cm_bytes = cm_bytes.concat(provableBn254ScalarFieldToBytes(proof.qcp_0_at_zeta).slice(0, 27));
+
+        const chunks = [];
+        for (let i = 0; i < cm_bytes.length; i += 4) {
+            const chunk = UInt32.Unsafe.fromField(
+                bytesToWord(cm_bytes.slice(i, i + 4).reverse())
+            )
+            chunks.push(chunk);
+        }
+
+        let H = Gadgets.SHA256.initialState;
+        for (let i = 0; i < 11; i++) {
+            const messageBlock = chunks.slice(16*i, 16*(i+1))
+            let W = Gadgets.SHA256.createMessageSchedule(messageBlock); 
+            H = Gadgets.SHA256.compression(H, W)
+        }
+
+        return H
+
+        // this.gamma_kzg_digest = Hash.SHA2_256.hash(new BytesGammaKzg(cm_bytes));
+    }
+
+    gammaKzgDigest_part1(proof: Sp1PlonkProof, H: UInt32[]) {
+        let cm_bytes = provableBn254ScalarFieldToBytes(proof.qcp_0_at_zeta).slice(27, 32);
+        cm_bytes = cm_bytes.concat(provableBn254ScalarFieldToBytes(proof.grand_product_at_omega_zeta));
+
+        cm_bytes = cm_bytes.concat(Bytes741Padding)
+
+        const chunks = [];
+        for (let i = 0; i < cm_bytes.length; i += 4) {
+            const chunk = UInt32.Unsafe.fromField(
+                bytesToWord(cm_bytes.slice(i, i + 4).reverse())
+            )
+            chunks.push(chunk);
+        }
+
+        const messageBlock = chunks
+        let W = Gadgets.SHA256.createMessageSchedule(messageBlock); 
+        H = Gadgets.SHA256.compression(H, W)
+
+        this.gamma_kzg_digest = Bytes.from(H.map((x) => wordToBytes(x.value, 4).reverse()).flat())
+    }
+
+    squeezeGammaKzgFromDigest() {
+        this.gamma_kzg = shaToFr(this.gamma_kzg_digest)
     }
 
 }

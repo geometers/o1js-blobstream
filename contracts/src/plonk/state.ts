@@ -1,4 +1,4 @@
-import { Provable, Struct } from "o1js";
+import { Provable, Struct, UInt32 } from "o1js";
 import { ATE_LOOP_COUNT, Fp12, FpC, FrC } from "../towers/index.js";
 
 class StateUntilPairing extends Struct({
@@ -36,6 +36,7 @@ class StateUntilPairing extends Struct({
     // g: Provable.Array(Fp12, ATE_LOOP_COUNT.length), 
     // f: Fp12
 
+    H: Provable.Array(UInt32, 8)
 }) 
 {
     deepClone() {
@@ -69,6 +70,8 @@ class StateUntilPairing extends Struct({
             kzg_cm_y: FpC.from(this.kzg_cm_y.toBigInt()), 
             neg_fq_x: FpC.from(this.neg_fq_x.toBigInt()), 
             neg_fq_y: FpC.from(this.neg_fq_y.toBigInt()),
+
+            H: [...this.H]
         })
     }
 }
@@ -107,6 +110,7 @@ type StateUntilPairingType = {
     // in pairing: 
     // g: Array<Fp12>, 
     // f: Fp12
+    H: Array<UInt32>
 }
 
 function empty(pi0: FrC, pi1: FrC): StateUntilPairingType {
@@ -144,6 +148,7 @@ function empty(pi0: FrC, pi1: FrC): StateUntilPairingType {
         // in pairing: 
         // g: new Array(ATE_LOOP_COUNT.length).fill(Fp12.zero()),
         // f: Fp12.zero()
+        H: new Array(8).fill(UInt32.from(0n))
     }
 }
 

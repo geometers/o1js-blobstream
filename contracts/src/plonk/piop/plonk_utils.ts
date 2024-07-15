@@ -302,6 +302,71 @@ export function fold_state(vk: Sp1PlonkVk, proof: Sp1PlonkProof, lcm_x: FpC, lcm
     return [cm.x.assertCanonical(), cm.y.assertCanonical(), opening]
 }
 
+// NOW SPLIT FOLD STATE
+export function fold_state_0(proof: Sp1PlonkProof, lcm_x: FpC, lcm_y: FpC, lcm_opening: FrC, gamma_kzg: FrC): [FpC, FpC, FrC] {
+    const gamma_2 = gamma_kzg.mul(gamma_kzg).assertCanonical(); 
+    const gamma_3 = gamma_kzg.mul(gamma_2).assertCanonical(); 
+    const gamma_4 = gamma_kzg.mul(gamma_3).assertCanonical(); 
+    const gamma_5 = gamma_kzg.mul(gamma_4).assertCanonical(); 
+    const gamma_6 = gamma_kzg.mul(gamma_5).assertCanonical(); 
+
+    const l = new bn254({x: proof.l_com_x, y: proof.l_com_y});
+    const r = new bn254({x: proof.r_com_x, y: proof.r_com_y});
+    
+    let cm = new bn254({x: lcm_x, y: lcm_y});
+    let opening = FrC.from(lcm_opening).assertCanonical(); 
+
+    cm = cm.add(l.scale(gamma_kzg))
+    cm = cm.add(r.scale(gamma_2))
+
+    opening = proof.l_at_zeta.mul(gamma_kzg).add(opening).assertCanonical();
+    opening = proof.r_at_zeta.mul(gamma_2).add(opening).assertCanonical();
+    opening = proof.o_at_zeta.mul(gamma_3).add(opening).assertCanonical();
+    opening = proof.s1_at_zeta.mul(gamma_4).add(opening).assertCanonical();
+    opening = proof.s2_at_zeta.mul(gamma_5).add(opening).assertCanonical();
+    opening = proof.qcp_0_at_zeta.mul(gamma_6).add(opening).assertCanonical();
+
+    return [cm.x.assertCanonical(), cm.y.assertCanonical(), opening]
+}
+
+export function fold_state_1(vk: Sp1PlonkVk, proof: Sp1PlonkProof, cm_x: FpC, cm_y: FpC, gamma_kzg: FrC): [FpC, FpC] {
+    const gamma_2 = gamma_kzg.mul(gamma_kzg).assertCanonical(); 
+    const gamma_3 = gamma_kzg.mul(gamma_2).assertCanonical(); 
+    const gamma_4 = gamma_kzg.mul(gamma_3).assertCanonical(); 
+    const gamma_5 = gamma_kzg.mul(gamma_4).assertCanonical(); 
+
+    const o = new bn254({x: proof.o_com_x, y: proof.o_com_y});
+    const s1 = new bn254({x: vk.qs1_x, y: vk.qs1_y});
+    const s2 = new bn254({x: vk.qs2_x, y: vk.qs2_y});
+    
+    let cm = new bn254({x: cm_x, y: cm_y});
+
+    cm = cm.add(o.scale(gamma_3))
+    cm = cm.add(s1.scale(gamma_4))
+    cm = cm.add(s2.scale(gamma_5))
+
+    return [cm.x.assertCanonical(), cm.y.assertCanonical()]
+}
+
+export function fold_state_2(vk: Sp1PlonkVk, proof: Sp1PlonkProof, cm_x: FpC, cm_y: FpC, gamma_kzg: FrC): [FpC, FpC] {
+    const gamma_2 = gamma_kzg.mul(gamma_kzg).assertCanonical(); 
+    const gamma_3 = gamma_kzg.mul(gamma_2).assertCanonical(); 
+    const gamma_4 = gamma_kzg.mul(gamma_3).assertCanonical(); 
+    const gamma_5 = gamma_kzg.mul(gamma_4).assertCanonical(); 
+    const gamma_6 = gamma_kzg.mul(gamma_5).assertCanonical(); 
+
+    // const s2 = new bn254({x: vk.qs2_x, y: vk.qs2_y});
+    const qcp_0 = new bn254({x: vk.qcp_0_x, y: vk.qcp_0_y})
+    
+    let cm = new bn254({x: cm_x, y: cm_y});
+
+    // cm = cm.add(s2.scale(gamma_5))
+    cm = cm.add(qcp_0.scale(gamma_6))
+
+    return [cm.x.assertCanonical(), cm.y.assertCanonical()]
+}
+
+
 export function preparePairing(vk: Sp1PlonkVk, proof: Sp1PlonkProof, random: FrC, cm_x: FpC, cm_y: FpC, cm_opening: FrC, zeta: FrC): [FpC, FpC, FpC, FpC] {
 
     // quotients part
@@ -337,4 +402,60 @@ export function preparePairing(vk: Sp1PlonkVk, proof: Sp1PlonkProof, random: FrC
     folded_commitments = folded_commitments.add(quotients_g1);
 
     return [folded_commitments.x.assertCanonical(), folded_commitments.y.assertCanonical(), neg_folded_q.x.assertCanonical(), neg_folded_q.y.assertCanonical()]
+}
+
+// NOW SPLIT PREPARE PAIRING
+export function preparePairing_0(vk: Sp1PlonkVk, proof: Sp1PlonkProof, random: FrC, cm_x: FpC, cm_y: FpC, cm_opening: FrC): [FpC, FpC, FpC, FpC] {
+
+    // quotients part
+    let batch_shifted = new bn254({x: proof.batch_opening_at_zeta_omega_x, y: proof.batch_opening_at_zeta_omega_y});
+    let folded_quotients = new bn254({x: proof.batch_opening_at_zeta_x, y: proof.batch_opening_at_zeta_y}); 
+    folded_quotients = folded_quotients.add(batch_shifted.scale(random)); 
+
+    const neg_folded_q = folded_quotients.negate(); 
+
+    // commitment part
+    const gp = new bn254({x: proof.grand_product_x, y: proof.grand_product_y});
+
+    let folded_commitments = new bn254({x: cm_x, y: cm_y});
+    folded_commitments = folded_commitments.add(gp.scale(random))
+
+    // evals part
+    const gen = new bn254({x: vk.g1_gen_x, y: vk.g1_gen_y});
+    let folded_evals = proof.grand_product_at_omega_zeta.mul(random).add(cm_opening).assertCanonical();
+    const neg_folded_evals_on_curve = gen.scale(folded_evals).negate();
+
+    folded_commitments = folded_commitments.add(neg_folded_evals_on_curve)
+
+    // // quotients g1 
+    // const batch_opening_z = new bn254({x: proof.batch_opening_at_zeta_x, y: proof.batch_opening_at_zeta_y});
+    // const batch_opening_omega_z = new bn254({x: proof.batch_opening_at_zeta_omega_x, y: proof.batch_opening_at_zeta_omega_y});
+
+    // const zeta_omega = vk.omega.mul(zeta).assertCanonical();
+    // const random_zeta_omega = random.mul(zeta_omega).assertCanonical();
+
+    // let quotients_g1 = batch_opening_z.scale(zeta); 
+    // quotients_g1 = quotients_g1.add(batch_opening_omega_z.scale(random_zeta_omega));
+
+    // folded_commitments = folded_commitments.add(quotients_g1);
+
+    return [folded_commitments.x.assertCanonical(), folded_commitments.y.assertCanonical(), neg_folded_q.x.assertCanonical(), neg_folded_q.y.assertCanonical()]
+}
+
+export function preparePairing_1(vk: Sp1PlonkVk, proof: Sp1PlonkProof, random: FrC, folded_cm_x: FpC, folded_cm_y: FpC, zeta: FrC): [FpC, FpC] {
+    let folded_commitments = new bn254({x: folded_cm_x, y: folded_cm_y});
+
+    // quotients g1 
+    const batch_opening_z = new bn254({x: proof.batch_opening_at_zeta_x, y: proof.batch_opening_at_zeta_y});
+    const batch_opening_omega_z = new bn254({x: proof.batch_opening_at_zeta_omega_x, y: proof.batch_opening_at_zeta_omega_y});
+
+    const zeta_omega = vk.omega.mul(zeta).assertCanonical();
+    const random_zeta_omega = random.mul(zeta_omega).assertCanonical();
+
+    let quotients_g1 = batch_opening_z.scale(zeta); 
+    quotients_g1 = quotients_g1.add(batch_opening_omega_z.scale(random_zeta_omega));
+
+    folded_commitments = folded_commitments.add(quotients_g1);
+
+    return [folded_commitments.x.assertCanonical(), folded_commitments.y.assertCanonical()]
 }

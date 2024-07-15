@@ -1,5 +1,5 @@
 import { Accumulator } from "../accumulator.js"
-import { compute_alpha_square_lagrange_0, compute_commitment_linearized_polynomial_split_0, compute_commitment_linearized_polynomial_split_1, compute_commitment_linearized_polynomial_split_2, customPiLagrange, evalVanishing, fold_quotient, opening_of_linearized_polynomial, pi_contribution } from "../piop/plonk_utils.js";
+import { compute_alpha_square_lagrange_0, compute_commitment_linearized_polynomial_split_0, compute_commitment_linearized_polynomial_split_1, compute_commitment_linearized_polynomial_split_2, customPiLagrange, evalVanishing, fold_quotient, fold_state_0, fold_state_1, fold_state_2, opening_of_linearized_polynomial, pi_contribution, preparePairing_0, preparePairing_1 } from "../piop/plonk_utils.js";
 import { VK } from "../vk.js";
 
 class WitnessTracker {
@@ -108,6 +108,80 @@ class WitnessTracker {
 
         this.acc.state.lcm_x = lcm_x;
         this.acc.state.lcm_y = lcm_y;
+
+        return this.acc.deepClone(); 
+    }
+
+    zkp7(): Accumulator {
+        let H = this.acc.fs.gammaKzgDigest_part0(this.acc.proof, VK, this.acc.state.lcm_x, this.acc.state.lcm_y, this.acc.state.linearized_opening);
+        this.acc.state.H = H;
+
+        return this.acc.deepClone(); 
+    }
+
+    zkp8(): Accumulator {
+        this.acc.fs.gammaKzgDigest_part1(this.acc.proof, this.acc.state.H);
+        this.acc.fs.squeezeGammaKzgFromDigest()
+
+        const [cm_x, cm_y, cm_opening] = fold_state_0(this.acc.proof, this.acc.state.lcm_x, this.acc.state.lcm_y, this.acc.state.linearized_opening, this.acc.fs.gamma_kzg);
+
+        this.acc.state.cm_x = cm_x; 
+        this.acc.state.cm_y = cm_y;
+        this.acc.state.cm_opening = cm_opening;
+
+        return this.acc.deepClone(); 
+    }
+
+    zkp9(): Accumulator {
+        const [cm_x, cm_y] = fold_state_1(VK, this.acc.proof, this.acc.state.cm_x, this.acc.state.cm_y, this.acc.fs.gamma_kzg);
+
+        this.acc.state.cm_x = cm_x; 
+        this.acc.state.cm_y = cm_y;
+
+        return this.acc.deepClone(); 
+    }
+
+    zkp10(): Accumulator {
+        const [cm_x, cm_y] = fold_state_2(VK, this.acc.proof, this.acc.state.cm_x, this.acc.state.cm_y, this.acc.fs.gamma_kzg);
+        const kzg_random = this.acc.fs.squeezeRandomForKzg(this.acc.proof, cm_x, cm_y)
+
+        this.acc.state.cm_x = cm_x; 
+        this.acc.state.cm_y = cm_y;
+        this.acc.state.kzg_random = kzg_random;
+
+        return this.acc.deepClone(); 
+    }
+
+    zkp11(): Accumulator {
+        const [kzg_cm_x, kzg_cm_y, neg_fq_x, neg_fq_y] = preparePairing_0(
+            VK, 
+            this.acc.proof, 
+            this.acc.state.kzg_random, 
+            this.acc.state.cm_x, 
+            this.acc.state.cm_y, 
+            this.acc.state.cm_opening
+        )
+
+        this.acc.state.kzg_cm_x = kzg_cm_x; 
+        this.acc.state.kzg_cm_y = kzg_cm_y; 
+        this.acc.state.neg_fq_x = neg_fq_x; 
+        this.acc.state.neg_fq_y = neg_fq_y;
+
+        return this.acc.deepClone(); 
+    }
+
+    zkp12(): Accumulator {
+        const [kzg_cm_x, kzg_cm_y] = preparePairing_1(
+            VK, 
+            this.acc.proof, 
+            this.acc.state.kzg_random, 
+            this.acc.state.kzg_cm_x, 
+            this.acc.state.kzg_cm_y, 
+            this.acc.fs.zeta
+        )
+
+        this.acc.state.kzg_cm_x = kzg_cm_x; 
+        this.acc.state.kzg_cm_y = kzg_cm_y;
 
         return this.acc.deepClone(); 
     }
