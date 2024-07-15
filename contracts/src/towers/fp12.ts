@@ -240,6 +240,26 @@ class Fp12 extends Struct({ c0: Fp6, c1: Fp6 }) {
     console.log(`${name}.h20: `, this.c1.c2.c0.toBigInt());
     console.log(`${name}.h21: `, this.c1.c2.c1.toBigInt());
   }
+
+  toJSON(): string {
+    const f = {
+      g00: this.c0.c0.c0.toBigInt().toString(),
+      g01: this.c0.c0.c1.toBigInt().toString(),
+      g10: this.c0.c1.c0.toBigInt().toString(),
+      g11: this.c0.c1.c1.toBigInt().toString(),
+      g20: this.c0.c2.c0.toBigInt().toString(),
+      g21: this.c0.c2.c1.toBigInt().toString(),
+
+      h00: this.c1.c0.c0.toBigInt().toString(),
+      h01: this.c1.c0.c1.toBigInt().toString(),
+      h10: this.c1.c1.c0.toBigInt().toString(),
+      h11: this.c1.c1.c1.toBigInt().toString(),
+      h20: this.c1.c2.c0.toBigInt().toString(),
+      h21: this.c1.c2.c1.toBigInt().toString(),
+    }
+
+    return JSON.stringify(f)
+  }
 }
 
 export { Fp12 };

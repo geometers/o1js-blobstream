@@ -94,7 +94,7 @@ pub fn compute_aux_witness(x: Fq12) -> (u8, Fq12) {
     // here we build the auxiliary witness
     let w27 = get_shift_factor();
 
-    display_fq12(w27, "w27");
+    // display_fq12(w27, "w27");
 
     let mut eth_residue = Fq12::zero();
     let mut shift_power = 0u8;
@@ -104,7 +104,7 @@ pub fn compute_aux_witness(x: Fq12) -> (u8, Fq12) {
         let tmp_eth = x * tmp_shift;
 
         if exp(tmp_eth, &RESIDUE) == Fq12::one() {
-            println!("found at {}", i);
+            // println!("found at {}", i);
             shift_power = i;
             // shift = tmp_shift;
             eth_residue = tmp_eth;
