@@ -27,14 +27,14 @@ pub struct Field12 {
 #[derive(Serialize, Deserialize, Debug)]
 pub struct AuxWitness {
     c: Field12, 
-    shift_pow: u8
+    shift_power: String
 }
 
 pub fn serialize_aux_witness(c: Fq12, shift_pow: u8, path: &str) {
     let c_serialized = serialize_fq12(c);
     let aux_witness = AuxWitness {
         c: c_serialized,
-        shift_pow
+        shift_power: shift_pow.to_string()
     };
 
     let json = serde_json::to_string(&aux_witness).unwrap();
@@ -58,7 +58,7 @@ pub fn serialize_fq12(f: Fq12) -> Field12 {
         g11: to_string(f.c0.c1.c1),
 
         g20: to_string(f.c0.c2.c0),
-        g21: to_string(f.c0.c2.c0),
+        g21: to_string(f.c0.c2.c1),
 
         h00: to_string(f.c1.c0.c0),
         h01: to_string(f.c1.c0.c1),

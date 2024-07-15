@@ -5,6 +5,22 @@ import { Fp2 } from './fp2.js';
 import { Fp6 } from './fp6.js';
 import { GAMMA_1S, GAMMA_2S, GAMMA_3S } from './precomputed.js';
 
+type Fp12Type = {
+  g00: string,
+  g01: string,
+  g10: string,
+  g11: string,
+  g20: string,
+  g21: string,
+
+  h00: string,
+  h01: string,
+  h10: string,
+  h11: string,
+  h20: string,  
+  h21: string,
+}
+
 // Fp6^2[w]/(w^2 - v)
 class Fp12 extends Struct({ c0: Fp6, c1: Fp6 }) {
   static zero(): Fp12 {
@@ -260,6 +276,44 @@ class Fp12 extends Struct({ c0: Fp6, c1: Fp6 }) {
 
     return JSON.stringify(f)
   }
+
+  static loadFromJSON(json: Fp12Type) {
+    const g00 = FpC.from(json.g00)
+    const g01 = FpC.from(json.g01)
+
+    const g0 = new Fp2({ c0: g00, c1: g01 })
+
+    const g10 = FpC.from(json.g10)
+    const g11 = FpC.from(json.g11)
+
+    const g1 = new Fp2({ c0: g10, c1: g11 })
+
+    const g20 = FpC.from(json.g20)
+    const g21 = FpC.from(json.g21)
+
+    const g2 = new Fp2({ c0: g20, c1: g21 })
+
+    const g = new Fp6({ c0: g0, c1: g1, c2: g2 })
+
+    const h00 = FpC.from(json.h00)
+    const h01 = FpC.from(json.h01)
+
+    const h0 = new Fp2({ c0: h00, c1: h01 })
+
+    const h10 = FpC.from(json.h10)
+    const h11 = FpC.from(json.h11)
+
+    const h1 = new Fp2({ c0: h10, c1: h11 })
+
+    const h20 = FpC.from(json.h20)
+    const h21 = FpC.from(json.h21)
+
+    const h2 = new Fp2({ c0: h20, c1: h21 })
+
+    const h = new Fp6({ c0: h0, c1: h1, c2: h2 })
+
+    return new Fp12({ c0: g, c1: h })
+  }
 }
 
-export { Fp12 };
+export { Fp12, Fp12Type };

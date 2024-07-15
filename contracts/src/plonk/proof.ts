@@ -45,8 +45,8 @@ class Sp1PlonkProof extends Struct({
     qcp_0_wire_y: FpC.provable,
 
     // pairing aux witness 
-    c: Fp12, 
-    shift_power: Field
+    // c: Fp12, 
+    // shift_power: Field
 }) {
     deserialize(hexProof: string) {
         const defaultEncoder = ethers.AbiCoder.defaultAbiCoder()
@@ -97,8 +97,8 @@ type ProofType = {
     qcp_0_wire_x: FpC
     qcp_0_wire_y: FpC
 
-    c: Fp12, 
-    shift_power: Field
+    // c: Fp12, 
+    // shift_power: Field
 }
 
 
@@ -165,8 +165,8 @@ const fromDecoded = (decodedProof: bigint[]): ProofType => {
         qcp_0_wire_y: FpC.from(decodedProof[26]),
 
         // pairing stuff 
-        c: make_c(), 
-        shift_power: get_shift_power(),
+        // c: make_c(), 
+        // shift_power: get_shift_power(),
     }
 }
 
