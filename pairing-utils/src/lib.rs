@@ -1,10 +1,14 @@
 use ark_bn254::Fq12;
+use kzg::{assert_o1js_mlo, compute_aux_witness};
+use serialize::{deserialize_fq12, serialize_aux_witness};
 
 pub mod constants;
 pub mod eth_root;
 pub mod kzg;
 pub mod tonelli_shanks;
 pub mod utils;
+pub mod write;
+pub mod serialize;
 
 pub fn display_fq12(x: Fq12, label: &str) {
     println!("{}.g00: {}", label, x.c0.c0.c0);
@@ -21,6 +25,17 @@ pub fn display_fq12(x: Fq12, label: &str) {
     println!("{}.h20: {}", label, x.c1.c2.c0);
     println!("{}.h21: {}", label, x.c1.c2.c1);
 }
+
+pub fn compute_and_serialize_aux_witness(path_to_mlo: &str, path_to_aux_witness: &str) {
+    let mlo = deserialize_fq12(path_to_mlo);
+
+    // make sure that it is indeed r-th residue
+    assert_o1js_mlo(mlo);
+
+    let (shift_pow, c) = compute_aux_witness(mlo);  
+    serialize_aux_witness(c, shift_pow, path_to_aux_witness);
+}
+
 
 #[cfg(test)]
 mod tests {

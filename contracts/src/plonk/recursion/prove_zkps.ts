@@ -1,12 +1,11 @@
-import { Field, Poseidon, Provable, VerificationKey, assert, verify } from "o1js";
-import { zkp0, ZKP0Proof } from "./zkp0.js";
+import { Poseidon, verify } from "o1js";
+import { zkp0 } from "./zkp0.js";
 import fs from "fs"
 import { FrC } from "../../towers/fr.js";
 import { Sp1PlonkProof, deserializeProof } from "../proof.js";
 import { Sp1PlonkFiatShamir } from "../fiat-shamir/index.js";
 import { StateUntilPairing, empty } from "../state.js";
 import { Accumulator } from "../accumulator.js";
-import { VK } from "../vk.js";
 import { zkp1 } from "./zkp1.js";
 import { zkp2 } from "./zkp2.js";
 import { WitnessTracker } from "./witness_tracker.js";
