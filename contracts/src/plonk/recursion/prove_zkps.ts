@@ -21,7 +21,7 @@ import { zkp11 } from "./zkp11.js";
 import { zkp12 } from "./zkp12.js";
 import { get_shift_power, make_c } from "../helpers.js";
 import { zkp13 } from "./zkp13.js";
-import { KzgAccumulator } from "../../kzg/structs.js";
+import { ArrayListHasher, KzgAccumulator } from "../../kzg/structs.js";
 import { zkp15 } from "./zkp15.js";
 import { zkp14 } from "./zkp14.js";
 import { zkp16 } from "./zkp16.js";
@@ -60,7 +60,30 @@ const acc_9 = wt.zkp8();
 const acc_10 = wt.zkp9();
 const acc_11 = wt.zkp10();
 const acc_12 = wt.zkp11();
-let [acc_13, line_hashes] = wt.zkp12(get_shift_power(), make_c());
+let [acc_13, line_hashes_13] = wt.zkp12(get_shift_power(), make_c());
+let [acc_14, line_hashes_14] = wt.zkp13()
+let [acc_15, line_hashes_15] = wt.zkp14()
+let [acc_16, line_hashes_16] = wt.zkp15()
+let [acc_17, line_hashes_17] = wt.zkp16()
+
+console.log(Poseidon.hashPacked(KzgAccumulator, acc_17).toBigInt())
+
+// const full_digest = wt.fullGHashes()
+// console.log(full_digest.toBigInt())
+// console.log(ArrayListHasher.hash(line_hashes_17).toBigInt())
+// console.log(acc_17.state.lines_hashes_digest.toBigInt())
+
+// console.log(ArrayListHasher.hash(line_hashes_13).toBigInt())
+// console.log(acc_13.state.lines_hashes_digest.toBigInt())
+
+// console.log(ArrayListHasher.hash(line_hashes_14).toBigInt())
+// console.log(acc_14.state.lines_hashes_digest.toBigInt())
+
+// console.log(ArrayListHasher.hash(line_hashes_15).toBigInt())
+// console.log(acc_15.state.lines_hashes_digest.toBigInt())
+
+// console.log(ArrayListHasher.hash(line_hashes_16).toBigInt())
+// console.log(acc_16.state.lines_hashes_digest.toBigInt())
 
 
 async function prove_zkp0() {
@@ -237,7 +260,7 @@ async function prove_zkp13() {
     const vk13 = (await zkp13.compile()).verificationKey;
 
     let cin13 = Poseidon.hashPacked(KzgAccumulator, acc_13);
-    const proof13 = await zkp13.compute(cin13, acc_13, line_hashes);
+    const proof13 = await zkp13.compute(cin13, acc_13, line_hashes_13);
 
     const valid = await verify(proof13, vk13); 
     console.log("valid zkp13?: ", valid);
@@ -249,8 +272,8 @@ async function prove_zkp13() {
 async function prove_zkp14() {
     const vk14 = (await zkp14.compile()).verificationKey;
 
-    let cin14 = Poseidon.hashPacked(KzgAccumulator, acc_13);
-    const proof14 = await zkp14.compute(cin14, acc_13, line_hashes);
+    let cin14 = Poseidon.hashPacked(KzgAccumulator, acc_14);
+    const proof14 = await zkp14.compute(cin14, acc_14, line_hashes_14);
 
     const valid = await verify(proof14, vk14); 
     console.log("valid zkp14?: ", valid);
@@ -262,8 +285,8 @@ async function prove_zkp14() {
 async function prove_zkp15() {
     const vk15 = (await zkp15.compile()).verificationKey;
 
-    let cin15 = Poseidon.hashPacked(KzgAccumulator, acc_13);
-    const proof15 = await zkp15.compute(cin15, acc_13, line_hashes);
+    let cin15 = Poseidon.hashPacked(KzgAccumulator, acc_15);
+    const proof15 = await zkp15.compute(cin15, acc_15, line_hashes_15);
 
     const valid = await verify(proof15, vk15); 
     console.log("valid zkp15?: ", valid);
@@ -275,8 +298,8 @@ async function prove_zkp15() {
 async function prove_zkp16() {
     const vk16 = (await zkp16.compile()).verificationKey;
 
-    let cin16 = Poseidon.hashPacked(KzgAccumulator, acc_13);
-    const proof16 = await zkp16.compute(cin16, acc_13, line_hashes);
+    let cin16 = Poseidon.hashPacked(KzgAccumulator, acc_16);
+    const proof16 = await zkp16.compute(cin16, acc_16, line_hashes_16);
 
     const valid = await verify(proof16, vk16); 
     console.log("valid zkp16?: ", valid);

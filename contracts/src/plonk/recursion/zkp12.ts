@@ -38,15 +38,17 @@ const zkp12 = ZkProgram({
             const A = new G1Affine({ x: kzg_cm_x, y: kzg_cm_y });
             const negB = new G1Affine({ x: acc.state.neg_fq_x, y: acc.state.neg_fq_y });
 
+            let c_inv = c.inverse();
             let kzgProof = new KzgProof({
                 A, 
                 negB, 
                 shift_power, 
-                c
+                c, 
+                c_inv
             })
 
             let kzgState = new KzgState({
-                f: c.inverse(), 
+                f: c_inv, 
                 lines_hashes_digest: ArrayListHasher.empty()
             })
 

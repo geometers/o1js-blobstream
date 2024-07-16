@@ -1,15 +1,33 @@
-import { Field } from "o1js";
+import { Field, Poseidon } from "o1js";
 import { ArrayListHasher, KzgAccumulator, KzgProof, KzgState } from "../../kzg/structs.js";
 import { Accumulator } from "../accumulator.js"
 import { compute_alpha_square_lagrange_0, compute_commitment_linearized_polynomial_split_0, compute_commitment_linearized_polynomial_split_1, compute_commitment_linearized_polynomial_split_2, customPiLagrange, evalVanishing, fold_quotient, fold_state_0, fold_state_1, fold_state_2, opening_of_linearized_polynomial, pi_contribution, preparePairing_0, preparePairing_1 } from "../piop/plonk_utils.js";
 import { VK } from "../vk.js";
 import { G1Affine } from "../../ec/index.js";
 import { Fp12 } from "../../towers/fp12.js";
+import { G2Line } from "../../lines/index.js";
+import { KZGLineAccumulator } from "../mm_loop/accumulate_lines.js";
+import fs from "fs"
+import { ATE_LOOP_COUNT } from "../../towers/consts.js";
+
+const g2_lines_path = fs.readFileSync("./src/plonk/mm_loop/g2_lines.json", 'utf8');
+const tau_lines_path = fs.readFileSync("./src/plonk/mm_loop/tau_lines.json", 'utf8');
+
+let parsed_g2_lines: any[] = JSON.parse(g2_lines_path);
+let g2_lines = parsed_g2_lines.map(
+    (g: any): G2Line => G2Line.fromJSON(g)
+);
+
+let parsed_tau_lines: any[] = JSON.parse(tau_lines_path);
+let tau_lines = parsed_tau_lines.map(
+    (tau: any): G2Line => G2Line.fromJSON(tau)
+);
 
 class WitnessTracker {
     acc: Accumulator
     kzg: KzgAccumulator
     line_hashes: Array<Field> 
+    g: Array<Fp12>
 
     constructor(acc: Accumulator) {
         this.acc = acc.deepClone(); 
@@ -186,8 +204,8 @@ class WitnessTracker {
             this.acc.fs.zeta
         )
 
-        this.acc.state.kzg_cm_x = kzg_cm_x; 
-        this.acc.state.kzg_cm_y = kzg_cm_y;
+        // this.acc.state.kzg_cm_x = kzg_cm_x; 
+        // this.acc.state.kzg_cm_y = kzg_cm_y;
 
         const A = new G1Affine({ x: kzg_cm_x, y: kzg_cm_y });
         const negB = new G1Affine({ x: this.acc.state.neg_fq_x, y: this.acc.state.neg_fq_y });
@@ -196,7 +214,8 @@ class WitnessTracker {
             A, 
             negB, 
             shift_power, 
-            c
+            c, 
+            c_inv: c.inverse()
         })
 
         let kzgState = new KzgState({
@@ -209,9 +228,53 @@ class WitnessTracker {
             state: kzgState
         });
 
+        this.g = KZGLineAccumulator.accumulate(g2_lines, tau_lines, A, negB)
         this.line_hashes = new Array(ArrayListHasher.n).fill(Field(0n))
         this.kzg = kzgAccumulator.deepClone();
         return [this.kzg.deepClone(), [...this.line_hashes]]; 
+    }
+
+    zkp13(): [KzgAccumulator, Array<Field>] {
+        for (let i = 1; i < ATE_LOOP_COUNT.length - 46; i++) {
+            this.line_hashes[i - 1] = Poseidon.hashPacked(Fp12, this.g[i - 1])
+        }
+
+        this.kzg.state.lines_hashes_digest = ArrayListHasher.hash(this.line_hashes)
+        return [this.kzg.deepClone(), [...this.line_hashes]]; 
+    }
+
+    zkp14(): [KzgAccumulator, Array<Field>] {
+        for (let i = ATE_LOOP_COUNT.length - 46; i < ATE_LOOP_COUNT.length - 26; i++) {
+            this.line_hashes[i - 1] = Poseidon.hashPacked(Fp12, this.g[i - 1])
+        }
+
+        this.kzg.state.lines_hashes_digest = ArrayListHasher.hash(this.line_hashes)
+        return [this.kzg.deepClone(), [...this.line_hashes]]; 
+    }
+
+    zkp15(): [KzgAccumulator, Array<Field>] {
+        for (let i = ATE_LOOP_COUNT.length - 26; i < ATE_LOOP_COUNT.length - 6; i++) {
+            this.line_hashes[i - 1] = Poseidon.hashPacked(Fp12, this.g[i - 1])
+        }
+
+        this.kzg.state.lines_hashes_digest = ArrayListHasher.hash(this.line_hashes)
+        return [this.kzg.deepClone(), [...this.line_hashes]]; 
+    }
+
+    zkp16(): [KzgAccumulator, Array<Field>] {
+        for (let i = ATE_LOOP_COUNT.length - 6; i < ATE_LOOP_COUNT.length; i++) {
+            this.line_hashes[i - 1] = Poseidon.hashPacked(Fp12, this.g[i - 1])
+        }
+
+        this.line_hashes[ATE_LOOP_COUNT.length - 1] = Poseidon.hashPacked(Fp12, this.g[ATE_LOOP_COUNT.length - 1])
+
+        this.kzg.state.lines_hashes_digest = ArrayListHasher.hash(this.line_hashes)
+        return [this.kzg.deepClone(), [...this.line_hashes]]; 
+    }
+
+    fullGHashes() {
+        const h = this.g.map((gi) => Poseidon.hashPacked(Fp12, gi))
+        return ArrayListHasher.hash(h)
     }
 }
 

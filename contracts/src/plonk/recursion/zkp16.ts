@@ -6,23 +6,13 @@ import {
   } from 'o1js';
 import { ArrayListHasher, KzgAccumulator } from '../../kzg/structs.js';
 import { Fp12 } from '../../towers/fp12.js';
-import fs from "fs";
 import { ATE_LOOP_COUNT } from '../../towers/consts.js';
 import { AffineCache } from '../../lines/precompute.js';
-import { G2Line } from '../../lines/index.js';
+import { LineParser } from './line_parser.js';
 
-const g2_lines_path = fs.readFileSync("./src/plonk/mm_loop/g2_lines.json", 'utf8');
-const tau_lines_path = fs.readFileSync("./src/plonk/mm_loop/tau_lines.json", 'utf8');
-
-let parsed_g2_lines: any[] = JSON.parse(g2_lines_path);
-const g2_lines = parsed_g2_lines.map(
-  (g: any): G2Line => G2Line.fromJSON(g)
-);
-
-let parsed_tau_lines: any[] = JSON.parse(tau_lines_path);
-const tau_lines = parsed_tau_lines.map(
-  (g: any): G2Line => G2Line.fromJSON(g)
-);
+const lineParser = LineParser.init()
+const g2_lines = lineParser.parse_g2(ATE_LOOP_COUNT.length - 6, ATE_LOOP_COUNT.length);
+const tau_lines = lineParser.parse_tau(ATE_LOOP_COUNT.length - 6, ATE_LOOP_COUNT.length);
 
 const zkp16 = ZkProgram({
     name: 'zkp16',
@@ -71,20 +61,16 @@ const zkp16 = ZkProgram({
                 lines_hashes[idx] = Poseidon.hashPacked(Fp12, g);
             }
 
-            let g2_line = g2_lines[line_cnt];
-            let tau_line = tau_lines[line_cnt];
-            line_cnt += 1;
-            idx += 1;
-        
-            g = g2_line.psi(a_cache);
-            g = g.sparse_mul(tau_line.psi(b_cache));
-        
-            g2_line = g2_lines[line_cnt];
-            tau_line = tau_lines[line_cnt];
-            g = g.sparse_mul(g2_line.psi(a_cache));
-            g = g.sparse_mul(tau_line.psi(b_cache));
+            let [g2_frob_0, g2_frob_1] = lineParser.frobenius_g2_lines()
+            let [tau_frob_0, tau_frob_1] = lineParser.frobenius_tau_lines()
 
-            lines_hashes[idx] = Poseidon.hashPacked(Fp12, g);
+            g = g2_frob_0.psi(a_cache)
+            g = g.sparse_mul(tau_frob_0.psi(b_cache))
+
+            g = g.sparse_mul(g2_frob_1.psi(a_cache))
+            g = g.sparse_mul(tau_frob_1.psi(b_cache))
+
+            lines_hashes[ATE_LOOP_COUNT.length - 1] = Poseidon.hashPacked(Fp12, g);
 
             let new_lines_hashes_digest = ArrayListHasher.hash(lines_hashes);
             acc.state.lines_hashes_digest = new_lines_hashes_digest;

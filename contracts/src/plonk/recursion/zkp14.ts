@@ -10,19 +10,11 @@ import fs from "fs";
 import { ATE_LOOP_COUNT } from '../../towers/consts.js';
 import { AffineCache } from '../../lines/precompute.js';
 import { G2Line } from '../../lines/index.js';
+import { LineParser } from './line_parser.js';
 
-const g2_lines_path = fs.readFileSync("./src/plonk/mm_loop/g2_lines.json", 'utf8');
-const tau_lines_path = fs.readFileSync("./src/plonk/mm_loop/tau_lines.json", 'utf8');
-
-let parsed_g2_lines: any[] = JSON.parse(g2_lines_path);
-const g2_lines = parsed_g2_lines.map(
-  (g: any): G2Line => G2Line.fromJSON(g)
-);
-
-let parsed_tau_lines: any[] = JSON.parse(tau_lines_path);
-const tau_lines = parsed_tau_lines.map(
-  (g: any): G2Line => G2Line.fromJSON(g)
-);
+const lineParser = LineParser.init()
+const g2_lines = lineParser.parse_g2(ATE_LOOP_COUNT.length - 46, ATE_LOOP_COUNT.length - 26);
+const tau_lines = lineParser.parse_tau(ATE_LOOP_COUNT.length - 46, ATE_LOOP_COUNT.length - 26);
 
 const zkp14 = ZkProgram({
     name: 'zkp14',

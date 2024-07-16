@@ -9,6 +9,7 @@ class KzgProof extends Struct({
     negB: G1Affine, 
     shift_power: Field, 
     c: Fp12,
+    c_inv: Fp12,
 }) {}; 
 
 class KzgState extends Struct({
