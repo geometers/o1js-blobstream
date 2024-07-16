@@ -79,16 +79,9 @@ const acc_20 = wt.zkp19();
 const acc_21 = wt.zkp20();
 const acc_22 = wt.zkp21();
 const acc_23 = wt.zkp22();
-const final = wt.zkp23(); 
+const _final = wt.zkp23(); 
 
 const g = wt.g;
-
-console.log(Poseidon.hashPacked(KzgAccumulator, final).toBigInt())
-
-// const full_digest = wt.fullGHashes()
-// console.log(full_digest.toBigInt())
-// console.log(ArrayListHasher.hash(line_hashes_17).toBigInt())
-// console.log(acc_17.state.lines_hashes_digest.toBigInt())
 
 
 async function prove_zkp0() {
