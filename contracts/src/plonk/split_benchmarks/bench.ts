@@ -85,45 +85,36 @@ function main() {
     // let arr = Provable.witness(Provable.Array(Field, 65), () => new Array(65).fill(Field(0)))
     // Poseidon.hashPacked(Provable.Array(Field, 65), arr)
 
-    let arr = Provable.witness(Provable.Array(Fp12, 65), () => new Array(65).fill(make_c()))
-    Poseidon.hashPacked(Provable.Array(Fp12, 65), arr)
+    // let arr = Provable.witness(Provable.Array(Fp12, 65), () => new Array(65).fill(make_c()))
     // Poseidon.hashPacked(Provable.Array(Fp12, 65), arr)
-    let A = new G1Affine({ x: VK.g1_gen_x, y: VK.g1_gen_y })
-    let negB = new G1Affine({ x: VK.g1_gen_x, y: VK.g1_gen_y })
+    // Poseidon.hashPacked(Provable.Array(Fp12, 65), arr)
+    // let A = new G1Affine({ x: VK.g1_gen_x, y: VK.g1_gen_y })
+    // let negB = new G1Affine({ x: VK.g1_gen_x, y: VK.g1_gen_y })
 
-    // KZGLineAccumulator.accumulate(g2_lines, tau_lines, A, negB)
-
-    const a_cache = new AffineCache(A);
-
-    let idx = 0;
-    let line_cnt = 0;
-
-    let g;
-    for (let i = 1; i < ATE_LOOP_COUNT.length; i++) {
-        idx = i - 1; 
-
-        let line = g2_lines[line_cnt]; 
-        line_cnt += 1; 
-
-        // g.push(line.psi(a_cache));
-        g = line.psi(a_cache);
-
-        if (ATE_LOOP_COUNT[i] == 1) {
-            let line = g2_lines[line_cnt];
-            line_cnt += 1;
-
-            g = g.sparse_mul(line.psi(a_cache));
-        }
-
-        if (ATE_LOOP_COUNT[i] == -1) {
-            let line = g2_lines[line_cnt];
-            line_cnt += 1;
-
-            g = g.sparse_mul(line.psi(a_cache));
-        }
-        Poseidon.hashPacked(Fp12, g)
-        // lines_hashes[idx] = Poseidon.hashPacked(Fp12, g);
-    }
+    const c = Provable.witness(Fp12, () => make_c())
+    Poseidon.hashPacked(Fp12, c);
+    Poseidon.hashPacked(Fp12, c);
+    Poseidon.hashPacked(Fp12, c);
+    Poseidon.hashPacked(Fp12, c);
+    Poseidon.hashPacked(Fp12, c);
+    Poseidon.hashPacked(Fp12, c);
+    Poseidon.hashPacked(Fp12, c);
+    Poseidon.hashPacked(Fp12, c);
+    Poseidon.hashPacked(Fp12, c);
+    Poseidon.hashPacked(Fp12, c);
+    // one step in exp part 
+    let f = c.square().mul(c).mul(c)
+    f = c.square().mul(c).mul(c)
+    f = c.square().mul(c).mul(c)
+    f = c.square().mul(c).mul(c)
+    f = c.square().mul(c).mul(c)
+    f = c.square().mul(c).mul(c)
+    f = c.square().mul(c).mul(c)
+    f = c.square().mul(c).mul(c)
+    f = c.square().mul(c).mul(c)
+    // f = c.square().mul(c).mul(c)
+    // f = c.square().mul(c).mul(c)
+    // const f = c.mul(c)
 }
 
 

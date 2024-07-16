@@ -81,10 +81,8 @@ class KZGPairing {
 			.mul(c_inv.frobenius_pow_p_cubed());
 
         const shift = Provable.switch([shift_power.equals(Field(0)), shift_power.equals(Field(1)), shift_power.equals(Field(2))], Fp12, [Fp12.one(), this.w27[1], this.w27[2]]);
-		// const shift = this.w27[shift_power];
 		f = f.mul(shift);
-
-		// f = Fp12.one();
+		
 		f.assert_equals(Fp12.one());
 	}
 }

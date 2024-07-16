@@ -1,4 +1,4 @@
-import { Field, Poseidon } from "o1js";
+import { Field, Poseidon, Provable } from "o1js";
 import { ArrayListHasher, KzgAccumulator, KzgProof, KzgState } from "../../kzg/structs.js";
 import { Accumulator } from "../accumulator.js"
 import { compute_alpha_square_lagrange_0, compute_commitment_linearized_polynomial_split_0, compute_commitment_linearized_polynomial_split_1, compute_commitment_linearized_polynomial_split_2, customPiLagrange, evalVanishing, fold_quotient, fold_state_0, fold_state_1, fold_state_2, opening_of_linearized_polynomial, pi_contribution, preparePairing_0, preparePairing_1 } from "../piop/plonk_utils.js";
@@ -9,6 +9,7 @@ import { G2Line } from "../../lines/index.js";
 import { KZGLineAccumulator } from "../mm_loop/accumulate_lines.js";
 import fs from "fs"
 import { ATE_LOOP_COUNT } from "../../towers/consts.js";
+import { make_w27 } from "../helpers.js";
 
 const g2_lines_path = fs.readFileSync("./src/plonk/mm_loop/g2_lines.json", 'utf8');
 const tau_lines_path = fs.readFileSync("./src/plonk/mm_loop/tau_lines.json", 'utf8');
@@ -270,6 +271,139 @@ class WitnessTracker {
 
         this.kzg.state.lines_hashes_digest = ArrayListHasher.hash(this.line_hashes)
         return [this.kzg.deepClone(), [...this.line_hashes]]; 
+    }
+
+    zkp17(): KzgAccumulator {
+        let idx = 0;
+
+        for (let i = 1; i < 10; i++) {
+            idx = i - 1;
+            this.kzg.state.f = this.kzg.state.f.square().mul(this.g[idx]);
+
+            if (ATE_LOOP_COUNT[i] == 1) {
+                this.kzg.state.f = this.kzg.state.f.mul(this.kzg.proof.c_inv);
+            }
+
+            if (ATE_LOOP_COUNT[i] == -1) {
+                this.kzg.state.f = this.kzg.state.f.mul(this.kzg.proof.c);
+            }
+        }
+
+        return this.kzg.deepClone()
+    }
+
+    zkp18(): KzgAccumulator {
+        let idx = 0;
+
+        for (let i = 10; i < 21; i++) {
+            idx = i - 1;
+            this.kzg.state.f = this.kzg.state.f.square().mul(this.g[idx]);
+
+            if (ATE_LOOP_COUNT[i] == 1) {
+                this.kzg.state.f = this.kzg.state.f.mul(this.kzg.proof.c_inv);
+            }
+
+            if (ATE_LOOP_COUNT[i] == -1) {
+                this.kzg.state.f = this.kzg.state.f.mul(this.kzg.proof.c);
+            }
+        }
+        
+        return this.kzg.deepClone()
+    }
+
+    zkp19(): KzgAccumulator {
+        let idx = 0;
+
+        for (let i = 21; i < 32; i++) {
+            idx = i - 1;
+            this.kzg.state.f = this.kzg.state.f.square().mul(this.g[idx]);
+
+            if (ATE_LOOP_COUNT[i] == 1) {
+                this.kzg.state.f = this.kzg.state.f.mul(this.kzg.proof.c_inv);
+            }
+
+            if (ATE_LOOP_COUNT[i] == -1) {
+                this.kzg.state.f = this.kzg.state.f.mul(this.kzg.proof.c);
+            }
+        }
+        
+        return this.kzg.deepClone()
+    }
+
+    zkp20(): KzgAccumulator {
+        let idx = 0;
+
+        for (let i = 32; i < 43; i++) {
+            idx = i - 1;
+            this.kzg.state.f = this.kzg.state.f.square().mul(this.g[idx]);
+
+            if (ATE_LOOP_COUNT[i] == 1) {
+                this.kzg.state.f = this.kzg.state.f.mul(this.kzg.proof.c_inv);
+            }
+
+            if (ATE_LOOP_COUNT[i] == -1) {
+                this.kzg.state.f = this.kzg.state.f.mul(this.kzg.proof.c);
+            }
+        }
+        
+        return this.kzg.deepClone()
+    }
+
+    zkp21(): KzgAccumulator {
+        let idx = 0;
+
+        for (let i = 43; i < 54; i++) {
+            idx = i - 1;
+            this.kzg.state.f = this.kzg.state.f.square().mul(this.g[idx]);
+
+            if (ATE_LOOP_COUNT[i] == 1) {
+                this.kzg.state.f = this.kzg.state.f.mul(this.kzg.proof.c_inv);
+            }
+
+            if (ATE_LOOP_COUNT[i] == -1) {
+                this.kzg.state.f = this.kzg.state.f.mul(this.kzg.proof.c);
+            }
+        }
+        
+        return this.kzg.deepClone()
+    }
+
+    zkp22(): KzgAccumulator {
+        let idx = 0;
+
+        for (let i = 54; i < 65; i++) {
+            idx = i - 1;
+            this.kzg.state.f = this.kzg.state.f.square().mul(this.g[idx]);
+
+            if (ATE_LOOP_COUNT[i] == 1) {
+                this.kzg.state.f = this.kzg.state.f.mul(this.kzg.proof.c_inv);
+            }
+
+            if (ATE_LOOP_COUNT[i] == -1) {
+                this.kzg.state.f = this.kzg.state.f.mul(this.kzg.proof.c);
+            }
+        }
+        
+        return this.kzg.deepClone()
+    }
+
+    zkp23(): KzgAccumulator {
+		this.kzg.state.f = this.kzg.state.f.mul(this.g[ATE_LOOP_COUNT.length - 1]);
+
+		this.kzg.state.f = this.kzg.state.f
+			.mul(this.kzg.proof.c_inv.frobenius_pow_p())
+			.mul(this.kzg.proof.c.frobenius_pow_p_squared())
+			.mul(this.kzg.proof.c_inv.frobenius_pow_p_cubed());
+
+        const w27 = make_w27() 
+        const w27_sq = w27.square(); 
+
+        const shift = Provable.switch([this.kzg.proof.shift_power.equals(Field(0)), this.kzg.proof.shift_power.equals(Field(1)), this.kzg.proof.shift_power.equals(Field(2))], Fp12, [Fp12.one(), w27, w27_sq]);
+		this.kzg.state.f = this.kzg.state.f.mul(shift);
+		
+		this.kzg.state.f.assert_equals(Fp12.one());
+        
+        return this.kzg.deepClone()
     }
 
     fullGHashes() {

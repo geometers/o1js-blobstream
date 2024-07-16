@@ -25,6 +25,14 @@ import { ArrayListHasher, KzgAccumulator } from "../../kzg/structs.js";
 import { zkp15 } from "./zkp15.js";
 import { zkp14 } from "./zkp14.js";
 import { zkp16 } from "./zkp16.js";
+import { zkp17 } from "./zkp17.js";
+import { Fp12 } from "../../towers/fp12.js";
+import { zkp18 } from "./zkp18.js";
+import { zkp19 } from "./zkp19.js";
+import { zkp20 } from "./zkp20.js";
+import { zkp21 } from "./zkp21.js";
+import { zkp22 } from "./zkp22.js";
+import { zkp23 } from "./zkp23.js";
 
 
 const make_acc = () => {
@@ -60,30 +68,27 @@ const acc_9 = wt.zkp8();
 const acc_10 = wt.zkp9();
 const acc_11 = wt.zkp10();
 const acc_12 = wt.zkp11();
-let [acc_13, line_hashes_13] = wt.zkp12(get_shift_power(), make_c());
-let [acc_14, line_hashes_14] = wt.zkp13()
-let [acc_15, line_hashes_15] = wt.zkp14()
-let [acc_16, line_hashes_16] = wt.zkp15()
-let [acc_17, line_hashes_17] = wt.zkp16()
+const [acc_13, line_hashes_13] = wt.zkp12(get_shift_power(), make_c());
+const [acc_14, line_hashes_14] = wt.zkp13()
+const [acc_15, line_hashes_15] = wt.zkp14()
+const [acc_16, line_hashes_16] = wt.zkp15()
+const [acc_17, final_line_hashes] = wt.zkp16()
+const acc_18 = wt.zkp17();
+const acc_19 = wt.zkp18();
+const acc_20 = wt.zkp19();
+const acc_21 = wt.zkp20();
+const acc_22 = wt.zkp21();
+const acc_23 = wt.zkp22();
+const final = wt.zkp23(); 
 
-console.log(Poseidon.hashPacked(KzgAccumulator, acc_17).toBigInt())
+const g = wt.g;
+
+console.log(Poseidon.hashPacked(KzgAccumulator, final).toBigInt())
 
 // const full_digest = wt.fullGHashes()
 // console.log(full_digest.toBigInt())
 // console.log(ArrayListHasher.hash(line_hashes_17).toBigInt())
 // console.log(acc_17.state.lines_hashes_digest.toBigInt())
-
-// console.log(ArrayListHasher.hash(line_hashes_13).toBigInt())
-// console.log(acc_13.state.lines_hashes_digest.toBigInt())
-
-// console.log(ArrayListHasher.hash(line_hashes_14).toBigInt())
-// console.log(acc_14.state.lines_hashes_digest.toBigInt())
-
-// console.log(ArrayListHasher.hash(line_hashes_15).toBigInt())
-// console.log(acc_15.state.lines_hashes_digest.toBigInt())
-
-// console.log(ArrayListHasher.hash(line_hashes_16).toBigInt())
-// console.log(acc_16.state.lines_hashes_digest.toBigInt())
 
 
 async function prove_zkp0() {
@@ -308,31 +313,96 @@ async function prove_zkp16() {
     fs.writeFileSync('./src/plonk/recursion/vks/vk16.json', JSON.stringify(vk16), 'utf8');
 }
 
-// async function prove_zkp17() {
-//     const vk17 = (await zkp17.compile()).verificationKey;
+async function prove_zkp17() {
+    const vk17 = (await zkp17.compile()).verificationKey;
 
-//     let cin17 = Poseidon.hashPacked(Groth16Data, in17);
-//     const proof17 = await zkp17.compute(cin17, in17);
+    let cin17 = Poseidon.hashPacked(KzgAccumulator, acc_17);
+    const proof17 = await zkp17.compute(cin17, acc_17, g.slice(0, 9), final_line_hashes.slice(9));
 
-//     const valid = await verify(proof17, vk17); 
-//     console.log("valid zkp17?: ", valid);
+    const valid = await verify(proof17, vk17); 
+    console.log("valid zkp17?: ", valid);
 
-//     fs.writeFileSync('./src/plonk/recursion/proofs/layer0/zkp17.json', JSON.stringify(proof17), 'utf8');
-//     fs.writeFileSync('./src/plonk/recursion/vks/vk17.json', JSON.stringify(vk17), 'utf8');
-// }
+    fs.writeFileSync('./src/plonk/recursion/proofs/layer0/zkp17.json', JSON.stringify(proof17), 'utf8');
+    fs.writeFileSync('./src/plonk/recursion/vks/vk17.json', JSON.stringify(vk17), 'utf8');
+}
 
-// async function prove_zkp18() {
-//     const vk18 = (await zkp18.compile()).verificationKey;
+async function prove_zkp18() {
+    const vk18 = (await zkp18.compile()).verificationKey;
 
-//     let cin18 = Poseidon.hashPacked(Groth16Data, in18);
-//     const proof18 = await zkp18.compute(cin18, in18);
+    let cin18 = Poseidon.hashPacked(KzgAccumulator, acc_18);
+    const proof18 = await zkp18.compute(cin18, acc_18, final_line_hashes.slice(0, 9), g.slice(9, 9 + 11), final_line_hashes.slice(20));
 
-//     const valid = await verify(proof18, vk18); 
-//     console.log("valid zkp18?: ", valid);
+    const valid = await verify(proof18, vk18); 
+    console.log("valid zkp18?: ", valid);
 
-//     fs.writeFileSync('./src/plonk/recursion/proofs/layer0/zkp18.json', JSON.stringify(proof18), 'utf8');
-//     fs.writeFileSync('./src/plonk/recursion/vks/vk18.json', JSON.stringify(vk18), 'utf8');
-// }
+    fs.writeFileSync('./src/plonk/recursion/proofs/layer0/zkp18.json', JSON.stringify(proof18), 'utf8');
+    fs.writeFileSync('./src/plonk/recursion/vks/vk18.json', JSON.stringify(vk18), 'utf8');
+}
+
+async function prove_zkp19() {
+    const vk19 = (await zkp19.compile()).verificationKey;
+
+    let cin19 = Poseidon.hashPacked(KzgAccumulator, acc_19);
+    const proof19 = await zkp19.compute(cin19, acc_19, final_line_hashes.slice(0, 20), g.slice(20, 20 + 11), final_line_hashes.slice(31));
+
+    const valid = await verify(proof19, vk19); 
+    console.log("valid zkp19?: ", valid);
+
+    fs.writeFileSync('./src/plonk/recursion/proofs/layer0/zkp19.json', JSON.stringify(proof19), 'utf8');
+    fs.writeFileSync('./src/plonk/recursion/vks/vk19.json', JSON.stringify(vk19), 'utf8');
+}
+
+async function prove_zkp20() {
+    const vk20 = (await zkp20.compile()).verificationKey;
+
+    let cin20 = Poseidon.hashPacked(KzgAccumulator, acc_20);
+    const proof20 = await zkp20.compute(cin20, acc_20, final_line_hashes.slice(0, 31), g.slice(31, 31 + 11), final_line_hashes.slice(42));
+
+    const valid = await verify(proof20, vk20); 
+    console.log("valid zkp20?: ", valid);
+
+    fs.writeFileSync('./src/plonk/recursion/proofs/layer0/zkp20.json', JSON.stringify(proof20), 'utf8');
+    fs.writeFileSync('./src/plonk/recursion/vks/vk20.json', JSON.stringify(vk20), 'utf8');
+}
+
+async function prove_zkp21() {
+    const vk21 = (await zkp21.compile()).verificationKey;
+
+    let cin21 = Poseidon.hashPacked(KzgAccumulator, acc_21);
+    const proof21 = await zkp21.compute(cin21, acc_21, final_line_hashes.slice(0, 42), g.slice(42, 42 + 11), final_line_hashes.slice(53));
+
+    const valid = await verify(proof21, vk21); 
+    console.log("valid zkp21?: ", valid);
+
+    fs.writeFileSync('./src/plonk/recursion/proofs/layer0/zkp21.json', JSON.stringify(proof21), 'utf8');
+    fs.writeFileSync('./src/plonk/recursion/vks/vk21.json', JSON.stringify(vk21), 'utf8');
+}
+
+async function prove_zkp22() {
+    const vk22 = (await zkp22.compile()).verificationKey;
+
+    let cin22 = Poseidon.hashPacked(KzgAccumulator, acc_22);
+    const proof22 = await zkp22.compute(cin22, acc_22, final_line_hashes.slice(0, 53), g.slice(53, 53 + 11), final_line_hashes.slice(64));
+
+    const valid = await verify(proof22, vk22); 
+    console.log("valid zkp22?: ", valid);
+
+    fs.writeFileSync('./src/plonk/recursion/proofs/layer0/zkp22.json', JSON.stringify(proof22), 'utf8');
+    fs.writeFileSync('./src/plonk/recursion/vks/vk22.json', JSON.stringify(vk22), 'utf8');
+}
+
+async function prove_zkp23() {
+    const vk23 = (await zkp23.compile()).verificationKey;
+
+    let cin23 = Poseidon.hashPacked(KzgAccumulator, acc_23);
+    const proof23 = await zkp23.compute(cin23, acc_23, final_line_hashes.slice(0, 64), g.slice(-1));
+
+    const valid = await verify(proof23, vk23); 
+    console.log("valid zkp23?: ", valid);
+
+    fs.writeFileSync('./src/plonk/recursion/proofs/layer0/zkp23.json', JSON.stringify(proof23), 'utf8');
+    fs.writeFileSync('./src/plonk/recursion/vks/vk23.json', JSON.stringify(vk23), 'utf8');
+}
 
 
 switch(process.argv[2]) {
@@ -387,10 +457,25 @@ switch(process.argv[2]) {
     case 'zkp16':
         await prove_zkp16();
         break;
-    // case 'zkp17':
-    //     await prove_zkp17();
-    //     break;
-    // case 'zkp18':
-    //     await prove_zkp18();
-    //     break;
+    case 'zkp17':
+        await prove_zkp17();
+        break;
+    case 'zkp18':
+        await prove_zkp18();
+        break;
+    case 'zkp19':
+        await prove_zkp19();
+        break;
+    case 'zkp20':
+        await prove_zkp20();
+        break;
+    case 'zkp21':
+        await prove_zkp21();
+        break;
+    case 'zkp22':
+        await prove_zkp22();
+        break;
+    case 'zkp23':
+        await prove_zkp23();
+        break;
 }

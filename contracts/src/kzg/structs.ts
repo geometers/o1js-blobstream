@@ -52,13 +52,13 @@ class ArrayListHasher {
         return Poseidon.hashPacked(Provable.Array(Field, ATE_LOOP_COUNT.length), arr)
     }
 
-    static open(lhs: Array<Field>, opening: Array<G2Line>, rhs: Array<Field>): Field {
-        const opening_hashes: Field[] = opening.map((line) => Poseidon.hashPacked(G2Line, line));
+    static open(lhs: Array<Field>, opening: Array<Fp12>, rhs: Array<Field>): Field {
+        const opening_hashes: Field[] = opening.map((x) => Poseidon.hashPacked(Fp12, x));
 
         let arr: Field[] = [] 
-        arr.concat(lhs) 
-        arr.concat(opening_hashes)
-        arr.concat(rhs)
+        arr = arr.concat(lhs) 
+        arr = arr.concat(opening_hashes)
+        arr = arr.concat(rhs)
 
         return this.hash(arr)
     }
