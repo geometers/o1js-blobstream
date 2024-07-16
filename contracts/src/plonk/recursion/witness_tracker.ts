@@ -216,7 +216,9 @@ class WitnessTracker {
             negB, 
             shift_power, 
             c, 
-            c_inv: c.inverse()
+            c_inv: c.inverse(),
+            pi0: this.acc.state.pi0, 
+            pi1: this.acc.state.pi1
         })
 
         let kzgState = new KzgState({

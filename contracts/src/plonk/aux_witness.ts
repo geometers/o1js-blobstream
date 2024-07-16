@@ -1,7 +1,6 @@
 import { Field, Struct } from "o1js"
 import { Fp12, Fp12Type } from "../towers/fp12.js"
 import fs from "fs"
-import { make_c } from "./helpers.js"
 
 export type AuXWitnessType = {
     c: Fp12Type, 

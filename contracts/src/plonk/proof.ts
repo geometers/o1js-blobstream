@@ -3,7 +3,6 @@ import { ethers } from "ethers"
 import { assertPointOnBn, assertInBnField, numOfUin256s } from "./utils.js"
 import assert from "assert"
 import { Field, Struct } from "o1js"
-import { get_shift_power, make_c } from "./helpers.js"
 
 const NUM_OF_UIN265s = 27
 

@@ -44,7 +44,9 @@ const zkp12 = ZkProgram({
                 negB, 
                 shift_power, 
                 c, 
-                c_inv
+                c_inv, 
+                pi0: acc.state.pi0, 
+                pi1: acc.state.pi1
             })
 
             let kzgState = new KzgState({

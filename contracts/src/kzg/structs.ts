@@ -1,5 +1,5 @@
 import { Field, Poseidon, Provable, Struct } from "o1js";
-import { ATE_LOOP_COUNT, Fp12 } from "../towers/index.js";
+import { ATE_LOOP_COUNT, Fp12, FrC } from "../towers/index.js";
 import { G1Affine } from "../ec/index.js";
 import { G2Line } from "../lines/index.js";
 
@@ -10,6 +10,8 @@ class KzgProof extends Struct({
     shift_power: Field, 
     c: Fp12,
     c_inv: Fp12,
+    pi0: FrC.provable, 
+    pi1: FrC.provable,
 }) {}; 
 
 class KzgState extends Struct({
