@@ -1,5 +1,8 @@
 import { ethers } from "ethers";
 import { FrC } from "../towers/index.js";
+import { Bool, Bytes, Field, Gadgets, UInt8 } from "o1js";
+import { shaToFr } from "./fiat-shamir/sha_to_fr.js";
+import { Bytes32 } from "./fiat-shamir/index.js";
 
 // TODO: some stuff here can be hardcoded
 export function parsePublicInputs(programVk: string, piHex: string): [FrC, FrC] {
@@ -19,4 +22,21 @@ export function parsePublicInputs(programVk: string, piHex: string): [FrC, FrC] 
     let pi1 = ethers.hexlify(new Uint8Array(pi1_bytes));
     
     return [FrC.from(programVk), FrC.from(pi1)]
+}
+
+export function parsePublicInputsProvable(piBytes: Bytes): FrC {
+  const digest = Gadgets.SHA256.hash(piBytes);
+  const k = [
+    Field.from(0x1fn),
+    ...Array(31).fill(Field.from(0xffn)),
+  ];
+
+  const fields = digest.toFields();
+  let bytes: UInt8[] = []
+
+  for (let i = 0; i < 32; i++) {
+    bytes.push(UInt8.Unsafe.fromField(Gadgets.and(fields[i], k[i], 8)))
+  }
+
+  return shaToFr(Bytes32.from(bytes))
 }

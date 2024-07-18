@@ -1,5 +1,5 @@
-import { AccountUpdate, Field, Mina, PrivateKey } from 'o1js';
-import { HelloWorldRollup, adminPrivateKey } from './decider_app.js';
+import { AccountUpdate, Field, Mina, PrivateKey, UInt8 } from 'o1js';
+import { HelloWorldRollup, StateBytes, adminPrivateKey } from './decider_app.js';
 import { NodeProofLeft } from '../../structs.js';
 import fs from "fs"
 import { parsePublicInputs } from '../parse_pi.js';
@@ -90,8 +90,9 @@ const args = process.argv;
 const programVk = args[2]
 const hexPi = args[3]; 
 
-const [_, newState] = parsePublicInputs(programVk, hexPi);
+const [_, newStateUnused] = parsePublicInputs(programVk, hexPi);
 
+const newState = StateBytes.fromString(hexPi)
 txn = await Mina.transaction(feePayer1, async () => {
   await contract.update(adminPrivateKey, rootProof, newState);
 });
