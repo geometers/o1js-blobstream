@@ -8,6 +8,7 @@ import { ArrayListHasher, KzgAccumulator } from '../../kzg/structs.js';
 import { Fp12 } from '../../towers/fp12.js';
 import { ATE_LOOP_COUNT } from '../../towers/consts.js';
 import { make_w27 } from '../helpers.js';
+import { FrC } from '../../towers/fr.js';
 
 const w27 = make_w27() 
 const w27_sq = w27.square();
@@ -45,7 +46,7 @@ const zkp23 = ZkProgram({
             f.assert_equals(Fp12.one());
 
             acc.state.f = f;
-            return Poseidon.hashPacked(KzgAccumulator, acc);
+            return Poseidon.hashPacked(Provable.Array(FrC.provable, 2), [acc.proof.pi0, acc.proof.pi1]);
         },
       },
     },
