@@ -22,7 +22,7 @@ import { parsePublicInputs, parsePublicInputsProvable } from '../plonk/parse_pi.
 import { provableBn254ScalarFieldToBytes, wordToBytes } from '../sha/utils.js';
 import fs from 'fs';
 
-const blobstreamProgramVk: FrC = FrC.from("0x3ca187479539c1478879bf30a6813cbba9f8a0a1b78212f7d3d4d02cd6fdcf")
+const blobstreamProgramVk: FrC = FrC.from("0x744021aed5b2c14ea2052e2570261bc1d16dbad1188f6c3833735f62dc1b82")
 const blobstreamNodeVk: Field = Field.from(20197230879339549708088630386158007275561315945478767330700301953454441177956n);
 const vk = VerificationKey.fromJSON(JSON.parse(fs.readFileSync('./src/plonk/recursion/vks/nodeVk.json', 'utf8')))
 

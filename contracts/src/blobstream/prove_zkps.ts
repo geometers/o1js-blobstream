@@ -1,9 +1,11 @@
 import { Poseidon, UInt64, verify, MerkleTree, Mina, AccountUpdate } from "o1js";
 import { blobstreamVerifier, BlobstreamProof, BlobstreamInput, Bytes32 } from "./verify_blobstream.js";
+import { blobInclusionVerifier, BlobInclusionProof, BlobInclusionInput, Bytes29 } from "./verify_blob_inclusion.js";
 import { NodeProofLeft } from "../structs.js";
 import fs from "fs";
 import { ethers } from "ethers";
 import { BlobstreamMerkleWitness, BlobstreamProcessor, adminPrivateKey } from "./blobstream_contract.js";
+import { HelloWorldRollup, StateBytes } from "./rollup.js";
 
 const args = process.argv;
 
@@ -49,6 +51,31 @@ async function prove_blobstream() {
 
     fs.writeFileSync(`./blobstreamProof.json`, JSON.stringify(proof), 'utf8');
     console.log("valid blobstream proof?: ", valid);
+}
+
+async function prove_blob_inclusion() {
+    const blobInclusionPlonkProofPath = args[3]
+    const blobInclusionSP1ProofPath = args[4]
+
+    const blobInclusionPlonkProof = await NodeProofLeft.fromJSON(JSON.parse(fs.readFileSync(blobInclusionPlonkProofPath, 'utf8')));
+
+    const blobInclusionSP1Proof: sp1JSON = JSON.parse(fs.readFileSync(blobInclusionSP1ProofPath, 'utf8'));
+
+    const data = blobInclusionSP1Proof.public_values.buffer.data.slice(16);
+    const input = new BlobInclusionInput ({
+        namespace: Bytes29.from(data.slice(0, 29)),
+        blob: Bytes32.from(data.slice(29, 61)),
+        dataCommitment: Bytes32.from(data.slice(61)),
+    });
+
+    const vk = (await blobInclusionVerifier.compile()).verificationKey;
+
+    const proof = await blobInclusionVerifier.compute(input, blobInclusionPlonkProof);
+
+    const valid = await verify(proof, vk); 
+
+    fs.writeFileSync(`./blobInclusionProof.json`, JSON.stringify(proof), 'utf8');
+    console.log("valid blob inclusion proof?: ", valid);
 }
 
 async function blobstream_contract() {
@@ -105,18 +132,100 @@ async function blobstream_contract() {
     console.log(`Current state successfully updated to ${currentState}`);
 }
 
+async function rollup_contract() {
+    (await blobstreamVerifier.compile()).verificationKey;
+    (await blobInclusionVerifier.compile()).verificationKey;
+
+    const blobstreamTree = new MerkleTree(32);
+
+    let txn;
+    let Local = await Mina.LocalBlockchain({ proofsEnabled: true });
+    Mina.setActiveInstance(Local);
+
+    const [feePayer1] = Local.testAccounts;
+
+    // contract account
+    const contractAccount = Mina.TestPublicKey.random();
+    const contract = new BlobstreamProcessor(contractAccount);
+    await BlobstreamProcessor.compile();
+
+    console.log('Deploying Blobstream Processor...');
+
+    txn = await Mina.transaction(feePayer1, async () => {
+    AccountUpdate.fundNewAccount(feePayer1);
+        await contract.deploy();
+    });
+    await txn.sign([feePayer1.key, contractAccount.key]).send();
+
+    const rollupContractAccount = Mina.TestPublicKey.random();
+    const rollupContract = new HelloWorldRollup(rollupContractAccount);
+    await HelloWorldRollup.compile();
+
+    console.log('Deploying Rollup...');
+
+    txn = await Mina.transaction(feePayer1, async () => {
+    AccountUpdate.fundNewAccount(feePayer1);
+        await rollupContract.deploy();
+    });
+    await txn.sign([feePayer1.key, rollupContractAccount.key]).send();
+
+    console.log('Setting Blobstream address...');
+    txn = await Mina.transaction(feePayer1, async () => {
+        await rollupContract.setBlobstreamAddress(adminPrivateKey, contractAccount);
+    });
+    await txn.prove();
+    await txn.sign([feePayer1.key]).send();
+
+    console.log(
+    `updating blobstream state`
+    );
+
+    const blobstreamProof = await BlobstreamProof.fromJSON(JSON.parse(fs.readFileSync(`./blobstreamProof.json`, 'utf8')));
+
+    const path = blobstreamTree.getWitness(0n);
+
+    txn = await Mina.transaction(feePayer1, async () => {
+        await contract.update(adminPrivateKey, blobstreamProof, new BlobstreamMerkleWitness(path));
+    });
+    await txn.prove();
+    await txn.sign([feePayer1.key]).send();
+
+    let currentState;
+
+    const blob = Bytes32.fromHex('736f6d65206461746120746f2073746f7265206f6e20626c6f636b636861696e');
+    const blobInclusionProof = await BlobInclusionProof.fromJSON(JSON.parse(fs.readFileSync(`./blobInclusionProof.json`, 'utf8')));
+    txn = await Mina.transaction(feePayer1, async () => {
+        await rollupContract.update(adminPrivateKey, blobInclusionProof, new BlobstreamMerkleWitness(path), blob);
+    });
+    await txn.prove();
+    await txn.sign([feePayer1.key]).send();
+
+    currentState = Mina.getAccount(rollupContractAccount).zkapp?.appState?.[0].toString();
+    Poseidon.hashPacked(StateBytes.provable, blob).assertEquals(currentState!);
+
+    console.log(`Successfully updated the rollup state while showing blob inclusion!`);
+}
+
 switch(process.argv[2]) {
     case 'blobstream':
         await prove_blobstream();
+        break;
+
+    case 'blob_inclusion':
+        await prove_blob_inclusion();
         break;
 
     case 'blobstream_contract':
         await blobstream_contract();
         break;
 
+    case 'rollup_contract':
+        await rollup_contract();
+        break;
+
     case 'compute':
-        const Tree = new MerkleTree(32);
-        console.log(Tree.getRoot().toBigInt().toString(10));
+        const buffer = Buffer.from([29,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,25,53,32,0,0,32,0,0,0,0,0,0,0,115,111,109,101,32,100,97,116,97,32,116,111,32,115,116,111,114,101,32,111,110,32,98,108,111,99,107,99,104,97,105,110,147,136,254,117,56,227,238,36,167,45,41,254,7,49,120,58,209,170,251,253,35,81,251,155,19,245,137,220,149,90,217,89]);
+        console.log(buffer.toString('hex'));
         break;
 
 }
