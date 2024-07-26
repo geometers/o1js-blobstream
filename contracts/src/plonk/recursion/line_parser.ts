@@ -26,8 +26,8 @@ class LineParser {
     }
 
     static init() {
-        const g2_lines_path = fs.readFileSync("./src/plonk/mm_loop/g2_lines.json", 'utf8');
-        const tau_lines_path = fs.readFileSync("./src/plonk/mm_loop/tau_lines.json", 'utf8');
+        const g2_lines_path = fs.readFileSync(`./src/plonk/mm_loop/g2_lines.json`, 'utf8');
+        const tau_lines_path = fs.readFileSync(`./src/plonk/mm_loop/tau_lines.json`, 'utf8');
 
         let parsed_g2_lines: any[] = JSON.parse(g2_lines_path);
         let g2_lines = parsed_g2_lines.map(

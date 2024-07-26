@@ -1,4 +1,4 @@
-import { Poseidon, verify } from "o1js";
+import { Poseidon, verify, Cache } from "o1js";
 import { zkp0 } from "./zkp0.js";
 import fs from "fs"
 import { Sp1PlonkProof, deserializeProof } from "../proof.js";
@@ -40,6 +40,8 @@ const programVk = args[4]
 const hexPi = args[5]
 const auxWtnsPath = args[6]
 const auxWitness = AuXWitness.loadFromPath(auxWtnsPath)
+const workDir = args[7]
+const cacheDir = args[8]
 
 const make_acc = () => {
     const [pi0, pi1] = parsePublicInputs(programVk, hexPi);
@@ -89,7 +91,7 @@ const g = wt.g;
 
 
 async function prove_zkp0() {
-    const vk0 = (await zkp0.compile()).verificationKey;
+    const vk0 = (await zkp0.compile({cache: Cache.FileSystem(cacheDir)})).verificationKey;
 
     let cin0 = Poseidon.hashPacked(Accumulator, acc_0);
 
@@ -97,12 +99,12 @@ async function prove_zkp0() {
     const valid = await verify(proof0, vk0); 
     console.log("valid zkp0?: ", valid);
 
-    fs.writeFileSync('./src/plonk/recursion/proofs/layer0/zkp0.json', JSON.stringify(proof0), 'utf8');
-    fs.writeFileSync('./src/plonk/recursion/vks/vk0.json', JSON.stringify(vk0), 'utf8');
+    fs.writeFileSync(`${workDir}/plonk/recursion/proofs/layer0/zkp0.json`, JSON.stringify(proof0), 'utf8');
+    fs.writeFileSync(`${workDir}/plonk/recursion/vks/vk0.json`, JSON.stringify(vk0), 'utf8');
 }
 
 async function prove_zkp1() {
-    const vk1 = (await zkp1.compile()).verificationKey;
+    const vk1 = (await zkp1.compile({cache: Cache.FileSystem(cacheDir)})).verificationKey;
 
     let cin1 = Poseidon.hashPacked(Accumulator, acc_1);
 
@@ -110,13 +112,13 @@ async function prove_zkp1() {
     const valid = await verify(proof1, vk1); 
     console.log("valid zkp1?: ", valid);
 
-    fs.writeFileSync('./src/plonk/recursion/proofs/layer0/zkp1.json', JSON.stringify(proof1), 'utf8');
-    fs.writeFileSync('./src/plonk/recursion/vks/vk1.json', JSON.stringify(vk1), 'utf8');
+    fs.writeFileSync(`${workDir}/plonk/recursion/proofs/layer0/zkp1.json`, JSON.stringify(proof1), 'utf8');
+    fs.writeFileSync(`${workDir}/plonk/recursion/vks/vk1.json`, JSON.stringify(vk1), 'utf8');
 }
 
 
 async function prove_zkp2() {
-    const vk2 = (await zkp2.compile()).verificationKey;
+    const vk2 = (await zkp2.compile({cache: Cache.FileSystem(cacheDir)})).verificationKey;
 
     let cin2 = Poseidon.hashPacked(Accumulator, acc_2);
 
@@ -124,12 +126,12 @@ async function prove_zkp2() {
     const valid = await verify(proof2, vk2); 
     console.log("valid zkp2?: ", valid);
 
-    fs.writeFileSync('./src/plonk/recursion/proofs/layer0/zkp2.json', JSON.stringify(proof2), 'utf8');
-    fs.writeFileSync('./src/plonk/recursion/vks/vk2.json', JSON.stringify(vk2), 'utf8');
+    fs.writeFileSync(`${workDir}/plonk/recursion/proofs/layer0/zkp2.json`, JSON.stringify(proof2), 'utf8');
+    fs.writeFileSync(`${workDir}/plonk/recursion/vks/vk2.json`, JSON.stringify(vk2), 'utf8');
 }
 
 async function prove_zkp3() {
-    const vk3 = (await zkp3.compile()).verificationKey;
+    const vk3 = (await zkp3.compile({cache: Cache.FileSystem(cacheDir)})).verificationKey;
 
     let cin3 = Poseidon.hashPacked(Accumulator, acc_3);
     const proof3 = await zkp3.compute(cin3, acc_3);
@@ -137,12 +139,12 @@ async function prove_zkp3() {
     const valid = await verify(proof3, vk3); 
     console.log("valid zkp3?: ", valid);
 
-    fs.writeFileSync('./src/plonk/recursion/proofs/layer0/zkp3.json', JSON.stringify(proof3), 'utf8');
-    fs.writeFileSync('./src/plonk/recursion/vks/vk3.json', JSON.stringify(vk3), 'utf8');
+    fs.writeFileSync(`${workDir}/plonk/recursion/proofs/layer0/zkp3.json`, JSON.stringify(proof3), 'utf8');
+    fs.writeFileSync(`${workDir}/plonk/recursion/vks/vk3.json`, JSON.stringify(vk3), 'utf8');
 }
 
 async function prove_zkp4() {
-    const vk4 = (await zkp4.compile()).verificationKey;
+    const vk4 = (await zkp4.compile({cache: Cache.FileSystem(cacheDir)})).verificationKey;
 
     let cin4 = Poseidon.hashPacked(Accumulator, acc_4);
     const proof4 = await zkp4.compute(cin4, acc_4);
@@ -150,12 +152,12 @@ async function prove_zkp4() {
     const valid = await verify(proof4, vk4); 
     console.log("valid zkp4?: ", valid);
 
-    fs.writeFileSync('./src/plonk/recursion/proofs/layer0/zkp4.json', JSON.stringify(proof4), 'utf8');
-    fs.writeFileSync('./src/plonk/recursion/vks/vk4.json', JSON.stringify(vk4), 'utf8');
+    fs.writeFileSync(`${workDir}/plonk/recursion/proofs/layer0/zkp4.json`, JSON.stringify(proof4), 'utf8');
+    fs.writeFileSync(`${workDir}/plonk/recursion/vks/vk4.json`, JSON.stringify(vk4), 'utf8');
 }
 
 async function prove_zkp5() {
-    const vk5 = (await zkp5.compile()).verificationKey;
+    const vk5 = (await zkp5.compile({cache: Cache.FileSystem(cacheDir)})).verificationKey;
 
     let cin5 = Poseidon.hashPacked(Accumulator, acc_5);
     const proof5 = await zkp5.compute(cin5, acc_5);
@@ -163,12 +165,12 @@ async function prove_zkp5() {
     const valid = await verify(proof5, vk5); 
     console.log("valid zkp5?: ", valid);
 
-    fs.writeFileSync('./src/plonk/recursion/proofs/layer0/zkp5.json', JSON.stringify(proof5), 'utf8');
-    fs.writeFileSync('./src/plonk/recursion/vks/vk5.json', JSON.stringify(vk5), 'utf8');
+    fs.writeFileSync(`${workDir}/plonk/recursion/proofs/layer0/zkp5.json`, JSON.stringify(proof5), 'utf8');
+    fs.writeFileSync(`${workDir}/plonk/recursion/vks/vk5.json`, JSON.stringify(vk5), 'utf8');
 }
 
 async function prove_zkp6() {
-    const vk6 = (await zkp6.compile()).verificationKey;
+    const vk6 = (await zkp6.compile({cache: Cache.FileSystem(cacheDir)})).verificationKey;
 
     let cin6 = Poseidon.hashPacked(Accumulator, acc_6);
     const proof6 = await zkp6.compute(cin6, acc_6);
@@ -176,12 +178,12 @@ async function prove_zkp6() {
     const valid = await verify(proof6, vk6); 
     console.log("valid zkp6?: ", valid);
 
-    fs.writeFileSync('./src/plonk/recursion/proofs/layer0/zkp6.json', JSON.stringify(proof6), 'utf8');
-    fs.writeFileSync('./src/plonk/recursion/vks/vk6.json', JSON.stringify(vk6), 'utf8');
+    fs.writeFileSync(`${workDir}/plonk/recursion/proofs/layer0/zkp6.json`, JSON.stringify(proof6), 'utf8');
+    fs.writeFileSync(`${workDir}/plonk/recursion/vks/vk6.json`, JSON.stringify(vk6), 'utf8');
 }
 
 async function prove_zkp7() {
-    const vk7 = (await zkp7.compile()).verificationKey;
+    const vk7 = (await zkp7.compile({cache: Cache.FileSystem(cacheDir)})).verificationKey;
 
     let cin7 = Poseidon.hashPacked(Accumulator, acc_7);
     const proof7 = await zkp7.compute(cin7, acc_7);
@@ -189,12 +191,12 @@ async function prove_zkp7() {
     const valid = await verify(proof7, vk7); 
     console.log("valid zkp7?: ", valid);
 
-    fs.writeFileSync('./src/plonk/recursion/proofs/layer0/zkp7.json', JSON.stringify(proof7), 'utf8');
-    fs.writeFileSync('./src/plonk/recursion/vks/vk7.json', JSON.stringify(vk7), 'utf8');
+    fs.writeFileSync(`${workDir}/plonk/recursion/proofs/layer0/zkp7.json`, JSON.stringify(proof7), 'utf8');
+    fs.writeFileSync(`${workDir}/plonk/recursion/vks/vk7.json`, JSON.stringify(vk7), 'utf8');
 }
 
 async function prove_zkp8() {
-    const vk8 = (await zkp8.compile()).verificationKey;
+    const vk8 = (await zkp8.compile({cache: Cache.FileSystem(cacheDir)})).verificationKey;
 
     let cin8 = Poseidon.hashPacked(Accumulator, acc_8);
     const proof8 = await zkp8.compute(cin8, acc_8);
@@ -202,12 +204,12 @@ async function prove_zkp8() {
     const valid = await verify(proof8, vk8); 
     console.log("valid zkp8?: ", valid);
 
-    fs.writeFileSync('./src/plonk/recursion/proofs/layer0/zkp8.json', JSON.stringify(proof8), 'utf8');
-    fs.writeFileSync('./src/plonk/recursion/vks/vk8.json', JSON.stringify(vk8), 'utf8');
+    fs.writeFileSync(`${workDir}/plonk/recursion/proofs/layer0/zkp8.json`, JSON.stringify(proof8), 'utf8');
+    fs.writeFileSync(`${workDir}/plonk/recursion/vks/vk8.json`, JSON.stringify(vk8), 'utf8');
 }
 
 async function prove_zkp9() {
-    const vk9 = (await zkp9.compile()).verificationKey;
+    const vk9 = (await zkp9.compile({cache: Cache.FileSystem(cacheDir)})).verificationKey;
 
     let cin9 = Poseidon.hashPacked(Accumulator, acc_9);
     const proof9 = await zkp9.compute(cin9, acc_9);
@@ -215,12 +217,12 @@ async function prove_zkp9() {
     const valid = await verify(proof9, vk9); 
     console.log("valid zkp9?: ", valid);
 
-    fs.writeFileSync('./src/plonk/recursion/proofs/layer0/zkp9.json', JSON.stringify(proof9), 'utf8');
-    fs.writeFileSync('./src/plonk/recursion/vks/vk9.json', JSON.stringify(vk9), 'utf8');
+    fs.writeFileSync(`${workDir}/plonk/recursion/proofs/layer0/zkp9.json`, JSON.stringify(proof9), 'utf8');
+    fs.writeFileSync(`${workDir}/plonk/recursion/vks/vk9.json`, JSON.stringify(vk9), 'utf8');
 }
 
 async function prove_zkp10() {
-    const vk10 = (await zkp10.compile()).verificationKey;
+    const vk10 = (await zkp10.compile({cache: Cache.FileSystem(cacheDir)})).verificationKey;
 
     let cin10 = Poseidon.hashPacked(Accumulator, acc_10);
     const proof10 = await zkp10.compute(cin10, acc_10);
@@ -228,12 +230,12 @@ async function prove_zkp10() {
     const valid = await verify(proof10, vk10); 
     console.log("valid zkp10?: ", valid);
 
-    fs.writeFileSync('./src/plonk/recursion/proofs/layer0/zkp10.json', JSON.stringify(proof10), 'utf8');
-    fs.writeFileSync('./src/plonk/recursion/vks/vk10.json', JSON.stringify(vk10), 'utf8');
+    fs.writeFileSync(`${workDir}/plonk/recursion/proofs/layer0/zkp10.json`, JSON.stringify(proof10), 'utf8');
+    fs.writeFileSync(`${workDir}/plonk/recursion/vks/vk10.json`, JSON.stringify(vk10), 'utf8');
 }
 
 async function prove_zkp11() {
-    const vk11 = (await zkp11.compile()).verificationKey;
+    const vk11 = (await zkp11.compile({cache: Cache.FileSystem(cacheDir)})).verificationKey;
 
     let cin11 = Poseidon.hashPacked(Accumulator, acc_11);
     const proof11 = await zkp11.compute(cin11, acc_11);
@@ -241,12 +243,12 @@ async function prove_zkp11() {
     const valid = await verify(proof11, vk11); 
     console.log("valid zkp11?: ", valid);
 
-    fs.writeFileSync('./src/plonk/recursion/proofs/layer0/zkp11.json', JSON.stringify(proof11), 'utf8');
-    fs.writeFileSync('./src/plonk/recursion/vks/vk11.json', JSON.stringify(vk11), 'utf8');
+    fs.writeFileSync(`${workDir}/plonk/recursion/proofs/layer0/zkp11.json`, JSON.stringify(proof11), 'utf8');
+    fs.writeFileSync(`${workDir}/plonk/recursion/vks/vk11.json`, JSON.stringify(vk11), 'utf8');
 }
 
 async function prove_zkp12() {
-    const vk12 = (await zkp12.compile()).verificationKey;
+    const vk12 = (await zkp12.compile({cache: Cache.FileSystem(cacheDir)})).verificationKey;
 
     let cin12 = Poseidon.hashPacked(Accumulator, acc_12);
     const proof12 = await zkp12.compute(cin12, acc_12, auxWitness.shift_power, auxWitness.c);
@@ -254,12 +256,12 @@ async function prove_zkp12() {
     const valid = await verify(proof12, vk12); 
     console.log("valid zkp12?: ", valid);
 
-    fs.writeFileSync('./src/plonk/recursion/proofs/layer0/zkp12.json', JSON.stringify(proof12), 'utf8');
-    fs.writeFileSync('./src/plonk/recursion/vks/vk12.json', JSON.stringify(vk12), 'utf8');
+    fs.writeFileSync(`${workDir}/plonk/recursion/proofs/layer0/zkp12.json`, JSON.stringify(proof12), 'utf8');
+    fs.writeFileSync(`${workDir}/plonk/recursion/vks/vk12.json`, JSON.stringify(vk12), 'utf8');
 }
 
 async function prove_zkp13() {
-    const vk13 = (await zkp13.compile()).verificationKey;
+    const vk13 = (await zkp13.compile({cache: Cache.FileSystem(cacheDir)})).verificationKey;
 
     let cin13 = Poseidon.hashPacked(KzgAccumulator, acc_13);
     const proof13 = await zkp13.compute(cin13, acc_13, line_hashes_13);
@@ -267,12 +269,12 @@ async function prove_zkp13() {
     const valid = await verify(proof13, vk13); 
     console.log("valid zkp13?: ", valid);
 
-    fs.writeFileSync('./src/plonk/recursion/proofs/layer0/zkp13.json', JSON.stringify(proof13), 'utf8');
-    fs.writeFileSync('./src/plonk/recursion/vks/vk13.json', JSON.stringify(vk13), 'utf8');
+    fs.writeFileSync(`${workDir}/plonk/recursion/proofs/layer0/zkp13.json`, JSON.stringify(proof13), 'utf8');
+    fs.writeFileSync(`${workDir}/plonk/recursion/vks/vk13.json`, JSON.stringify(vk13), 'utf8');
 }
 
 async function prove_zkp14() {
-    const vk14 = (await zkp14.compile()).verificationKey;
+    const vk14 = (await zkp14.compile({cache: Cache.FileSystem(cacheDir)})).verificationKey;
 
     let cin14 = Poseidon.hashPacked(KzgAccumulator, acc_14);
     const proof14 = await zkp14.compute(cin14, acc_14, line_hashes_14);
@@ -280,12 +282,12 @@ async function prove_zkp14() {
     const valid = await verify(proof14, vk14); 
     console.log("valid zkp14?: ", valid);
 
-    fs.writeFileSync('./src/plonk/recursion/proofs/layer0/zkp14.json', JSON.stringify(proof14), 'utf8');
-    fs.writeFileSync('./src/plonk/recursion/vks/vk14.json', JSON.stringify(vk14), 'utf8');
+    fs.writeFileSync(`${workDir}/plonk/recursion/proofs/layer0/zkp14.json`, JSON.stringify(proof14), 'utf8');
+    fs.writeFileSync(`${workDir}/plonk/recursion/vks/vk14.json`, JSON.stringify(vk14), 'utf8');
 }
 
 async function prove_zkp15() {
-    const vk15 = (await zkp15.compile()).verificationKey;
+    const vk15 = (await zkp15.compile({cache: Cache.FileSystem(cacheDir)})).verificationKey;
 
     let cin15 = Poseidon.hashPacked(KzgAccumulator, acc_15);
     const proof15 = await zkp15.compute(cin15, acc_15, line_hashes_15);
@@ -293,12 +295,12 @@ async function prove_zkp15() {
     const valid = await verify(proof15, vk15); 
     console.log("valid zkp15?: ", valid);
 
-    fs.writeFileSync('./src/plonk/recursion/proofs/layer0/zkp15.json', JSON.stringify(proof15), 'utf8');
-    fs.writeFileSync('./src/plonk/recursion/vks/vk15.json', JSON.stringify(vk15), 'utf8');
+    fs.writeFileSync(`${workDir}/plonk/recursion/proofs/layer0/zkp15.json`, JSON.stringify(proof15), 'utf8');
+    fs.writeFileSync(`${workDir}/plonk/recursion/vks/vk15.json`, JSON.stringify(vk15), 'utf8');
 }
 
 async function prove_zkp16() {
-    const vk16 = (await zkp16.compile()).verificationKey;
+    const vk16 = (await zkp16.compile({cache: Cache.FileSystem(cacheDir)})).verificationKey;
 
     let cin16 = Poseidon.hashPacked(KzgAccumulator, acc_16);
     const proof16 = await zkp16.compute(cin16, acc_16, line_hashes_16);
@@ -306,12 +308,12 @@ async function prove_zkp16() {
     const valid = await verify(proof16, vk16); 
     console.log("valid zkp16?: ", valid);
 
-    fs.writeFileSync('./src/plonk/recursion/proofs/layer0/zkp16.json', JSON.stringify(proof16), 'utf8');
-    fs.writeFileSync('./src/plonk/recursion/vks/vk16.json', JSON.stringify(vk16), 'utf8');
+    fs.writeFileSync(`${workDir}/plonk/recursion/proofs/layer0/zkp16.json`, JSON.stringify(proof16), 'utf8');
+    fs.writeFileSync(`${workDir}/plonk/recursion/vks/vk16.json`, JSON.stringify(vk16), 'utf8');
 }
 
 async function prove_zkp17() {
-    const vk17 = (await zkp17.compile()).verificationKey;
+    const vk17 = (await zkp17.compile({cache: Cache.FileSystem(cacheDir)})).verificationKey;
 
     let cin17 = Poseidon.hashPacked(KzgAccumulator, acc_17);
     const proof17 = await zkp17.compute(cin17, acc_17, g.slice(0, 9), final_line_hashes.slice(9));
@@ -319,12 +321,12 @@ async function prove_zkp17() {
     const valid = await verify(proof17, vk17); 
     console.log("valid zkp17?: ", valid);
 
-    fs.writeFileSync('./src/plonk/recursion/proofs/layer0/zkp17.json', JSON.stringify(proof17), 'utf8');
-    fs.writeFileSync('./src/plonk/recursion/vks/vk17.json', JSON.stringify(vk17), 'utf8');
+    fs.writeFileSync(`${workDir}/plonk/recursion/proofs/layer0/zkp17.json`, JSON.stringify(proof17), 'utf8');
+    fs.writeFileSync(`${workDir}/plonk/recursion/vks/vk17.json`, JSON.stringify(vk17), 'utf8');
 }
 
 async function prove_zkp18() {
-    const vk18 = (await zkp18.compile()).verificationKey;
+    const vk18 = (await zkp18.compile({cache: Cache.FileSystem(cacheDir)})).verificationKey;
 
     let cin18 = Poseidon.hashPacked(KzgAccumulator, acc_18);
     const proof18 = await zkp18.compute(cin18, acc_18, final_line_hashes.slice(0, 9), g.slice(9, 9 + 11), final_line_hashes.slice(20));
@@ -332,12 +334,12 @@ async function prove_zkp18() {
     const valid = await verify(proof18, vk18); 
     console.log("valid zkp18?: ", valid);
 
-    fs.writeFileSync('./src/plonk/recursion/proofs/layer0/zkp18.json', JSON.stringify(proof18), 'utf8');
-    fs.writeFileSync('./src/plonk/recursion/vks/vk18.json', JSON.stringify(vk18), 'utf8');
+    fs.writeFileSync(`${workDir}/plonk/recursion/proofs/layer0/zkp18.json`, JSON.stringify(proof18), 'utf8');
+    fs.writeFileSync(`${workDir}/plonk/recursion/vks/vk18.json`, JSON.stringify(vk18), 'utf8');
 }
 
 async function prove_zkp19() {
-    const vk19 = (await zkp19.compile()).verificationKey;
+    const vk19 = (await zkp19.compile({cache: Cache.FileSystem(cacheDir)})).verificationKey;
 
     let cin19 = Poseidon.hashPacked(KzgAccumulator, acc_19);
     const proof19 = await zkp19.compute(cin19, acc_19, final_line_hashes.slice(0, 20), g.slice(20, 20 + 11), final_line_hashes.slice(31));
@@ -345,12 +347,12 @@ async function prove_zkp19() {
     const valid = await verify(proof19, vk19); 
     console.log("valid zkp19?: ", valid);
 
-    fs.writeFileSync('./src/plonk/recursion/proofs/layer0/zkp19.json', JSON.stringify(proof19), 'utf8');
-    fs.writeFileSync('./src/plonk/recursion/vks/vk19.json', JSON.stringify(vk19), 'utf8');
+    fs.writeFileSync(`${workDir}/plonk/recursion/proofs/layer0/zkp19.json`, JSON.stringify(proof19), 'utf8');
+    fs.writeFileSync(`${workDir}/plonk/recursion/vks/vk19.json`, JSON.stringify(vk19), 'utf8');
 }
 
 async function prove_zkp20() {
-    const vk20 = (await zkp20.compile()).verificationKey;
+    const vk20 = (await zkp20.compile({cache: Cache.FileSystem(cacheDir)})).verificationKey;
 
     let cin20 = Poseidon.hashPacked(KzgAccumulator, acc_20);
     const proof20 = await zkp20.compute(cin20, acc_20, final_line_hashes.slice(0, 31), g.slice(31, 31 + 11), final_line_hashes.slice(42));
@@ -358,12 +360,12 @@ async function prove_zkp20() {
     const valid = await verify(proof20, vk20); 
     console.log("valid zkp20?: ", valid);
 
-    fs.writeFileSync('./src/plonk/recursion/proofs/layer0/zkp20.json', JSON.stringify(proof20), 'utf8');
-    fs.writeFileSync('./src/plonk/recursion/vks/vk20.json', JSON.stringify(vk20), 'utf8');
+    fs.writeFileSync(`${workDir}/plonk/recursion/proofs/layer0/zkp20.json`, JSON.stringify(proof20), 'utf8');
+    fs.writeFileSync(`${workDir}/plonk/recursion/vks/vk20.json`, JSON.stringify(vk20), 'utf8');
 }
 
 async function prove_zkp21() {
-    const vk21 = (await zkp21.compile()).verificationKey;
+    const vk21 = (await zkp21.compile({cache: Cache.FileSystem(cacheDir)})).verificationKey;
 
     let cin21 = Poseidon.hashPacked(KzgAccumulator, acc_21);
     const proof21 = await zkp21.compute(cin21, acc_21, final_line_hashes.slice(0, 42), g.slice(42, 42 + 11), final_line_hashes.slice(53));
@@ -371,12 +373,12 @@ async function prove_zkp21() {
     const valid = await verify(proof21, vk21); 
     console.log("valid zkp21?: ", valid);
 
-    fs.writeFileSync('./src/plonk/recursion/proofs/layer0/zkp21.json', JSON.stringify(proof21), 'utf8');
-    fs.writeFileSync('./src/plonk/recursion/vks/vk21.json', JSON.stringify(vk21), 'utf8');
+    fs.writeFileSync(`${workDir}/plonk/recursion/proofs/layer0/zkp21.json`, JSON.stringify(proof21), 'utf8');
+    fs.writeFileSync(`${workDir}/plonk/recursion/vks/vk21.json`, JSON.stringify(vk21), 'utf8');
 }
 
 async function prove_zkp22() {
-    const vk22 = (await zkp22.compile()).verificationKey;
+    const vk22 = (await zkp22.compile({cache: Cache.FileSystem(cacheDir)})).verificationKey;
 
     let cin22 = Poseidon.hashPacked(KzgAccumulator, acc_22);
     const proof22 = await zkp22.compute(cin22, acc_22, final_line_hashes.slice(0, 53), g.slice(53, 53 + 11), final_line_hashes.slice(64));
@@ -384,12 +386,12 @@ async function prove_zkp22() {
     const valid = await verify(proof22, vk22); 
     console.log("valid zkp22?: ", valid);
 
-    fs.writeFileSync('./src/plonk/recursion/proofs/layer0/zkp22.json', JSON.stringify(proof22), 'utf8');
-    fs.writeFileSync('./src/plonk/recursion/vks/vk22.json', JSON.stringify(vk22), 'utf8');
+    fs.writeFileSync(`${workDir}/plonk/recursion/proofs/layer0/zkp22.json`, JSON.stringify(proof22), 'utf8');
+    fs.writeFileSync(`${workDir}/plonk/recursion/vks/vk22.json`, JSON.stringify(vk22), 'utf8');
 }
 
 async function prove_zkp23() {
-    const vk23 = (await zkp23.compile()).verificationKey;
+    const vk23 = (await zkp23.compile({cache: Cache.FileSystem(cacheDir)})).verificationKey;
 
     let cin23 = Poseidon.hashPacked(KzgAccumulator, acc_23);
     const proof23 = await zkp23.compute(cin23, acc_23, final_line_hashes.slice(0, 64), g.slice(-1));
@@ -397,11 +399,14 @@ async function prove_zkp23() {
     const valid = await verify(proof23, vk23); 
     console.log("valid zkp23?: ", valid);
 
-    fs.writeFileSync('./src/plonk/recursion/proofs/layer0/zkp23.json', JSON.stringify(proof23), 'utf8');
-    fs.writeFileSync('./src/plonk/recursion/vks/vk23.json', JSON.stringify(vk23), 'utf8');
+    fs.writeFileSync(`${workDir}/plonk/recursion/proofs/layer0/zkp23.json`, JSON.stringify(proof23), 'utf8');
+    fs.writeFileSync(`${workDir}/plonk/recursion/vks/vk23.json`, JSON.stringify(vk23), 'utf8');
 }
 
 
+if (!fs.existsSync(workDir)){
+    fs.mkdirSync(workDir);
+}
 switch(process.argv[2]) {
     case 'zkp0':
         await prove_zkp0();

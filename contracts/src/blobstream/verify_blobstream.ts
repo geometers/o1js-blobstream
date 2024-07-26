@@ -22,9 +22,11 @@ import { parsePublicInputs, parsePublicInputsProvable } from '../plonk/parse_pi.
 import { provableBn254ScalarFieldToBytes, wordToBytes } from '../sha/utils.js';
 import fs from 'fs';
 
-const blobstreamProgramVk: FrC = FrC.from("0x744021aed5b2c14ea2052e2570261bc1d16dbad1188f6c3833735f62dc1b82")
-const blobstreamNodeVk: Field = Field.from(20197230879339549708088630386158007275561315945478767330700301953454441177956n);
-const vk = VerificationKey.fromJSON(JSON.parse(fs.readFileSync('./src/plonk/recursion/vks/nodeVk.json', 'utf8')))
+const blobstreamProgramVk: FrC = FrC.from(process.env.BLOBSTREAM_PROGRAM_VK as string)
+const workDir = process.env.BLOBSTREAM_WORK_DIR as string;
+const blobstreamNodeVk: Field = Field.from(JSON.parse(fs.readFileSync(`${workDir}/plonk/recursion/proofs/layer5/p0.json`, 'utf8')).publicOutput[2]);
+
+const vk = VerificationKey.fromJSON(JSON.parse(fs.readFileSync(`${workDir}/plonk/recursion/vks/nodeVk.json`, 'utf8')))
 
 class Bytes32 extends Bytes(32) {}
 

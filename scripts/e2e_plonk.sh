@@ -3,10 +3,11 @@
 # exit if any of scripts exit
 set -e 
 
+args=("$@")
+ENV=$(realpath ${args[0]})
+source ${ENV}
 SCRIPT_DIR=$(dirname -- $(realpath $0)) 
 cd $SCRIPT_DIR/..
-
-rm -f mlo.json aux_wtns.json
 
 pushd ./contracts
 
@@ -26,8 +27,14 @@ npm run build
 
 popd
 
+WORK_DIR_RELATIVE_TO_SCRIPTS="./scripts/${WORK_DIR}"
+mkdir -p ${WORK_DIR_RELATIVE_TO_SCRIPTS}
+
+CACHE_DIR_RELATIVE_TO_SCRIPTS="./scripts/${CACHE_DIR}"
+mkdir -p ${CACHE_DIR_RELATIVE_TO_SCRIPTS}
+
 # get aux pairing witness 
-./scripts/get_aux_witness.sh 
+./scripts/get_aux_witness.sh ${ENV}
 
 # test e2e proof 
-./scripts/plonk_tree.sh
+./scripts/plonk_tree.sh ${ENV}

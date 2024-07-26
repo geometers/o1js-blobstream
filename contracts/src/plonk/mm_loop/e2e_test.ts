@@ -5,8 +5,8 @@ import { Provable } from 'o1js';
 import { G1Affine } from '../../ec/index.js';
 import { Fp12 } from '../../towers/fp12.js';
 
-const g2_lines = fs.readFileSync("./src/plonk/mm_loop/g2_lines.json", 'utf8');
-const tau_lines = fs.readFileSync("./src/plonk/mm_loop/tau_lines.json", 'utf8');
+const g2_lines = fs.readFileSync(`./src/plonk/mm_loop/g2_lines.json`, 'utf8');
+const tau_lines = fs.readFileSync(`./src/plonk/mm_loop/tau_lines.json`, 'utf8');
 const kzgP = new KZGPairing(g2_lines, tau_lines, make_w27());
 
 function main() {
