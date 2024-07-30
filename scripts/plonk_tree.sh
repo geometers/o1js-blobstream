@@ -38,7 +38,7 @@ fi
 MAX_THREADS=${MAX_THREADS:-32}
 echo "MAX THREADS: $MAX_THREADS"
 
-MAX_ITERATIONS=$(( (32 + $MAX_THREADS - 1)/$MAX_THREADS - 1))
+MAX_ITERATIONS=$(( (32 + $MAX_THREADS - 1)/$MAX_THREADS ))
 TOTAL_IN_LOOP=24
 SHOULD_BREAK=false
 
@@ -66,7 +66,7 @@ echo "Computed ZKPs 0-23..."
 for i in `seq 1 5`; do
     echo "Compressing layer ${i}..."
     upper_limit=$(( 2 ** (5 - i) - 1 ))
-    MAX_ITERATIONS=$(( ($upper_limit + $MAX_THREADS - 1) / $MAX_THREADS - 1 ))
+    MAX_ITERATIONS=$(( ($upper_limit + $MAX_THREADS - 1) / $MAX_THREADS ))
     SHOULD_BREAK=false
     for j in `seq 0 $MAX_ITERATIONS`; do
         # echo "${i}, ${j}"
