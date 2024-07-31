@@ -3,7 +3,8 @@ set -e
 SCRIPT_DIR=$(dirname -- $(realpath $0)) 
 cd $SCRIPT_DIR/../..
 
-RUN_DIR=$SCRIPT_DIR/run
+RUN_DIR_RELATIVE_TO_SCRIPTS=$(basename $SCRIPT_DIR)/run
+RUN_DIR=$(pwd)/scripts/$RUN_DIR_RELATIVE_TO_SCRIPTS
 
 mkdir -p $RUN_DIR
 
@@ -24,7 +25,7 @@ npm install
 npm run build
 
 
-node "./build/src/blobstream/sp1_to_env.js" $SCRIPT_DIR/blobstreamSP1Proof.json $RUN_DIR/env.blobstream blobstream &
+node "./build/src/blobstream/sp1_to_env.js" $SCRIPT_DIR/blobstreamSP1Proof.json $RUN_DIR $RUN_DIR_RELATIVE_TO_SCRIPTS blobstream &
 
 node_pid=$!
 wait $node_pid
@@ -37,7 +38,7 @@ else
   exit 1
 fi
 
-node "./build/src/blobstream/sp1_to_env.js" $SCRIPT_DIR/blobInclusionSP1Proof.json $RUN_DIR/env.blobInclusion blobInclusion &
+node "./build/src/blobstream/sp1_to_env.js" $SCRIPT_DIR/blobInclusionSP1Proof.json $RUN_DIR $RUN_DIR_RELATIVE_TO_SCRIPTS blobInclusion &
 
 node_pid=$!
 wait $node_pid
