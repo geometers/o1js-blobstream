@@ -1,4 +1,4 @@
-import { Poseidon, UInt64, verify, MerkleTree, Mina, AccountUpdate } from "o1js";
+import { Poseidon, UInt64, verify, MerkleTree, Mina, AccountUpdate, Cache } from "o1js";
 import { blobstreamVerifier, BlobstreamProof, BlobstreamInput, Bytes32 } from "./verify_blobstream.js";
 import { blobInclusionVerifier, BlobInclusionProof, BlobInclusionInput, Bytes29 } from "./verify_blob_inclusion.js";
 import { NodeProofLeft } from "../structs.js";
@@ -9,26 +9,15 @@ import { HelloWorldRollup, StateBytes } from "./rollup.js";
 
 const args = process.argv;
 
-interface sp1JSON {
-    proof: {
-        public_inputs: [string],
-        encoded_proof: string,
-        raw_proof: string,
-    },
-    public_values: {
-        buffer: {
-            data: Uint8Array,
-        }
-    }
-}
-
 async function prove_blobstream() {
-    const blobstreamPlonkProofPath = args[3]
-    const blobstreamSP1ProofPath = args[4]
+    const blobstreamPlonkProofPath = args[3];
+    const blobstreamSP1ProofPath = args[4];
+    const blobstreamProofPath = args[5];
+    const cacheDir = args[6];
 
     const blobstreamPlonkProof = await NodeProofLeft.fromJSON(JSON.parse(fs.readFileSync(blobstreamPlonkProofPath, 'utf8')));
 
-    const blobstreamSP1Proof: sp1JSON = JSON.parse(fs.readFileSync(blobstreamSP1ProofPath, 'utf8'));
+    const blobstreamSP1Proof = JSON.parse(fs.readFileSync(blobstreamSP1ProofPath, 'utf8'));
     const defaultEncoder = ethers.AbiCoder.defaultAbiCoder()
     const decoded = defaultEncoder.decode(
         ['bytes32', 'bytes32', 'bytes32', 'uint64', 'uint64', 'bytes32'],
@@ -44,22 +33,24 @@ async function prove_blobstream() {
         validatorBitmap: Bytes32.fromHex(decoded[5].slice(2)),
     });
 
-    const vk = (await blobstreamVerifier.compile()).verificationKey;
+    const vk = (await blobstreamVerifier.compile({cache: Cache.FileSystem(cacheDir)})).verificationKey;
 
     const proof = await blobstreamVerifier.compute(input, blobstreamPlonkProof);
     const valid = await verify(proof, vk); 
 
-    fs.writeFileSync(`./blobstreamProof.json`, JSON.stringify(proof), 'utf8');
+    fs.writeFileSync(blobstreamProofPath, JSON.stringify(proof), 'utf8');
     console.log("valid blobstream proof?: ", valid);
 }
 
 async function prove_blob_inclusion() {
-    const blobInclusionPlonkProofPath = args[3]
-    const blobInclusionSP1ProofPath = args[4]
+    const blobInclusionPlonkProofPath = args[3];
+    const blobInclusionSP1ProofPath = args[4];
+    const blobInclusionProofPath = args[5];
+    const cacheDir = args[6];
 
     const blobInclusionPlonkProof = await NodeProofLeft.fromJSON(JSON.parse(fs.readFileSync(blobInclusionPlonkProofPath, 'utf8')));
 
-    const blobInclusionSP1Proof: sp1JSON = JSON.parse(fs.readFileSync(blobInclusionSP1ProofPath, 'utf8'));
+    const blobInclusionSP1Proof = JSON.parse(fs.readFileSync(blobInclusionSP1ProofPath, 'utf8'));
 
     const data = blobInclusionSP1Proof.public_values.buffer.data.slice(16);
     const input = new BlobInclusionInput ({
@@ -68,18 +59,21 @@ async function prove_blob_inclusion() {
         dataCommitment: Bytes32.from(data.slice(61)),
     });
 
-    const vk = (await blobInclusionVerifier.compile()).verificationKey;
+    const vk = (await blobInclusionVerifier.compile({cache: Cache.FileSystem(cacheDir)})).verificationKey;
 
     const proof = await blobInclusionVerifier.compute(input, blobInclusionPlonkProof);
 
     const valid = await verify(proof, vk); 
 
-    fs.writeFileSync(`./blobInclusionProof.json`, JSON.stringify(proof), 'utf8');
+    fs.writeFileSync(blobInclusionProofPath, JSON.stringify(proof), 'utf8');
     console.log("valid blob inclusion proof?: ", valid);
 }
 
 async function blobstream_contract() {
-    (await blobstreamVerifier.compile()).verificationKey;
+    const blobstreamProofPath = args[3];
+    const cacheDir = args[4];
+
+    (await blobstreamVerifier.compile({cache: Cache.FileSystem(cacheDir)})).verificationKey;
 
     const blobstreamTree = new MerkleTree(32);
 
@@ -92,7 +86,7 @@ async function blobstream_contract() {
     // contract account
     const contractAccount = Mina.TestPublicKey.random();
     const contract = new BlobstreamProcessor(contractAccount);
-    await BlobstreamProcessor.compile();
+    await BlobstreamProcessor.compile({cache: Cache.FileSystem(cacheDir)});
 
     console.log('Deploying Blobstream Processor...');
 
@@ -114,7 +108,7 @@ async function blobstream_contract() {
     `updating blobstream state`
     );
 
-    const blobstreamProof = await BlobstreamProof.fromJSON(JSON.parse(fs.readFileSync(`./blobstreamProof.json`, 'utf8')));
+    const blobstreamProof = await BlobstreamProof.fromJSON(JSON.parse(fs.readFileSync(blobstreamProofPath, 'utf8')));
 
     const path = blobstreamTree.getWitness(0n);
 
@@ -133,8 +127,12 @@ async function blobstream_contract() {
 }
 
 async function rollup_contract() {
-    (await blobstreamVerifier.compile()).verificationKey;
-    (await blobInclusionVerifier.compile()).verificationKey;
+    const blobstreamProofPath = args[3];
+    const blobInclusionProofPath = args[4];
+    const cacheDir = args[5];
+
+    (await blobstreamVerifier.compile({cache: Cache.FileSystem(cacheDir)})).verificationKey;
+    (await blobInclusionVerifier.compile({cache: Cache.FileSystem(cacheDir)})).verificationKey;
 
     const blobstreamTree = new MerkleTree(32);
 
@@ -147,7 +145,7 @@ async function rollup_contract() {
     // contract account
     const contractAccount = Mina.TestPublicKey.random();
     const contract = new BlobstreamProcessor(contractAccount);
-    await BlobstreamProcessor.compile();
+    await BlobstreamProcessor.compile({cache: Cache.FileSystem(cacheDir)});
 
     console.log('Deploying Blobstream Processor...');
 
@@ -159,7 +157,7 @@ async function rollup_contract() {
 
     const rollupContractAccount = Mina.TestPublicKey.random();
     const rollupContract = new HelloWorldRollup(rollupContractAccount);
-    await HelloWorldRollup.compile();
+    await HelloWorldRollup.compile({cache: Cache.FileSystem(cacheDir)});
 
     console.log('Deploying Rollup...');
 
@@ -180,7 +178,7 @@ async function rollup_contract() {
     `updating blobstream state`
     );
 
-    const blobstreamProof = await BlobstreamProof.fromJSON(JSON.parse(fs.readFileSync(`./blobstreamProof.json`, 'utf8')));
+    const blobstreamProof = await BlobstreamProof.fromJSON(JSON.parse(fs.readFileSync(blobstreamProofPath, 'utf8')));
 
     const path = blobstreamTree.getWitness(0n);
 
@@ -193,7 +191,7 @@ async function rollup_contract() {
     let currentState;
 
     const blob = Bytes32.fromHex('736f6d65206461746120746f2073746f7265206f6e20626c6f636b636861696e');
-    const blobInclusionProof = await BlobInclusionProof.fromJSON(JSON.parse(fs.readFileSync(`./blobInclusionProof.json`, 'utf8')));
+    const blobInclusionProof = await BlobInclusionProof.fromJSON(JSON.parse(fs.readFileSync(blobInclusionProofPath, 'utf8')));
     txn = await Mina.transaction(feePayer1, async () => {
         await rollupContract.update(adminPrivateKey, blobInclusionProof, new BlobstreamMerkleWitness(path), blob);
     });
@@ -206,7 +204,7 @@ async function rollup_contract() {
     console.log(`Successfully updated the rollup state while showing blob inclusion!`);
 }
 
-switch(process.argv[2]) {
+switch(args[2]) {
     case 'blobstream':
         await prove_blobstream();
         break;
@@ -222,10 +220,4 @@ switch(process.argv[2]) {
     case 'rollup_contract':
         await rollup_contract();
         break;
-
-    case 'compute':
-        const buffer = Buffer.from([23,222,218,138,26,221,91,104,100,52,175,210,154,247,215,247,98,174,170,105,192,69,132,81,155,1,79,107,113,199,21,59,84,194,151,84,211,241,195,97,42,27,66,199,65,180,132,167,103,66,126,36,208,21,173,231,70,99,192,148,136,88,245,84,147,136,254,117,56,227,238,36,167,45,41,254,7,49,120,58,209,170,251,253,35,81,251,155,19,245,137,220,149,90,217,89,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,29,60,218,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,29,60,238,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,15,255,255,255,255,255,255,255,255,255,255,255,255]);
-        console.log(buffer.toString('hex'));
-        break;
-
 }

@@ -24,9 +24,11 @@ import fs from 'fs';
 import { blob } from 'stream/consumers';
 import { Bytes32 } from './verify_blobstream.js';
 
-const blobInclusionProgramVk: FrC = FrC.from("0x59f84b28ba58a4b04dd38fc4528624d85e6145d0b7211f69916f37b1f5d729")
-const blobInclusionNodeVk: Field = Field.from(20197230879339549708088630386158007275561315945478767330700301953454441177956n);
-const vk = VerificationKey.fromJSON(JSON.parse(fs.readFileSync('./src/plonk/recursion/vks/nodeVk.json', 'utf8')))
+const blobInclusionProgramVk: FrC = FrC.from(process.env.BLOB_INCLUSION_PROGRAM_VK as string)
+const workDir = process.env.BLOB_INCLUSION_WORK_DIR as string;
+const blobInclusionNodeVk: Field = Field.from(JSON.parse(fs.readFileSync(`${workDir}/plonk/recursion/proofs/layer5/p0.json`, 'utf8')).publicOutput[2]);
+
+const vk = VerificationKey.fromJSON(JSON.parse(fs.readFileSync(`${workDir}/plonk/recursion/vks/nodeVk.json`, 'utf8')))
 
 export class Bytes29 extends Bytes(29) {}
 

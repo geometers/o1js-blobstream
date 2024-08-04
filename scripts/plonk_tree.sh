@@ -1,22 +1,28 @@
 #!/bin/bash
 
-source ./scripts/.env
+args=("$@")
+ENV=${args[0]}
+source ${ENV}
+
 cd ./contracts
 
-AUX_WITNESS_RELATIVE_PATH="../$AUX_WITNESS_PATH"
+WORK_DIR_RELATIVE_TO_SCRIPTS="../scripts/${WORK_DIR}"
+CACHE_DIR_RELATIVE_TO_SCRIPTS="../scripts/${CACHE_DIR}"
+AUX_WITNESS_RELATIVE_PATH="$(realpath ${WORK_DIR_RELATIVE_TO_SCRIPTS})/aux_wtns.json"
 
-mkdir -p ./src/plonk/recursion/vks/
-mkdir -p ./src/plonk/recursion/proofs/
 
-mkdir -p ./src/plonk/recursion/proofs/layer0
-mkdir -p ./src/plonk/recursion/proofs/layer1
-mkdir -p ./src/plonk/recursion/proofs/layer2
-mkdir -p ./src/plonk/recursion/proofs/layer3
-mkdir -p ./src/plonk/recursion/proofs/layer4
-mkdir -p ./src/plonk/recursion/proofs/layer5
+mkdir -p ${WORK_DIR_RELATIVE_TO_SCRIPTS}/plonk/recursion/vks/
+mkdir -p ${WORK_DIR_RELATIVE_TO_SCRIPTS}/plonk/recursion/proofs/
+
+mkdir -p ${WORK_DIR_RELATIVE_TO_SCRIPTS}/plonk/recursion/proofs/layer0
+mkdir -p ${WORK_DIR_RELATIVE_TO_SCRIPTS}/plonk/recursion/proofs/layer1
+mkdir -p ${WORK_DIR_RELATIVE_TO_SCRIPTS}/plonk/recursion/proofs/layer2
+mkdir -p ${WORK_DIR_RELATIVE_TO_SCRIPTS}/plonk/recursion/proofs/layer3
+mkdir -p ${WORK_DIR_RELATIVE_TO_SCRIPTS}/plonk/recursion/proofs/layer4
+mkdir -p ${WORK_DIR_RELATIVE_TO_SCRIPTS}/plonk/recursion/proofs/layer5
 
 echo "Compiling recursion vks..."
-node build/src/plonk/recursion/compile_recursion_vks.js &
+node ./build/src/plonk/recursion/compile_recursion_vks.js ${WORK_DIR_RELATIVE_TO_SCRIPTS} ${CACHE_DIR_RELATIVE_TO_SCRIPTS} 2>/dev/null &
 
 node_pid=$!
 wait $node_pid
@@ -29,23 +35,57 @@ else
   exit 1
 fi
 
-echo "Computing ZKPs 0-23..."
-for i in `seq 0 23`; do
-    node build/src/plonk/recursion/prove_zkps.js zkp${i} $HEX_PROOF $PROGRAM_VK $HEX_PI $AUX_WITNESS_RELATIVE_PATH  2>/dev/null &
-done
+MAX_THREADS=${MAX_THREADS:-32}
+echo "MAX THREADS: $MAX_THREADS"
 
-wait
+MAX_ITERATIONS=$(( (32 + $MAX_THREADS - 1)/$MAX_THREADS ))
+TOTAL_IN_LOOP=24
+SHOULD_BREAK=false
+
+echo "Computing ZKPs 0-23..."
+for i in `seq 0 $MAX_ITERATIONS`; do
+  for j in `seq 0 $(( $MAX_THREADS - 1 ))`; do
+    ZKP_I=$(( $i * $MAX_THREADS + $j ))
+    if (( $ZKP_I >= $TOTAL_IN_LOOP )); then
+      SHOULD_BREAK=true
+    fi
+    if $SHOULD_BREAK; then
+      break
+    fi
+    # echo "Computing ZKP ${ZKP_I}..."
+    node ./build/src/plonk/recursion/prove_zkps.js zkp${ZKP_I} $HEX_PROOF $PROGRAM_VK $HEX_PI $AUX_WITNESS_RELATIVE_PATH ${WORK_DIR_RELATIVE_TO_SCRIPTS} ${CACHE_DIR_RELATIVE_TO_SCRIPTS} 2>/dev/null &
+  done
+  wait
+  if $SHOULD_BREAK; then
+    break
+  fi
+done
 
 echo "Computed ZKPs 0-23..."
 
 for i in `seq 1 5`; do
     echo "Compressing layer ${i}..."
     upper_limit=$(( 2 ** (5 - i) - 1 ))
-    for j in $(seq 0 $upper_limit); do
+    MAX_ITERATIONS=$(( ($upper_limit + $MAX_THREADS - 1) / $MAX_THREADS ))
+    SHOULD_BREAK=false
+    for j in `seq 0 $MAX_ITERATIONS`; do
         # echo "${i}, ${j}"
-        node build/src/plonk/recursion/node_resolver.js ${i} ${j} 2>/dev/null &
+       for k in `seq 0 $(( $MAX_THREADS - 1 ))`; do
+          ZKP_J=$(( $j * $MAX_THREADS + $k ))
+          if (( $ZKP_J > $upper_limit )); then
+            SHOULD_BREAK=true
+          fi
+          if $SHOULD_BREAK; then
+            break
+          fi
+          # echo "${i}, ${j}, ${k}, ${ZKP_J}"
+          node ./build/src/plonk/recursion/node_resolver.js ${i} ${ZKP_J} ${WORK_DIR_RELATIVE_TO_SCRIPTS} ${CACHE_DIR_RELATIVE_TO_SCRIPTS} 2>/dev/null &
+        done
+        wait
+        if $SHOULD_BREAK; then
+          break
+        fi
     done
-    wait
     echo "Compressed layer ${i}..."
 done
 

@@ -2,12 +2,21 @@
 
 set -e
 
-source ./scripts/.env
+args=("$@")
+ENV=${args[0]}
+source ${ENV}
+
+WORK_DIR_RELATIVE_TO_SCRIPTS="./scripts/${WORK_DIR}"
+MLO_RELATIVE_PATH="$(realpath ${WORK_DIR_RELATIVE_TO_SCRIPTS})/mlo.json"
+rm -f $MLO_RELATIVE_PATH
+AUX_WITNESS_RELATIVE_PATH="$(realpath ${WORK_DIR_RELATIVE_TO_SCRIPTS})/aux_wtns.json"
+rm -f $AUX_WITNESS_RELATIVE_PATH
+
 cd ./contracts
 NODE_SCRIPT="./build/src/plonk/serialize_mlo.js"
 
 # obtain mlo result
-MLO_RELATIVE_PATH="../$MLO_PATH"
+
 node $NODE_SCRIPT $MLO_RELATIVE_PATH $HEX_PROOF $PROGRAM_VK $HEX_PI &
 
 node_pid=$!
@@ -23,7 +32,6 @@ fi
 
 # reposition 
 cd ../pairing-utils
-AUX_WITNESS_RELATIVE_PATH="../$AUX_WITNESS_PATH"
 
 cargo run --bin aux_witness -- $MLO_RELATIVE_PATH $AUX_WITNESS_RELATIVE_PATH & 
 cargo_pid=$!

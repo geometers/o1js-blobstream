@@ -4,8 +4,8 @@ import { G2Affine } from '../../ec/g2.js';
 import { computeLineCoeffs } from '../../lines/coeffs.js';
 import { G2Line } from '../../lines/index.js';
 
-const g2_lines_path = "./src/plonk/mm_loop/g2_lines.json"; 
-const tau_lines_path = "./src/plonk/mm_loop/tau_lines.json"; 
+const g2_lines_path = `./src/plonk/mm_loop/g2_lines.json`; 
+const tau_lines_path = `./src/plonk/mm_loop/tau_lines.json`; 
 
 function precompute_lines(
     g2_x_0: bigint, 

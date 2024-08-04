@@ -16,8 +16,8 @@ const hexPi = args[4]
 const auxWtnsPath = args[5]
 const auxWitness = AuXWitness.loadFromPath(auxWtnsPath)
 
-const g2_lines = fs.readFileSync("./src/plonk/mm_loop/g2_lines.json", 'utf8');
-const tau_lines = fs.readFileSync("./src/plonk/mm_loop/tau_lines.json", 'utf8');
+const g2_lines = fs.readFileSync(`./src/plonk/mm_loop/g2_lines.json`, 'utf8');
+const tau_lines = fs.readFileSync(`./src/plonk/mm_loop/tau_lines.json`, 'utf8');
 
 const Verifier = new Sp1PlonkVerifier(VK, g2_lines, tau_lines)
 
