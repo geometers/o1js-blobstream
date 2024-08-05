@@ -15,6 +15,32 @@ class Groth16Verifier {
         this.vk = GrothVk.parse(path_to_vk);
     }
 
+    multiMillerLoop(
+        proof: Proof,
+    ) {
+        let g = LineAccumulator.accumulate(
+            proof.b_lines,
+            this.vk.gamma_lines,
+            this.vk.delta_lines,
+            proof.B,
+            proof.negA,
+            proof.PI,
+            proof.C
+        );
+
+        let mlo = Fp12.one();
+        let mlo_idx = 0; 
+        for (let i = 1; i < ATE_LOOP_COUNT.length; i++) {
+                mlo_idx = i - 1;
+                mlo = mlo.square().mul(g[mlo_idx]);
+        }
+
+        mlo_idx += 1;
+        mlo = mlo.mul(g[mlo_idx]);
+
+        return mlo
+    }
+
     verify(
         proof: Proof,
         aux_witness: AuXWitness,
