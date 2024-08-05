@@ -20,4 +20,11 @@ export class AuXWitness extends Struct({
             shift_power: Field.from(obj.shift_power)
         })
     }
+
+static loadFromJSON(obj: AuXWitnessType): AuXWitness {
+        return new AuXWitness({
+            c: Fp12.loadFromJSON(obj.c), 
+            shift_power: Field.from(obj.shift_power)
+        })
+    }
 }
