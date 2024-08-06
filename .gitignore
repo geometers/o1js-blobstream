@@ -1,2 +1,5 @@
 o1js
 scripts/blobstream_example/run
+scripts/groth_example/run
+scripts/groth_example/work_dir
+scripts/groth_example/cache_dir
