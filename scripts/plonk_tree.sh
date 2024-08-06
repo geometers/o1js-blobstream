@@ -11,18 +11,18 @@ CACHE_DIR_RELATIVE_TO_SCRIPTS="../scripts/${CACHE_DIR}"
 AUX_WITNESS_RELATIVE_PATH="$(realpath ${WORK_DIR_RELATIVE_TO_SCRIPTS})/aux_wtns.json"
 
 
-mkdir -p ${WORK_DIR_RELATIVE_TO_SCRIPTS}/plonk/recursion/vks/
-mkdir -p ${WORK_DIR_RELATIVE_TO_SCRIPTS}/plonk/recursion/proofs/
+mkdir -p ${WORK_DIR_RELATIVE_TO_SCRIPTS}/vks/
+mkdir -p ${WORK_DIR_RELATIVE_TO_SCRIPTS}/proofs/
 
-mkdir -p ${WORK_DIR_RELATIVE_TO_SCRIPTS}/plonk/recursion/proofs/layer0
-mkdir -p ${WORK_DIR_RELATIVE_TO_SCRIPTS}/plonk/recursion/proofs/layer1
-mkdir -p ${WORK_DIR_RELATIVE_TO_SCRIPTS}/plonk/recursion/proofs/layer2
-mkdir -p ${WORK_DIR_RELATIVE_TO_SCRIPTS}/plonk/recursion/proofs/layer3
-mkdir -p ${WORK_DIR_RELATIVE_TO_SCRIPTS}/plonk/recursion/proofs/layer4
-mkdir -p ${WORK_DIR_RELATIVE_TO_SCRIPTS}/plonk/recursion/proofs/layer5
+mkdir -p ${WORK_DIR_RELATIVE_TO_SCRIPTS}/proofs/layer0
+mkdir -p ${WORK_DIR_RELATIVE_TO_SCRIPTS}/proofs/layer1
+mkdir -p ${WORK_DIR_RELATIVE_TO_SCRIPTS}/proofs/layer2
+mkdir -p ${WORK_DIR_RELATIVE_TO_SCRIPTS}/proofs/layer3
+mkdir -p ${WORK_DIR_RELATIVE_TO_SCRIPTS}/proofs/layer4
+mkdir -p ${WORK_DIR_RELATIVE_TO_SCRIPTS}/proofs/layer5
 
 echo "Compiling recursion vks..."
-node ./build/src/plonk/recursion/compile_recursion_vks.js ${WORK_DIR_RELATIVE_TO_SCRIPTS} ${CACHE_DIR_RELATIVE_TO_SCRIPTS} 2>/dev/null &
+node ./build/src/compile_recursion_vks.js ${WORK_DIR_RELATIVE_TO_SCRIPTS} ${CACHE_DIR_RELATIVE_TO_SCRIPTS} 2>/dev/null &
 
 node_pid=$!
 wait $node_pid
@@ -79,7 +79,7 @@ for i in `seq 1 5`; do
             break
           fi
           # echo "${i}, ${j}, ${k}, ${ZKP_J}"
-          node ./build/src/plonk/recursion/node_resolver.js ${i} ${ZKP_J} ${WORK_DIR_RELATIVE_TO_SCRIPTS} ${CACHE_DIR_RELATIVE_TO_SCRIPTS} 2>/dev/null &
+          node ./build/src/node_resolver.js ${i} ${ZKP_J} ${WORK_DIR_RELATIVE_TO_SCRIPTS} ${CACHE_DIR_RELATIVE_TO_SCRIPTS} 2>/dev/null &
         done
         wait
         if $SHOULD_BREAK; then
