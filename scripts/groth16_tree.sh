@@ -19,7 +19,6 @@ mkdir -p ${WORK_DIR_RELATIVE_TO_SCRIPTS}/proofs/layer1
 mkdir -p ${WORK_DIR_RELATIVE_TO_SCRIPTS}/proofs/layer2
 mkdir -p ${WORK_DIR_RELATIVE_TO_SCRIPTS}/proofs/layer3
 mkdir -p ${WORK_DIR_RELATIVE_TO_SCRIPTS}/proofs/layer4
-mkdir -p ${WORK_DIR_RELATIVE_TO_SCRIPTS}/proofs/layer5
 
 echo "Compiling recursion vks..."
 node ./build/src/compile_recursion_vks.js ${WORK_DIR_RELATIVE_TO_SCRIPTS} ${CACHE_DIR_RELATIVE_TO_SCRIPTS} 2>/dev/null &
@@ -35,10 +34,10 @@ else
   exit 1
 fi
 
-MAX_THREADS=${MAX_THREADS:-32}
+MAX_THREADS=${MAX_THREADS:-16}
 echo "MAX THREADS: $MAX_THREADS"
 
-MAX_ITERATIONS=$(( (32 + $MAX_THREADS - 1)/$MAX_THREADS ))
+MAX_ITERATIONS=$(( (16 + $MAX_THREADS - 1)/$MAX_THREADS ))
 TOTAL_IN_LOOP=14
 SHOULD_BREAK=false
 
@@ -65,9 +64,9 @@ done
 
 echo "Computed ZKPs 0-13..."
 
-for i in `seq 1 5`; do
+for i in `seq 1 4`; do
     echo "Compressing layer ${i}..."
-    upper_limit=$(( 2 ** (5 - i) - 1 ))
+    upper_limit=$(( 2 ** (4 - i) - 1 ))
     MAX_ITERATIONS=$(( ($upper_limit + $MAX_THREADS - 1) / $MAX_THREADS ))
     SHOULD_BREAK=false
     for j in `seq 0 $MAX_ITERATIONS`; do

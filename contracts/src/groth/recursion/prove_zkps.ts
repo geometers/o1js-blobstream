@@ -19,7 +19,7 @@ import { zkp11 } from "./zkp11.js";
 import { zkp12 } from "./zkp12.js";
 import { zkp13 } from "./zkp13.js";
 
-// npm run build && node build/src/groth/recursion/prove_zkps.js zkp0 ./src/groth/jsons/proof.json ./src/groth/jsons/aux_witness.json ../scripts/groth_example/work_dir ../scripts/groth_example/cache_dir
+// npm run build && node build/src/groth/recursion/prove_zkps.js zkp0 ./src/groth/jsons/proof.json ./src/groth/jsons/aux_witness.json ../scripts/risc_zero_example/work_dir ../scripts/risc_zero_example/cache_dir
 
 const args = process.argv;
 

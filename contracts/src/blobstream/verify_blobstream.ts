@@ -24,9 +24,9 @@ import fs from 'fs';
 
 const blobstreamProgramVk: FrC = FrC.from(process.env.BLOBSTREAM_PROGRAM_VK as string)
 const workDir = process.env.BLOBSTREAM_WORK_DIR as string;
-const blobstreamNodeVk: Field = Field.from(JSON.parse(fs.readFileSync(`${workDir}/plonk/recursion/proofs/layer5/p0.json`, 'utf8')).publicOutput[2]);
+const blobstreamNodeVk: Field = Field.from(JSON.parse(fs.readFileSync(`${workDir}/proofs/layer5/p0.json`, 'utf8')).publicOutput[2]);
 
-const vk = VerificationKey.fromJSON(JSON.parse(fs.readFileSync(`${workDir}/plonk/recursion/vks/nodeVk.json`, 'utf8')))
+const vk = VerificationKey.fromJSON(JSON.parse(fs.readFileSync(`${workDir}/vks/nodeVk.json`, 'utf8')))
 
 class Bytes32 extends Bytes(32) {}
 

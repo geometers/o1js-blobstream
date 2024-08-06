@@ -67,7 +67,7 @@ export BLOB_INCLUSION_WORK_DIR=$WORK_DIR
 export BLOB_INCLUSION_PROGRAM_VK=$PROGRAM_VK
 
 source $RUN_DIR/env.blobstream
-node "../contracts/build/src/blobstream/prove_zkps.js" blobstream ${WORK_DIR}/plonk/recursion/proofs/layer5/p0.json $SCRIPT_DIR/blobstreamSP1Proof.json ${RUN_DIR}/blobstreamProof.json ${CACHE_DIR} &
+node "../contracts/build/src/blobstream/prove_zkps.js" blobstream ${WORK_DIR}/proofs/layer5/p0.json $SCRIPT_DIR/blobstreamSP1Proof.json ${RUN_DIR}/blobstreamProof.json ${CACHE_DIR} &
 
 node_pid=$!
 wait $node_pid
@@ -81,7 +81,7 @@ else
 fi
 
 source $RUN_DIR/env.blobInclusion
-node "../contracts/build/src/blobstream/prove_zkps.js" blob_inclusion ${WORK_DIR}/plonk/recursion/proofs/layer5/p0.json $SCRIPT_DIR/blobInclusionSP1Proof.json ${RUN_DIR}/blobInclusionProof.json ${CACHE_DIR} &
+node "../contracts/build/src/blobstream/prove_zkps.js" blob_inclusion ${WORK_DIR}/proofs/layer5/p0.json $SCRIPT_DIR/blobInclusionSP1Proof.json ${RUN_DIR}/blobInclusionProof.json ${CACHE_DIR} &
 
 node_pid=$!
 wait $node_pid
