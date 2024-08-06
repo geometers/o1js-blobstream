@@ -21,7 +21,7 @@ mkdir -p ${WORK_DIR_RELATIVE_TO_SCRIPTS}/proofs/layer3
 mkdir -p ${WORK_DIR_RELATIVE_TO_SCRIPTS}/proofs/layer4
 
 echo "Compiling recursion vks..."
-node ./build/src/compile_recursion_vks.js ${WORK_DIR_RELATIVE_TO_SCRIPTS} ${CACHE_DIR_RELATIVE_TO_SCRIPTS} 2>/dev/null &
+node ./build/src/compile_recursion_vks.js ${WORK_DIR_RELATIVE_TO_SCRIPTS} ${CACHE_DIR_RELATIVE_TO_SCRIPTS} &
 
 node_pid=$!
 wait $node_pid
@@ -54,7 +54,7 @@ for i in `seq 0 $MAX_ITERATIONS`; do
       break
     fi
     # echo "Computing ZKP ${ZKP_I}..."
-    node ./build/src/groth/recursion/prove_zkps.js zkp${ZKP_I} $PROOF_PATH $AUX_WITNESS_RELATIVE_PATH ${WORK_DIR_RELATIVE_TO_SCRIPTS} ${CACHE_DIR_RELATIVE_TO_SCRIPTS} 2>/dev/null &
+    node ./build/src/groth/recursion/prove_zkps.js zkp${ZKP_I} $PROOF_PATH $AUX_WITNESS_RELATIVE_PATH ${WORK_DIR_RELATIVE_TO_SCRIPTS} ${CACHE_DIR_RELATIVE_TO_SCRIPTS} &
   done
   wait
   if $SHOULD_BREAK; then
@@ -80,7 +80,7 @@ for i in `seq 1 4`; do
             break
           fi
           # echo "${i}, ${j}, ${k}, ${ZKP_J}"
-          node ./build/src/node_resolver.js $TOTAL_IN_LOOP ${i} ${ZKP_J} ${WORK_DIR_RELATIVE_TO_SCRIPTS} ${CACHE_DIR_RELATIVE_TO_SCRIPTS} 2>/dev/null &
+          node ./build/src/node_resolver.js $TOTAL_IN_LOOP ${i} ${ZKP_J} ${WORK_DIR_RELATIVE_TO_SCRIPTS} ${CACHE_DIR_RELATIVE_TO_SCRIPTS} &
         done
         wait
         if $SHOULD_BREAK; then
