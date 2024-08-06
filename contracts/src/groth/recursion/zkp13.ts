@@ -2,7 +2,7 @@ import { Field, Poseidon, Provable, ZkProgram } from "o1js";
 import { Accumulator } from "./data.js";
 import { Fp12 } from "../../towers/index.js";
 import { ArrayListHasher } from "../../array_list_hasher.js";
-import { VK } from "../vk.js";
+import { VK } from "../vk_from_env.js";
 
 const zkp13 = ZkProgram({
     name: 'zkp13',

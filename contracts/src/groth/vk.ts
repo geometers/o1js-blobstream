@@ -55,6 +55,4 @@ class GrothVk {
     }
 }
 
-// export static VK
-const VK = GrothVk.parse("./src/groth/jsons/vk.json")
-export { GrothVk, VK }
+export { GrothVk }

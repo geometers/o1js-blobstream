@@ -1,6 +1,5 @@
 import { Provable } from 'o1js';
 import { Groth16Verifier } from './verifier.js';
-import { G2Line, computeLineCoeffs } from '../lines/index.js';
 
 const grothVerifier = new Groth16Verifier("./src/groth/jsons/vk.json")
 

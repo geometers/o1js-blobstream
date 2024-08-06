@@ -7,7 +7,7 @@ import { LineAccumulator } from "./accumulate_lines.js";
 import { Proof } from "./proof.js";
 import { AuXWitness } from "../aux_witness.js";
 import { ArrayListHasher } from "../array_list_hasher.js";
-import { VK } from "./vk.js";
+import { VK } from "./vk_from_env.js";
 import { LineParser } from "../line_parser.js";
 
 class WitnessTracker {

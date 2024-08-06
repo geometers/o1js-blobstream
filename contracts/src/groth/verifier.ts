@@ -37,6 +37,7 @@ class Groth16Verifier {
 
         mlo_idx += 1;
         mlo = mlo.mul(g[mlo_idx]);
+        mlo = mlo.mul(this.vk.alpha_beta)
 
         return mlo
     }
