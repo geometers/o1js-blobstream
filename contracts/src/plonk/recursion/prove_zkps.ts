@@ -99,8 +99,8 @@ async function prove_zkp0() {
     const valid = await verify(proof0, vk0); 
     console.log("valid zkp0?: ", valid);
 
-    fs.writeFileSync(`${workDir}/plonk/recursion/proofs/layer0/zkp0.json`, JSON.stringify(proof0), 'utf8');
-    fs.writeFileSync(`${workDir}/plonk/recursion/vks/vk0.json`, JSON.stringify(vk0), 'utf8');
+    fs.writeFileSync(`${workDir}/proofs/layer0/zkp0.json`, JSON.stringify(proof0), 'utf8');
+    fs.writeFileSync(`${workDir}/vks/vk0.json`, JSON.stringify(vk0), 'utf8');
 }
 
 async function prove_zkp1() {
@@ -112,8 +112,8 @@ async function prove_zkp1() {
     const valid = await verify(proof1, vk1); 
     console.log("valid zkp1?: ", valid);
 
-    fs.writeFileSync(`${workDir}/plonk/recursion/proofs/layer0/zkp1.json`, JSON.stringify(proof1), 'utf8');
-    fs.writeFileSync(`${workDir}/plonk/recursion/vks/vk1.json`, JSON.stringify(vk1), 'utf8');
+    fs.writeFileSync(`${workDir}/proofs/layer0/zkp1.json`, JSON.stringify(proof1), 'utf8');
+    fs.writeFileSync(`${workDir}/vks/vk1.json`, JSON.stringify(vk1), 'utf8');
 }
 
 
@@ -126,8 +126,8 @@ async function prove_zkp2() {
     const valid = await verify(proof2, vk2); 
     console.log("valid zkp2?: ", valid);
 
-    fs.writeFileSync(`${workDir}/plonk/recursion/proofs/layer0/zkp2.json`, JSON.stringify(proof2), 'utf8');
-    fs.writeFileSync(`${workDir}/plonk/recursion/vks/vk2.json`, JSON.stringify(vk2), 'utf8');
+    fs.writeFileSync(`${workDir}/proofs/layer0/zkp2.json`, JSON.stringify(proof2), 'utf8');
+    fs.writeFileSync(`${workDir}/vks/vk2.json`, JSON.stringify(vk2), 'utf8');
 }
 
 async function prove_zkp3() {
@@ -139,8 +139,8 @@ async function prove_zkp3() {
     const valid = await verify(proof3, vk3); 
     console.log("valid zkp3?: ", valid);
 
-    fs.writeFileSync(`${workDir}/plonk/recursion/proofs/layer0/zkp3.json`, JSON.stringify(proof3), 'utf8');
-    fs.writeFileSync(`${workDir}/plonk/recursion/vks/vk3.json`, JSON.stringify(vk3), 'utf8');
+    fs.writeFileSync(`${workDir}/proofs/layer0/zkp3.json`, JSON.stringify(proof3), 'utf8');
+    fs.writeFileSync(`${workDir}/vks/vk3.json`, JSON.stringify(vk3), 'utf8');
 }
 
 async function prove_zkp4() {
@@ -152,8 +152,8 @@ async function prove_zkp4() {
     const valid = await verify(proof4, vk4); 
     console.log("valid zkp4?: ", valid);
 
-    fs.writeFileSync(`${workDir}/plonk/recursion/proofs/layer0/zkp4.json`, JSON.stringify(proof4), 'utf8');
-    fs.writeFileSync(`${workDir}/plonk/recursion/vks/vk4.json`, JSON.stringify(vk4), 'utf8');
+    fs.writeFileSync(`${workDir}/proofs/layer0/zkp4.json`, JSON.stringify(proof4), 'utf8');
+    fs.writeFileSync(`${workDir}/vks/vk4.json`, JSON.stringify(vk4), 'utf8');
 }
 
 async function prove_zkp5() {
@@ -165,8 +165,8 @@ async function prove_zkp5() {
     const valid = await verify(proof5, vk5); 
     console.log("valid zkp5?: ", valid);
 
-    fs.writeFileSync(`${workDir}/plonk/recursion/proofs/layer0/zkp5.json`, JSON.stringify(proof5), 'utf8');
-    fs.writeFileSync(`${workDir}/plonk/recursion/vks/vk5.json`, JSON.stringify(vk5), 'utf8');
+    fs.writeFileSync(`${workDir}/proofs/layer0/zkp5.json`, JSON.stringify(proof5), 'utf8');
+    fs.writeFileSync(`${workDir}/vks/vk5.json`, JSON.stringify(vk5), 'utf8');
 }
 
 async function prove_zkp6() {
@@ -178,8 +178,8 @@ async function prove_zkp6() {
     const valid = await verify(proof6, vk6); 
     console.log("valid zkp6?: ", valid);
 
-    fs.writeFileSync(`${workDir}/plonk/recursion/proofs/layer0/zkp6.json`, JSON.stringify(proof6), 'utf8');
-    fs.writeFileSync(`${workDir}/plonk/recursion/vks/vk6.json`, JSON.stringify(vk6), 'utf8');
+    fs.writeFileSync(`${workDir}/proofs/layer0/zkp6.json`, JSON.stringify(proof6), 'utf8');
+    fs.writeFileSync(`${workDir}/vks/vk6.json`, JSON.stringify(vk6), 'utf8');
 }
 
 async function prove_zkp7() {
@@ -191,8 +191,8 @@ async function prove_zkp7() {
     const valid = await verify(proof7, vk7); 
     console.log("valid zkp7?: ", valid);
 
-    fs.writeFileSync(`${workDir}/plonk/recursion/proofs/layer0/zkp7.json`, JSON.stringify(proof7), 'utf8');
-    fs.writeFileSync(`${workDir}/plonk/recursion/vks/vk7.json`, JSON.stringify(vk7), 'utf8');
+    fs.writeFileSync(`${workDir}/proofs/layer0/zkp7.json`, JSON.stringify(proof7), 'utf8');
+    fs.writeFileSync(`${workDir}/vks/vk7.json`, JSON.stringify(vk7), 'utf8');
 }
 
 async function prove_zkp8() {
@@ -204,8 +204,8 @@ async function prove_zkp8() {
     const valid = await verify(proof8, vk8); 
     console.log("valid zkp8?: ", valid);
 
-    fs.writeFileSync(`${workDir}/plonk/recursion/proofs/layer0/zkp8.json`, JSON.stringify(proof8), 'utf8');
-    fs.writeFileSync(`${workDir}/plonk/recursion/vks/vk8.json`, JSON.stringify(vk8), 'utf8');
+    fs.writeFileSync(`${workDir}/proofs/layer0/zkp8.json`, JSON.stringify(proof8), 'utf8');
+    fs.writeFileSync(`${workDir}/vks/vk8.json`, JSON.stringify(vk8), 'utf8');
 }
 
 async function prove_zkp9() {
@@ -217,8 +217,8 @@ async function prove_zkp9() {
     const valid = await verify(proof9, vk9); 
     console.log("valid zkp9?: ", valid);
 
-    fs.writeFileSync(`${workDir}/plonk/recursion/proofs/layer0/zkp9.json`, JSON.stringify(proof9), 'utf8');
-    fs.writeFileSync(`${workDir}/plonk/recursion/vks/vk9.json`, JSON.stringify(vk9), 'utf8');
+    fs.writeFileSync(`${workDir}/proofs/layer0/zkp9.json`, JSON.stringify(proof9), 'utf8');
+    fs.writeFileSync(`${workDir}/vks/vk9.json`, JSON.stringify(vk9), 'utf8');
 }
 
 async function prove_zkp10() {
@@ -230,8 +230,8 @@ async function prove_zkp10() {
     const valid = await verify(proof10, vk10); 
     console.log("valid zkp10?: ", valid);
 
-    fs.writeFileSync(`${workDir}/plonk/recursion/proofs/layer0/zkp10.json`, JSON.stringify(proof10), 'utf8');
-    fs.writeFileSync(`${workDir}/plonk/recursion/vks/vk10.json`, JSON.stringify(vk10), 'utf8');
+    fs.writeFileSync(`${workDir}/proofs/layer0/zkp10.json`, JSON.stringify(proof10), 'utf8');
+    fs.writeFileSync(`${workDir}/vks/vk10.json`, JSON.stringify(vk10), 'utf8');
 }
 
 async function prove_zkp11() {
@@ -243,8 +243,8 @@ async function prove_zkp11() {
     const valid = await verify(proof11, vk11); 
     console.log("valid zkp11?: ", valid);
 
-    fs.writeFileSync(`${workDir}/plonk/recursion/proofs/layer0/zkp11.json`, JSON.stringify(proof11), 'utf8');
-    fs.writeFileSync(`${workDir}/plonk/recursion/vks/vk11.json`, JSON.stringify(vk11), 'utf8');
+    fs.writeFileSync(`${workDir}/proofs/layer0/zkp11.json`, JSON.stringify(proof11), 'utf8');
+    fs.writeFileSync(`${workDir}/vks/vk11.json`, JSON.stringify(vk11), 'utf8');
 }
 
 async function prove_zkp12() {
@@ -256,8 +256,8 @@ async function prove_zkp12() {
     const valid = await verify(proof12, vk12); 
     console.log("valid zkp12?: ", valid);
 
-    fs.writeFileSync(`${workDir}/plonk/recursion/proofs/layer0/zkp12.json`, JSON.stringify(proof12), 'utf8');
-    fs.writeFileSync(`${workDir}/plonk/recursion/vks/vk12.json`, JSON.stringify(vk12), 'utf8');
+    fs.writeFileSync(`${workDir}/proofs/layer0/zkp12.json`, JSON.stringify(proof12), 'utf8');
+    fs.writeFileSync(`${workDir}/vks/vk12.json`, JSON.stringify(vk12), 'utf8');
 }
 
 async function prove_zkp13() {
@@ -269,8 +269,8 @@ async function prove_zkp13() {
     const valid = await verify(proof13, vk13); 
     console.log("valid zkp13?: ", valid);
 
-    fs.writeFileSync(`${workDir}/plonk/recursion/proofs/layer0/zkp13.json`, JSON.stringify(proof13), 'utf8');
-    fs.writeFileSync(`${workDir}/plonk/recursion/vks/vk13.json`, JSON.stringify(vk13), 'utf8');
+    fs.writeFileSync(`${workDir}/proofs/layer0/zkp13.json`, JSON.stringify(proof13), 'utf8');
+    fs.writeFileSync(`${workDir}/vks/vk13.json`, JSON.stringify(vk13), 'utf8');
 }
 
 async function prove_zkp14() {
@@ -282,8 +282,8 @@ async function prove_zkp14() {
     const valid = await verify(proof14, vk14); 
     console.log("valid zkp14?: ", valid);
 
-    fs.writeFileSync(`${workDir}/plonk/recursion/proofs/layer0/zkp14.json`, JSON.stringify(proof14), 'utf8');
-    fs.writeFileSync(`${workDir}/plonk/recursion/vks/vk14.json`, JSON.stringify(vk14), 'utf8');
+    fs.writeFileSync(`${workDir}/proofs/layer0/zkp14.json`, JSON.stringify(proof14), 'utf8');
+    fs.writeFileSync(`${workDir}/vks/vk14.json`, JSON.stringify(vk14), 'utf8');
 }
 
 async function prove_zkp15() {
@@ -295,8 +295,8 @@ async function prove_zkp15() {
     const valid = await verify(proof15, vk15); 
     console.log("valid zkp15?: ", valid);
 
-    fs.writeFileSync(`${workDir}/plonk/recursion/proofs/layer0/zkp15.json`, JSON.stringify(proof15), 'utf8');
-    fs.writeFileSync(`${workDir}/plonk/recursion/vks/vk15.json`, JSON.stringify(vk15), 'utf8');
+    fs.writeFileSync(`${workDir}/proofs/layer0/zkp15.json`, JSON.stringify(proof15), 'utf8');
+    fs.writeFileSync(`${workDir}/vks/vk15.json`, JSON.stringify(vk15), 'utf8');
 }
 
 async function prove_zkp16() {
@@ -308,8 +308,8 @@ async function prove_zkp16() {
     const valid = await verify(proof16, vk16); 
     console.log("valid zkp16?: ", valid);
 
-    fs.writeFileSync(`${workDir}/plonk/recursion/proofs/layer0/zkp16.json`, JSON.stringify(proof16), 'utf8');
-    fs.writeFileSync(`${workDir}/plonk/recursion/vks/vk16.json`, JSON.stringify(vk16), 'utf8');
+    fs.writeFileSync(`${workDir}/proofs/layer0/zkp16.json`, JSON.stringify(proof16), 'utf8');
+    fs.writeFileSync(`${workDir}/vks/vk16.json`, JSON.stringify(vk16), 'utf8');
 }
 
 async function prove_zkp17() {
@@ -321,8 +321,8 @@ async function prove_zkp17() {
     const valid = await verify(proof17, vk17); 
     console.log("valid zkp17?: ", valid);
 
-    fs.writeFileSync(`${workDir}/plonk/recursion/proofs/layer0/zkp17.json`, JSON.stringify(proof17), 'utf8');
-    fs.writeFileSync(`${workDir}/plonk/recursion/vks/vk17.json`, JSON.stringify(vk17), 'utf8');
+    fs.writeFileSync(`${workDir}/proofs/layer0/zkp17.json`, JSON.stringify(proof17), 'utf8');
+    fs.writeFileSync(`${workDir}/vks/vk17.json`, JSON.stringify(vk17), 'utf8');
 }
 
 async function prove_zkp18() {
@@ -334,8 +334,8 @@ async function prove_zkp18() {
     const valid = await verify(proof18, vk18); 
     console.log("valid zkp18?: ", valid);
 
-    fs.writeFileSync(`${workDir}/plonk/recursion/proofs/layer0/zkp18.json`, JSON.stringify(proof18), 'utf8');
-    fs.writeFileSync(`${workDir}/plonk/recursion/vks/vk18.json`, JSON.stringify(vk18), 'utf8');
+    fs.writeFileSync(`${workDir}/proofs/layer0/zkp18.json`, JSON.stringify(proof18), 'utf8');
+    fs.writeFileSync(`${workDir}/vks/vk18.json`, JSON.stringify(vk18), 'utf8');
 }
 
 async function prove_zkp19() {
@@ -347,8 +347,8 @@ async function prove_zkp19() {
     const valid = await verify(proof19, vk19); 
     console.log("valid zkp19?: ", valid);
 
-    fs.writeFileSync(`${workDir}/plonk/recursion/proofs/layer0/zkp19.json`, JSON.stringify(proof19), 'utf8');
-    fs.writeFileSync(`${workDir}/plonk/recursion/vks/vk19.json`, JSON.stringify(vk19), 'utf8');
+    fs.writeFileSync(`${workDir}/proofs/layer0/zkp19.json`, JSON.stringify(proof19), 'utf8');
+    fs.writeFileSync(`${workDir}/vks/vk19.json`, JSON.stringify(vk19), 'utf8');
 }
 
 async function prove_zkp20() {
@@ -360,8 +360,8 @@ async function prove_zkp20() {
     const valid = await verify(proof20, vk20); 
     console.log("valid zkp20?: ", valid);
 
-    fs.writeFileSync(`${workDir}/plonk/recursion/proofs/layer0/zkp20.json`, JSON.stringify(proof20), 'utf8');
-    fs.writeFileSync(`${workDir}/plonk/recursion/vks/vk20.json`, JSON.stringify(vk20), 'utf8');
+    fs.writeFileSync(`${workDir}/proofs/layer0/zkp20.json`, JSON.stringify(proof20), 'utf8');
+    fs.writeFileSync(`${workDir}/vks/vk20.json`, JSON.stringify(vk20), 'utf8');
 }
 
 async function prove_zkp21() {
@@ -373,8 +373,8 @@ async function prove_zkp21() {
     const valid = await verify(proof21, vk21); 
     console.log("valid zkp21?: ", valid);
 
-    fs.writeFileSync(`${workDir}/plonk/recursion/proofs/layer0/zkp21.json`, JSON.stringify(proof21), 'utf8');
-    fs.writeFileSync(`${workDir}/plonk/recursion/vks/vk21.json`, JSON.stringify(vk21), 'utf8');
+    fs.writeFileSync(`${workDir}/proofs/layer0/zkp21.json`, JSON.stringify(proof21), 'utf8');
+    fs.writeFileSync(`${workDir}/vks/vk21.json`, JSON.stringify(vk21), 'utf8');
 }
 
 async function prove_zkp22() {
@@ -386,8 +386,8 @@ async function prove_zkp22() {
     const valid = await verify(proof22, vk22); 
     console.log("valid zkp22?: ", valid);
 
-    fs.writeFileSync(`${workDir}/plonk/recursion/proofs/layer0/zkp22.json`, JSON.stringify(proof22), 'utf8');
-    fs.writeFileSync(`${workDir}/plonk/recursion/vks/vk22.json`, JSON.stringify(vk22), 'utf8');
+    fs.writeFileSync(`${workDir}/proofs/layer0/zkp22.json`, JSON.stringify(proof22), 'utf8');
+    fs.writeFileSync(`${workDir}/vks/vk22.json`, JSON.stringify(vk22), 'utf8');
 }
 
 async function prove_zkp23() {
@@ -399,8 +399,8 @@ async function prove_zkp23() {
     const valid = await verify(proof23, vk23); 
     console.log("valid zkp23?: ", valid);
 
-    fs.writeFileSync(`${workDir}/plonk/recursion/proofs/layer0/zkp23.json`, JSON.stringify(proof23), 'utf8');
-    fs.writeFileSync(`${workDir}/plonk/recursion/vks/vk23.json`, JSON.stringify(vk23), 'utf8');
+    fs.writeFileSync(`${workDir}/proofs/layer0/zkp23.json`, JSON.stringify(proof23), 'utf8');
+    fs.writeFileSync(`${workDir}/vks/vk23.json`, JSON.stringify(vk23), 'utf8');
 }
 
 
