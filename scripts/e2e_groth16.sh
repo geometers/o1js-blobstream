@@ -34,7 +34,7 @@ CACHE_DIR_RELATIVE_TO_SCRIPTS="./scripts/${CACHE_DIR}"
 mkdir -p ${CACHE_DIR_RELATIVE_TO_SCRIPTS}
 
 # get aux pairing witness 
-./scripts/get_aux_witness_plonk.sh ${ENV}
+./scripts/get_aux_witness_groth16.sh ${ENV}
 
 # test e2e proof 
-./scripts/plonk_tree.sh ${ENV}
+./scripts/groth16_tree.sh ${ENV}
