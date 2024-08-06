@@ -9,6 +9,8 @@ import { AuXWitness } from "../aux_witness.js";
 import { ArrayListHasher } from "../array_list_hasher.js";
 import { VK } from "./vk_from_env.js";
 import { LineParser } from "../line_parser.js";
+import { bn254 } from "../ec/g1.js";
+import { G1Affine } from "../ec/index.js";
 
 class WitnessTracker {
     proof: Proof
@@ -296,6 +298,18 @@ class WitnessTracker {
 
         this.acc.state.f = f;
         return this.acc.deepClone()
+    }
+
+    zkp14() {
+        let acc = new bn254({ x: VK.ic0.x, y: VK.ic0.y }); 
+
+        acc = acc.add(VK.ic1.scale(this.proof.pis[0]));
+        acc = acc.add(VK.ic2.scale(this.proof.pis[1]));
+        acc = acc.add(VK.ic3.scale(this.proof.pis[2]));
+        // acc = acc.add(VK.ic4.scale(pis[3]));
+        // acc = acc.add(VK.ic5.scale(pis[4]));
+
+        return new G1Affine({ x: acc.x.assertCanonical(), y: acc.y.assertCanonical() })
     }
 }
 

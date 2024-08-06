@@ -33,6 +33,9 @@ mkdir -p ${WORK_DIR_RELATIVE_TO_SCRIPTS}
 CACHE_DIR_RELATIVE_TO_SCRIPTS="./scripts/${CACHE_DIR}"
 mkdir -p ${CACHE_DIR_RELATIVE_TO_SCRIPTS}
 
+# get alphabeta
+./scripts/get_alphabeta_groth16.sh ${ENV}
+
 # get aux pairing witness 
 ./scripts/get_aux_witness_groth16.sh ${ENV}
 

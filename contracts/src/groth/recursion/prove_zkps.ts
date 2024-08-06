@@ -1,4 +1,4 @@
-import { Poseidon, verify, Cache } from "o1js";
+import { Poseidon, verify, Cache, Provable, Field } from "o1js";
 import { zkp0 } from "./zkp0.js";
 import fs from "fs"
 import { AuXWitness } from "../../aux_witness.js";
@@ -18,12 +18,17 @@ import { zkp10 } from "./zkp10.js";
 import { zkp11 } from "./zkp11.js";
 import { zkp12 } from "./zkp12.js";
 import { zkp13 } from "./zkp13.js";
+import { zkp14 } from "./zkp14.js";
+import { zkp15 } from "./zkp15.js";
+import { G1Affine } from "../../ec/index.js";
+import { FrC } from "../../towers/fr.js";
+import { VK } from "../vk_from_env.js";
 
 // npm run build && node build/src/groth/recursion/prove_zkps.js zkp0 ./src/groth/jsons/proof.json ./src/groth/jsons/aux_witness.json ../scripts/risc_zero_example/work_dir ../scripts/risc_zero_example/cache_dir
 
 const args = process.argv;
 
-const proof = Proof.parse(args[3])
+const proof = Proof.parse(VK, args[3])
 const auxWitness = AuXWitness.parse(args[4])
 const workDir = args[5]
 const cacheDir = args[6]
@@ -44,6 +49,7 @@ const acc_11 = wt.zkp10();
 const acc_12 = wt.zkp11();
 const acc_13 = wt.zkp12();
 const _ = wt.zkp13(); 
+const partialPiAcc = wt.zkp14();
 const g = wt.g; 
 
 
@@ -231,6 +237,36 @@ async function prove_zkp13() {
     fs.writeFileSync(`${workDir}/vks/vk13.json`, JSON.stringify(vk13), 'utf8');
 }
 
+async function prove_zkp14() {
+    const vk14 = (await zkp14.compile({cache: Cache.FileSystem(cacheDir)})).verificationKey;
+
+    const cin14 = Poseidon.hashPacked(G1Affine, proof.PI);
+    const proof14 = await zkp14.compute(cin14, proof.pis);
+
+    const valid = await verify(proof14, vk14); 
+    console.log("valid zkp14?: ", valid);
+
+    fs.writeFileSync(`${workDir}/proofs/layer0/zkp14.json`, JSON.stringify(proof14), 'utf8');
+    fs.writeFileSync(`${workDir}/vks/vk14.json`, JSON.stringify(vk14), 'utf8');
+}
+
+async function prove_zkp15() {
+    const vk15 = (await zkp15.compile({cache: Cache.FileSystem(cacheDir)})).verificationKey;
+
+    const pi_hash = Poseidon.hashPacked(G1Affine, proof.PI);
+    const pis_hash = Poseidon.hashPacked(Provable.Array(FrC.provable, 5), proof.pis);
+    const acc_hash = Poseidon.hashPacked(G1Affine, partialPiAcc);
+     
+    const cin15 = Poseidon.hashPacked(Provable.Array(Field, 3), [pi_hash, pis_hash, acc_hash]);
+    const proof15 = await zkp15.compute(cin15, proof.PI, partialPiAcc, proof.pis);
+
+    const valid = await verify(proof15, vk15); 
+    console.log("valid zkp15?: ", valid);
+
+    fs.writeFileSync(`${workDir}/proofs/layer0/zkp15.json`, JSON.stringify(proof15), 'utf8');
+    fs.writeFileSync(`${workDir}/vks/vk15.json`, JSON.stringify(vk15), 'utf8');
+}
+
 
 if (!fs.existsSync(workDir)){
     fs.mkdirSync(workDir);
@@ -277,5 +313,11 @@ switch(process.argv[2]) {
         break;
     case 'zkp13':
         await prove_zkp13();
+        break;
+    case 'zkp14':
+        await prove_zkp14();
+        break;
+    case 'zkp15':
+        await prove_zkp15();
         break;
 }

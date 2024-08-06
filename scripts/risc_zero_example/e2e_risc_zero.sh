@@ -24,7 +24,7 @@ fi
 npm install
 npm run build
 
-node "./build/src/groth/proof_to_env.js" $SCRIPT_DIR/risc_zero_proof.json $SCRIPT_DIR/risc_zero_vk.json $RUN_DIR $RUN_DIR_RELATIVE_TO_SCRIPTS risc_zero &
+node "./build/src/groth/proof_to_env.js" $SCRIPT_DIR/risc_zero_proof.json $SCRIPT_DIR/risc_zero_raw_vk.json $RUN_DIR/risc_zero_vk.json $RUN_DIR $RUN_DIR_RELATIVE_TO_SCRIPTS risc_zero &
 
 node_pid=$!
 wait $node_pid
@@ -41,12 +41,13 @@ popd
 
 pushd ./scripts
 
-# ./e2e_groth16.sh $RUN_DIR/env.risc_zero
+./e2e_groth16.sh $RUN_DIR/env.risc_zero
 
 source $RUN_DIR/env.risc_zero
+export GROTH16_VK_PATH=${VK_PATH}
 export RISC_ZERO_EXAMPLE_WORK_DIR=$WORK_DIR
-export RISC_ZERO_EXAMPLE_IMAGE_ID=1 
-node "../contracts/build/src/risc_zero/prove_zkps.js" blobstream ${WORK_DIR}/proofs/layer4/p0.json ${RUN_DIR}/riscZeroProof.json ${CACHE_DIR} 2>/dev/null &
+export RISC_ZERO_EXAMPLE_PROOF_PATH=$PROOF_PATH 
+node "../contracts/build/src/risc_zero/prove_zkps.js" risc_zero ${WORK_DIR}/proofs/layer4/p0.json $PROOF_PATH ${RUN_DIR}/riscZeroProof.json ${CACHE_DIR} &
 
 node_pid=$!
 wait $node_pid

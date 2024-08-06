@@ -5,23 +5,23 @@ use std::str::FromStr;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Field12 {
-    g00: String, 
-    g01: String, 
+    pub g00: String, 
+    pub g01: String, 
 
-    g10: String, 
-    g11: String, 
+    pub g10: String, 
+    pub g11: String, 
 
-    g20: String, 
-    g21: String, 
+    pub g20: String, 
+    pub g21: String, 
 
-    h00: String, 
-    h01: String, 
+    pub h00: String, 
+    pub h01: String, 
 
-    h10: String, 
-    h11: String, 
+    pub h10: String, 
+    pub h11: String, 
 
-    h20: String, 
-    h21: String 
+    pub h20: String, 
+    pub h21: String 
 }
 
 #[derive(Serialize, Deserialize, Debug)]

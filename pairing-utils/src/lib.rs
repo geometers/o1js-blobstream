@@ -1,5 +1,7 @@
 use ark_bn254::Fq12;
 use kzg::{assert_o1js_mlo, compute_aux_witness};
+use serde_json::Value;
+use serialize::serialize_fq12;
 use serialize::{deserialize_fq12, serialize_aux_witness};
 
 pub mod constants;
@@ -9,6 +11,7 @@ pub mod tonelli_shanks;
 pub mod utils;
 pub mod write;
 pub mod serialize;
+mod risc0_vk;
 
 pub fn display_fq12(x: Fq12, label: &str) {
     println!("{}.g00: {}", label, x.c0.c0.c0);
@@ -34,6 +37,49 @@ pub fn compute_and_serialize_aux_witness(path_to_mlo: &str, path_to_aux_witness:
 
     let (shift_pow, c) = compute_aux_witness(mlo);  
     serialize_aux_witness(c, shift_pow, path_to_aux_witness);
+}
+
+use ark_bn254::Bn254;
+use ark_bn254::Fq;
+use ark_bn254::Fq2;
+use ark_bn254::G1Affine;
+use ark_bn254::G2Affine;
+use ark_ec::pairing::Pairing;
+use std::str::FromStr;
+
+pub fn make_alpha_beta(json_path: &str, alpha_beta_path: &str) {
+    let mut v: Value = serde_json::from_str(&std::fs::read_to_string(json_path).unwrap()).unwrap();
+
+    let alpha_x: Fq = Fq::from_str(v["alpha"]["x"].as_str().unwrap()).unwrap(); 
+    let alpha_y: Fq = Fq::from_str(&v["alpha"]["y"].as_str().unwrap()).unwrap();
+
+    let beta_x_c0: Fq = Fq::from_str(&v["beta"]["x_c0"].as_str().unwrap()).unwrap(); 
+    let beta_x_c1: Fq = Fq::from_str(&v["beta"]["x_c1"].as_str().unwrap()).unwrap(); 
+
+    let beta_y_c0: Fq = Fq::from_str(&v["beta"]["y_c0"].as_str().unwrap()).unwrap(); 
+    let beta_y_c1: Fq = Fq::from_str(&v["beta"]["y_c1"].as_str().unwrap()).unwrap(); 
+
+    let beta_x = Fq2::new(beta_x_c0, beta_x_c1); 
+    let beta_y = Fq2::new(beta_y_c0, beta_y_c1); 
+
+    let alpha = G1Affine::new(alpha_x, alpha_y); 
+    let beta = G2Affine::new(beta_x, beta_y); 
+
+    let alpha_beta = Bn254::multi_miller_loop(&[alpha], &[beta]).0; 
+    let serialized_alpha_beta = serialize_fq12(alpha_beta);
+    v["alpha_beta"]["g00"] = serde_json::Value::from(serialized_alpha_beta.g00);
+    v["alpha_beta"]["g01"] = serde_json::Value::from(serialized_alpha_beta.g01);
+    v["alpha_beta"]["g10"] = serde_json::Value::from(serialized_alpha_beta.g10);
+    v["alpha_beta"]["g11"] = serde_json::Value::from(serialized_alpha_beta.g11);
+    v["alpha_beta"]["g20"] = serde_json::Value::from(serialized_alpha_beta.g20);
+    v["alpha_beta"]["g21"] = serde_json::Value::from(serialized_alpha_beta.g21);
+    v["alpha_beta"]["h00"] = serde_json::Value::from(serialized_alpha_beta.h00);
+    v["alpha_beta"]["h01"] = serde_json::Value::from(serialized_alpha_beta.h01);
+    v["alpha_beta"]["h10"] = serde_json::Value::from(serialized_alpha_beta.h10);
+    v["alpha_beta"]["h11"] = serde_json::Value::from(serialized_alpha_beta.h11);
+    v["alpha_beta"]["h20"] = serde_json::Value::from(serialized_alpha_beta.h20);
+    v["alpha_beta"]["h21"] = serde_json::Value::from(serialized_alpha_beta.h21);
+    std::fs::write(alpha_beta_path, v.to_string()).unwrap();
 }
 
 

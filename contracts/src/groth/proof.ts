@@ -1,8 +1,10 @@
 import { G1Affine, G2Affine } from "../ec/index.js";
 import fs from "fs";
-import { ATE_LOOP_COUNT, Fp2, FpC } from "../towers/index.js";
+import { ATE_LOOP_COUNT, Fp2, FpC, FrC } from "../towers/index.js";
 import { Provable, Struct } from "o1js";
 import { G2Line, computeLineCoeffs } from "../lines/index.js";
+import { computePI } from "./compute_pi.js";
+import { GrothVk } from "./vk.js";
 
 const getNumOfLines = () => {
     let cnt = 0; 
@@ -32,10 +34,11 @@ type SerializedProof = {
         x: string, 
         y: string
     },
-    PI: {
-        x: string, 
-        y: string
-    }
+    pi1: string, 
+    pi2: string, 
+    pi3: string, 
+    pi4: string,
+    pi5: string,
 }
 
 class Proof extends Struct({
@@ -43,15 +46,19 @@ class Proof extends Struct({
     B: G2Affine,
     C: G1Affine,
     PI: G1Affine,
-    b_lines: Provable.Array(G2Line, getNumOfLines())
+    b_lines: Provable.Array(G2Line, getNumOfLines()),
+    pis: Provable.Array(FrC.provable, 5)
 }) { 
-    static parse(path: string): Proof {
+    static parse(vk: GrothVk, path: string): Proof {
         const data = fs.readFileSync(path, 'utf-8');
         const obj: SerializedProof = JSON.parse(data);
 
         const negA = new G1Affine({ x: FpC.from(obj.negA.x), y: FpC.from(obj.negA.y )});
         const C = new G1Affine({ x: FpC.from(obj.C.x), y: FpC.from(obj.C.y )});
-        const PI = new G1Affine({ x: FpC.from(obj.PI.x), y: FpC.from(obj.PI.y )});
+
+        const pis = [FrC.from(obj.pi1), FrC.from(obj.pi2), FrC.from(obj.pi3), FrC.from(obj.pi4), FrC.from(obj.pi5)];
+        let piBn = computePI(vk, pis);
+        const PI = new G1Affine({ x: FpC.from(piBn.x).assertCanonical(), y: FpC.from(piBn.y).assertCanonical()});
 
         const bx = new Fp2({ c0: FpC.from(obj.B.x_c0), c1: FpC.from(obj.B.x_c1)});
         const by = new Fp2({ c0: FpC.from(obj.B.y_c0), c1: FpC.from(obj.B.y_c1)});
@@ -59,7 +66,7 @@ class Proof extends Struct({
 
         const b_lines = computeLineCoeffs(B)
 
-        return new Proof({ negA, B, C, PI, b_lines });
+        return new Proof({ negA, B, C, PI, b_lines, pis });
     }
 }
 

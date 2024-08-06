@@ -3,6 +3,7 @@ import { Accumulator } from "./data.js";
 import { Fp12 } from "../../towers/index.js";
 import { ArrayListHasher } from "../../array_list_hasher.js";
 import { VK } from "../vk_from_env.js";
+import { G1Affine } from "../../ec/index.js";
 
 const zkp13 = ZkProgram({
     name: 'zkp13',
@@ -37,7 +38,7 @@ const zkp13 = ZkProgram({
             f.assert_equals(Fp12.one());
 
             acc.state.f = f;
-            return Poseidon.hashPacked(Accumulator, acc);
+            return Poseidon.hashPacked(G1Affine, acc.proof.PI);
         },
       },
     },

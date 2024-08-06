@@ -17,6 +17,7 @@ NODE_SCRIPT="./build/src/groth/serialize_mlo.js"
 
 # obtain mlo result
 
+export GROTH16_VK_PATH=${VK_PATH}
 node $NODE_SCRIPT $VK_PATH $PROOF_PATH $MLO_RELATIVE_PATH &
 
 node_pid=$!

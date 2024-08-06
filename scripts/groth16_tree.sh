@@ -38,12 +38,12 @@ MAX_THREADS=${MAX_THREADS:-16}
 echo "MAX THREADS: $MAX_THREADS"
 
 MAX_ITERATIONS=$(( (16 + $MAX_THREADS - 1)/$MAX_THREADS ))
-TOTAL_IN_LOOP=14
+TOTAL_IN_LOOP=16
 SHOULD_BREAK=false
 
 export GROTH16_VK_PATH=${VK_PATH}
 
-echo "Computing ZKPs 0-13..."
+echo "Computing ZKPs 0-15..."
 for i in `seq 0 $MAX_ITERATIONS`; do
   for j in `seq 0 $(( $MAX_THREADS - 1 ))`; do
     ZKP_I=$(( $i * $MAX_THREADS + $j ))
@@ -62,7 +62,7 @@ for i in `seq 0 $MAX_ITERATIONS`; do
   fi
 done
 
-echo "Computed ZKPs 0-13..."
+echo "Computed ZKPs 0-15..."
 
 for i in `seq 1 4`; do
     echo "Compressing layer ${i}..."
