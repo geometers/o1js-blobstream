@@ -1,11 +1,11 @@
 import { Provable } from 'o1js';
 import { Groth16Verifier } from './verifier.js';
 
-const grothVerifier = new Groth16Verifier("./src/groth/jsons/vk.json")
+const grothVerifier = new Groth16Verifier("./src/groth/example_jsons/vk.json")
 
 function main() {
-    const proof = Provable.witness(Proof, () => Proof.parse("./src/groth/jsons/proof.json"))
-    const aux_witness = Provable.witness(AuXWitness, () => AuXWitness.parse("./src/groth/jsons/aux_witness.json"));
+    const proof = Provable.witness(Proof, () => Proof.parse("./src/groth/example_jsons/proof.json"))
+    const aux_witness = Provable.witness(AuXWitness, () => AuXWitness.parse("./src/groth/example_jsons/aux_witness.json"));
     grothVerifier.verify(proof, aux_witness);
 }
 
