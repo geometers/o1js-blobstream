@@ -7,7 +7,10 @@ use ark_std::{
 };
 
 use crate::{
-    constants::{E, RESIDUE}, display_fq12, eth_root::eth_root, tonelli_shanks::TS, utils::{exp, sample_27th_root_of_unity}
+    constants::{E, RESIDUE},
+    eth_root::eth_root,
+    tonelli_shanks::TS,
+    utils::{exp, sample_27th_root_of_unity},
 };
 
 pub struct SRS {
@@ -16,6 +19,7 @@ pub struct SRS {
 }
 
 impl SRS {
+    #[allow(dead_code)]
     fn new(g2: G2Affine, tau: G2Affine) -> Self {
         Self { g2, tau }
     }
@@ -24,12 +28,12 @@ impl SRS {
 // e(a, [1]) * e(b, [x]) == 1
 pub fn assert_kzg_pairing(srs: &SRS, a: G1Affine, b: G1Affine) {
     let mlo: MillerLoopOutput<_> = Bn254::multi_miller_loop(&[a, b], &[srs.g2, srs.tau]);
-    let e = Bn254::final_exponentiation(mlo).unwrap().0; 
+    let e = Bn254::final_exponentiation(mlo).unwrap().0;
     assert_eq!(e, Fq12::one());
 }
 
 pub fn assert_o1js_mlo(x: Fq12) {
-    let e = Bn254::final_exponentiation(MillerLoopOutput(x)).unwrap().0; 
+    let e = Bn254::final_exponentiation(MillerLoopOutput(x)).unwrap().0;
     assert_eq!(e, Fq12::one());
 }
 
@@ -38,42 +42,36 @@ fn get_shift_factor() -> Fq12 {
     sample_27th_root_of_unity(rng)
 }
 
+#[allow(dead_code)]
 fn make_fq12() -> Fq12 {
-    let g00 = MontFp!(
-        "7132501230381864267188409488606173516635842146803349097563305179025064669065"
-    );
-    let g01 = MontFp!(
-        "16365919602559810549726669100967320393143548174841331179289652685753593493650"
-    );
+    let g00 =
+        MontFp!("7132501230381864267188409488606173516635842146803349097563305179025064669065");
+    let g01 =
+        MontFp!("16365919602559810549726669100967320393143548174841331179289652685753593493650");
     let g0 = Fq2::new(g00, g01);
 
-    let g10 = MontFp!(
-        "3532095959317750303964796360428780559597205257991016775312050753348379506721"
-    );
-    let g11 = MontFp!(
-        "18634158873596615205287518873401860019057794615246596548091176453228829533646"
-    );
+    let g10 =
+        MontFp!("3532095959317750303964796360428780559597205257991016775312050753348379506721");
+    let g11 =
+        MontFp!("18634158873596615205287518873401860019057794615246596548091176453228829533646");
     let g1 = Fq2::new(g10, g11);
 
     let g20 =
         MontFp!("5581090697418127075806485318594150677879841066635013512096731176744342492127");
-    let g21 = MontFp!(
-        "1354975069351217677760809604335762049397632419417110654497819354750851356054"
-    );
+    let g21 =
+        MontFp!("1354975069351217677760809604335762049397632419417110654497819354750851356054");
     let g2 = Fq2::new(g20, g21);
 
     let g = Fq6::new(g0, g1, g2);
 
-    let h00: ark_ff::Fp<ark_ff::MontBackend<ark_bn254::FqConfig, 4>, 4> = MontFp!(
-        "15665151486746981962219262278742126187753639050101108188325922459179333115049"
-    );
+    let h00: ark_ff::Fp<ark_ff::MontBackend<ark_bn254::FqConfig, 4>, 4> =
+        MontFp!("15665151486746981962219262278742126187753639050101108188325922459179333115049");
     let h01 =
         MontFp!("2482671709059119726943774312645729129273477576245631706425041190756079176733");
     let h0 = Fq2::new(h00, h01);
 
-    let h10 = MontFp!(
-        "20324490397940400734909154464690181469291619326777848983577166161876280041452"
-    );
+    let h10 =
+        MontFp!("20324490397940400734909154464690181469291619326777848983577166161876280041452");
     let h11 =
         MontFp!("963088239415532675560461442673174771458628954456447330308929714589995123602");
     let h1 = Fq2::new(h10, h11);
@@ -130,11 +128,13 @@ pub fn compute_aux_witness(x: Fq12) -> (u8, Fq12) {
 
 #[cfg(test)]
 mod kzg_tests {
-    use ark_bn254::{Bn254, Fq, Fq2, G1Affine, G2Affine};
-    use ark_ec::pairing::Pairing;
+    use ark_bn254::{Fq, Fq2, G1Affine, G2Affine};
     use ark_ff::MontFp;
 
-    use crate::{display_fq12, kzg::{assert_kzg_pairing, assert_o1js_mlo, compute_aux_witness, make_fq12}};
+    use crate::{
+        display_fq12,
+        kzg::{assert_kzg_pairing, assert_o1js_mlo, compute_aux_witness, make_fq12},
+    };
 
     use super::SRS;
 
@@ -216,9 +216,9 @@ mod kzg_tests {
 
         // display_fq12(mlo, "mlo");
 
-        let (shift_pow, c) = compute_aux_witness(mlo);   
+        let (shift_pow, c) = compute_aux_witness(mlo);
 
-        println!("shift pow: {}", shift_pow); 
+        println!("shift pow: {}", shift_pow);
 
         display_fq12(c, "c");
     }

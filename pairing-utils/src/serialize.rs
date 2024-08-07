@@ -5,36 +5,36 @@ use std::str::FromStr;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Field12 {
-    pub g00: String, 
-    pub g01: String, 
+    pub g00: String,
+    pub g01: String,
 
-    pub g10: String, 
-    pub g11: String, 
+    pub g10: String,
+    pub g11: String,
 
-    pub g20: String, 
-    pub g21: String, 
+    pub g20: String,
+    pub g21: String,
 
-    pub h00: String, 
-    pub h01: String, 
+    pub h00: String,
+    pub h01: String,
 
-    pub h10: String, 
-    pub h11: String, 
+    pub h10: String,
+    pub h11: String,
 
-    pub h20: String, 
-    pub h21: String 
+    pub h20: String,
+    pub h21: String,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct AuxWitness {
-    c: Field12, 
-    shift_power: String
+    c: Field12,
+    shift_power: String,
 }
 
 pub fn serialize_aux_witness(c: Fq12, shift_pow: u8, path: &str) {
     let c_serialized = serialize_fq12(c);
     let aux_witness = AuxWitness {
         c: c_serialized,
-        shift_power: shift_pow.to_string()
+        shift_power: shift_pow.to_string(),
     };
 
     let json = serde_json::to_string(&aux_witness).unwrap();
@@ -83,7 +83,6 @@ pub fn deserialize_fq12(path: &str) -> Fq12 {
     let g11: Fq = Fq::from_str(&f12.g11).unwrap();
     let g1 = Fq2::new(g10, g11);
 
-
     let g20: Fq = Fq::from_str(&f12.g20).unwrap();
     let g21: Fq = Fq::from_str(&f12.g21).unwrap();
     let g2 = Fq2::new(g20, g21);
@@ -94,7 +93,6 @@ pub fn deserialize_fq12(path: &str) -> Fq12 {
     let h01: Fq = Fq::from_str(&f12.h01).unwrap();
     let h0 = Fq2::new(h00, h01);
 
-
     let h10: Fq = Fq::from_str(&f12.h10).unwrap();
     let h11: Fq = Fq::from_str(&f12.h11).unwrap();
     let h1 = Fq2::new(h10, h11);
@@ -103,7 +101,7 @@ pub fn deserialize_fq12(path: &str) -> Fq12 {
     let h21: Fq = Fq::from_str(&f12.h21).unwrap();
     let h2 = Fq2::new(h20, h21);
 
-    let h: Fq6 = Fq6::new(h0, h1, h2); 
+    let h: Fq6 = Fq6::new(h0, h1, h2);
 
     Fq12::new(g, h)
 }

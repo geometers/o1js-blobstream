@@ -7,11 +7,11 @@ use serialize::{deserialize_fq12, serialize_aux_witness};
 pub mod constants;
 pub mod eth_root;
 pub mod kzg;
+mod risc0_vk;
+pub mod serialize;
 pub mod tonelli_shanks;
 pub mod utils;
 pub mod write;
-pub mod serialize;
-mod risc0_vk;
 
 pub fn display_fq12(x: Fq12, label: &str) {
     println!("{}.g00: {}", label, x.c0.c0.c0);
@@ -35,7 +35,7 @@ pub fn compute_and_serialize_aux_witness(path_to_mlo: &str, path_to_aux_witness:
     // make sure that it is indeed r-th residue
     assert_o1js_mlo(mlo);
 
-    let (shift_pow, c) = compute_aux_witness(mlo);  
+    let (shift_pow, c) = compute_aux_witness(mlo);
     serialize_aux_witness(c, shift_pow, path_to_aux_witness);
 }
 
@@ -50,22 +50,22 @@ use std::str::FromStr;
 pub fn make_alpha_beta(json_path: &str, alpha_beta_path: &str) {
     let mut v: Value = serde_json::from_str(&std::fs::read_to_string(json_path).unwrap()).unwrap();
 
-    let alpha_x: Fq = Fq::from_str(v["alpha"]["x"].as_str().unwrap()).unwrap(); 
+    let alpha_x: Fq = Fq::from_str(v["alpha"]["x"].as_str().unwrap()).unwrap();
     let alpha_y: Fq = Fq::from_str(&v["alpha"]["y"].as_str().unwrap()).unwrap();
 
-    let beta_x_c0: Fq = Fq::from_str(&v["beta"]["x_c0"].as_str().unwrap()).unwrap(); 
-    let beta_x_c1: Fq = Fq::from_str(&v["beta"]["x_c1"].as_str().unwrap()).unwrap(); 
+    let beta_x_c0: Fq = Fq::from_str(&v["beta"]["x_c0"].as_str().unwrap()).unwrap();
+    let beta_x_c1: Fq = Fq::from_str(&v["beta"]["x_c1"].as_str().unwrap()).unwrap();
 
-    let beta_y_c0: Fq = Fq::from_str(&v["beta"]["y_c0"].as_str().unwrap()).unwrap(); 
-    let beta_y_c1: Fq = Fq::from_str(&v["beta"]["y_c1"].as_str().unwrap()).unwrap(); 
+    let beta_y_c0: Fq = Fq::from_str(&v["beta"]["y_c0"].as_str().unwrap()).unwrap();
+    let beta_y_c1: Fq = Fq::from_str(&v["beta"]["y_c1"].as_str().unwrap()).unwrap();
 
-    let beta_x = Fq2::new(beta_x_c0, beta_x_c1); 
-    let beta_y = Fq2::new(beta_y_c0, beta_y_c1); 
+    let beta_x = Fq2::new(beta_x_c0, beta_x_c1);
+    let beta_y = Fq2::new(beta_y_c0, beta_y_c1);
 
-    let alpha = G1Affine::new(alpha_x, alpha_y); 
-    let beta = G2Affine::new(beta_x, beta_y); 
+    let alpha = G1Affine::new(alpha_x, alpha_y);
+    let beta = G2Affine::new(beta_x, beta_y);
 
-    let alpha_beta = Bn254::multi_miller_loop(&[alpha], &[beta]).0; 
+    let alpha_beta = Bn254::multi_miller_loop(&[alpha], &[beta]).0;
     let serialized_alpha_beta = serialize_fq12(alpha_beta);
     v["alpha_beta"]["g00"] = serde_json::Value::from(serialized_alpha_beta.g00);
     v["alpha_beta"]["g01"] = serde_json::Value::from(serialized_alpha_beta.g01);
@@ -81,7 +81,6 @@ pub fn make_alpha_beta(json_path: &str, alpha_beta_path: &str) {
     v["alpha_beta"]["h21"] = serde_json::Value::from(serialized_alpha_beta.h21);
     std::fs::write(alpha_beta_path, v.to_string()).unwrap();
 }
-
 
 #[cfg(test)]
 mod tests {

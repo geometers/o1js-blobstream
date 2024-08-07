@@ -61,10 +61,6 @@ const blobInclusionVerifier = ZkProgram({
             bytes = bytes.concat(input.namespace.bytes);    
             bytes = bytes.concat(input.blob.bytes);    
             bytes = bytes.concat(input.dataCommitment.bytes);    
-             Provable.asProver(() => {
-                const buffer = Buffer.from(new Uint8Array(bytes.map((byte) => byte.toNumber())));
-                console.log(buffer.toString('hex'));
-            });
            
             const pi0 = blobInclusionProgramVk;
             const pi1 = parsePublicInputsProvable(Bytes.from(bytes));

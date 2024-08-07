@@ -42,10 +42,6 @@ const riscZeroExampleVerifier = ZkProgram({
 
             const piDigest = Poseidon.hashPacked(Provable.Array(FrC.provable, 5), pis);
             piDigest.assertEquals(input);
-            // Provable.asProver(() => {
-            //     console.log(piDigest.toString());
-            //     console.log(proof.publicOutput.rightOut.toString());
-            // });
  
             piDigest.assertEquals(proof.publicOutput.rightOut)
 

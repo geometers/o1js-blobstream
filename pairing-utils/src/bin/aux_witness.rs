@@ -1,4 +1,4 @@
-use pairing_utils::compute_and_serialize_aux_witness; 
+use pairing_utils::compute_and_serialize_aux_witness;
 use std::env;
 use std::process;
 
