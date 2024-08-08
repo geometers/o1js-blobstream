@@ -214,18 +214,23 @@ def pad_741(s: str):
     
 
 s = "" 
-for _ in range(741): 
-    s += "a"
+for _ in range(289): 
+    s += "b"
 
 # print(s)
 # print(generate_hash(s).hex())
 
 print(get_padding(s))
 
-print(len(pad_741(s)))
-bits = pad_741(s)
-byte_array = bits_to_bytearray(bits)
-print(byte_array.hex())
+print(len(get_padding(s)))
+
+print(get_padding(s)[1:-2])
+
+
+# print(len(pad_741(s)))
+# bits = pad_741(s)
+# byte_array = bits_to_bytearray(bits)
+# print(byte_array.hex())
 # print(list(byte_array))
 
 # print(pad_741(s))

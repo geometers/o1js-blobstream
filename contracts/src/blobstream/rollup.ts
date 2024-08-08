@@ -59,11 +59,11 @@ export class HelloWorldRollup extends SmartContract {
         const blobstreamRoot = blobstreamContract.commitmentsRoot.get();
         blobstreamContract.commitmentsRoot.requireEquals(blobstreamRoot);
 
-        pathInBlobstream.calculateRoot(
-            Poseidon.hash([
-                ...blobInclusionProof.publicInput.dataCommitment.toFields(),
-            ])
-        ).assertEquals(blobstreamRoot);
+        // pathInBlobstream.calculateRoot(
+        //     Poseidon.hash([
+        //         ...blobInclusionProof.publicInput.dataCommitment.toFields(),
+        //     ])
+        // ).assertEquals(blobstreamRoot);
 
         this.rollupState.requireNothing();
         this.rollupState.set(Poseidon.hashPacked(StateBytes.provable, newState));

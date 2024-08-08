@@ -1,11 +1,12 @@
 import { Poseidon, UInt64, verify, MerkleTree, Mina, AccountUpdate, Cache } from "o1js";
 import { blobstreamVerifier, BlobstreamProof, BlobstreamInput, Bytes32 } from "./verify_blobstream.js";
-import { blobInclusionVerifier, BlobInclusionProof, BlobInclusionInput, Bytes29 } from "./verify_blob_inclusion.js";
+import { blobInclusionVerifier, BlobInclusionProof, BlobInclusionInput } from "./verify_blob_inclusion.js";
 import { NodeProofLeft } from "../structs.js";
 import fs from "fs";
 import { ethers } from "ethers";
 import { BlobstreamMerkleWitness, BlobstreamProcessor, adminPrivateKey } from "./blobstream_contract.js";
 import { HelloWorldRollup, StateBytes } from "./rollup.js";
+import { parsePublicInputs, parsePublicInputsProvable } from "../plonk/parse_pi.js";
 
 const args = process.argv;
 
@@ -43,30 +44,58 @@ async function prove_blobstream() {
 }
 
 async function prove_blob_inclusion() {
+    // const blobInclusionPlonkProofPath = args[3];
+    // const blobInclusionSP1ProofPath = args[4];
+    // const blobInclusionProofPath = args[5];
+    // const cacheDir = args[6];
+
+    // const blobInclusionPlonkProof = await NodeProofLeft.fromJSON(JSON.parse(fs.readFileSync(blobInclusionPlonkProofPath, 'utf8')));
+
+    // const blobInclusionSP1Proof = JSON.parse(fs.readFileSync(blobInclusionSP1ProofPath, 'utf8'));
+
+    // const data = blobInclusionSP1Proof.public_values.buffer.data.slice(16);
+    // const input = new BlobInclusionInput ({
+    //     namespace: Bytes29.from(data.slice(0, 29)),
+    //     blob: Bytes32.from(data.slice(29, 61)),
+    //     dataCommitment: Bytes32.from(data.slice(61)),
+    // });
+
+    // const vk = (await blobInclusionVerifier.compile({cache: Cache.FileSystem(cacheDir)})).verificationKey;
+
+    // const proof = await blobInclusionVerifier.compute(input, blobInclusionPlonkProof);
+
+    // const valid = await verify(proof, vk); 
+
+    // fs.writeFileSync(blobInclusionProofPath, JSON.stringify(proof), 'utf8');
+    // console.log("valid blob inclusion proof?: ", valid);
+}
+
+async function prove_batcher() {
     const blobInclusionPlonkProofPath = args[3];
     const blobInclusionSP1ProofPath = args[4];
-    const blobInclusionProofPath = args[5];
+    const batcherProofPath = args[5];
     const cacheDir = args[6];
 
-    const blobInclusionPlonkProof = await NodeProofLeft.fromJSON(JSON.parse(fs.readFileSync(blobInclusionPlonkProofPath, 'utf8')));
 
     const blobInclusionSP1Proof = JSON.parse(fs.readFileSync(blobInclusionSP1ProofPath, 'utf8'));
 
-    const data = blobInclusionSP1Proof.public_values.buffer.data.slice(16);
+    const digest = ethers.sha256(new Uint8Array(blobInclusionSP1Proof.public_values.buffer.data));
+    const digestBytes = ethers.getBytes(digest);
+    console.log(`digest: ${digest}`);
     const input = new BlobInclusionInput ({
-        namespace: Bytes29.from(data.slice(0, 29)),
-        blob: Bytes32.from(data.slice(29, 61)),
-        dataCommitment: Bytes32.from(data.slice(61)),
+        digest: Bytes32.from(digestBytes),
     });
 
-    const vk = (await blobInclusionVerifier.compile({cache: Cache.FileSystem(cacheDir)})).verificationKey;
+    // const blobInclusionPlonkProof = await NodeProofLeft.fromJSON(JSON.parse(fs.readFileSync(blobInclusionPlonkProofPath, 'utf8')));
 
-    const proof = await blobInclusionVerifier.compute(input, blobInclusionPlonkProof);
+    // const vk = (await blobInclusionVerifier.compile({cache: Cache.FileSystem(cacheDir)})).verificationKey;
 
-    const valid = await verify(proof, vk); 
+    // const proof = await blobInclusionVerifier.compute(input, blobInclusionPlonkProof);
 
-    fs.writeFileSync(blobInclusionProofPath, JSON.stringify(proof), 'utf8');
-    console.log("valid blob inclusion proof?: ", valid);
+    // const valid = await verify(proof, vk); 
+
+    // fs.writeFileSync(blobInclusionProofPath, JSON.stringify(proof), 'utf8');
+    // console.log("valid blob inclusion proof?: ", valid);
 }
 
 async function blobstream_contract() {
@@ -211,6 +240,10 @@ switch(args[2]) {
 
     case 'blob_inclusion':
         await prove_blob_inclusion();
+        break;
+
+    case 'batcher':
+        await prove_batcher();
         break;
 
     case 'blobstream_contract':
