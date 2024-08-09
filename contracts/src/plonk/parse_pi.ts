@@ -24,8 +24,7 @@ export function parsePublicInputs(programVk: string, piHex: string): [FrC, FrC] 
     return [FrC.from(programVk), FrC.from(pi1)]
 }
 
-export function parsePublicInputsProvable(piBytes: Bytes): FrC {
-  const digest = Gadgets.SHA256.hash(piBytes);
+export function parseDigestProvable(digest: Bytes): FrC {
   const k = [
     Field.from(0x1fn),
     ...Array(31).fill(Field.from(0xffn)),
@@ -39,4 +38,9 @@ export function parsePublicInputsProvable(piBytes: Bytes): FrC {
   }
 
   return shaToFr(Bytes32.from(bytes))
+}
+
+export function parsePublicInputsProvable(piBytes: Bytes): FrC {
+  const digest = Gadgets.SHA256.hash(piBytes);
+  return parseDigestProvable(digest);
 }

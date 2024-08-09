@@ -39,6 +39,8 @@ def get_padding(message: str):
 
     message += length.to_bytes(8, 'big') # pad to 8 bytes or 64 bits
     padding += length.to_bytes(8, 'big') # pad to 8 bytes or 64 bits
+    print(length)
+    print(length.to_bytes(8, 'big'))    
     assert (len(message) * 8) % 512 == 0, "Padding did not complete properly!"
 
     return bytearray(padding)
@@ -214,18 +216,23 @@ def pad_741(s: str):
     
 
 s = "" 
-for _ in range(741): 
-    s += "a"
+for _ in range(289): 
+    s += "b"
 
 # print(s)
 # print(generate_hash(s).hex())
 
 print(get_padding(s))
 
-print(len(pad_741(s)))
-bits = pad_741(s)
-byte_array = bits_to_bytearray(bits)
-print(byte_array.hex())
+print(len(get_padding(s)))
+
+print(get_padding(s)[1:-2])
+
+
+# print(len(pad_741(s)))
+# bits = pad_741(s)
+# byte_array = bits_to_bytearray(bits)
+# print(byte_array.hex())
 # print(list(byte_array))
 
 # print(pad_741(s))

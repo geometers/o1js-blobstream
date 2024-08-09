@@ -22,12 +22,6 @@ import { parsePublicInputs, parsePublicInputsProvable } from '../plonk/parse_pi.
 import { provableBn254ScalarFieldToBytes, wordToBytes } from '../sha/utils.js';
 import fs from 'fs';
 
-const blobstreamProgramVk: FrC = FrC.from(process.env.BLOBSTREAM_PROGRAM_VK as string)
-const workDir = process.env.BLOBSTREAM_WORK_DIR as string;
-const blobstreamNodeVk: Field = Field.from(JSON.parse(fs.readFileSync(`${workDir}/proofs/layer5/p0.json`, 'utf8')).publicOutput[2]);
-
-const vk = VerificationKey.fromJSON(JSON.parse(fs.readFileSync(`${workDir}/vks/nodeVk.json`, 'utf8')))
-
 class Bytes32 extends Bytes(32) {}
 
 class BlobstreamInput extends Struct({
@@ -58,6 +52,22 @@ const blobstreamVerifier = ZkProgram({
             input: BlobstreamInput,
             proof: NodeProofLeft,
         ) {
+            let blobstreamProgramVk: FrC;
+            let blobstreamNodeVk: Field;
+            let vk: VerificationKey;
+
+            if (process.env.BLOBSTREAM_ENABLED == 'true') {
+                blobstreamProgramVk = FrC.from(process.env.BLOBSTREAM_PROGRAM_VK as string)
+                const workDir = process.env.BLOBSTREAM_WORK_DIR as string;
+
+                blobstreamNodeVk = Field.from(JSON.parse(fs.readFileSync(`${workDir}/proofs/layer5/p0.json`, 'utf8')).publicOutput[2]);
+                vk = VerificationKey.fromJSON(JSON.parse(fs.readFileSync(`${workDir}/vks/nodeVk.json`, 'utf8')))
+            } else {
+                blobstreamProgramVk = FrC.from(0n);
+                blobstreamNodeVk = Field.from(0n);
+                vk = VerificationKey.empty();
+            }
+
             proof.verify(vk)
             proof.publicOutput.subtreeVkDigest.assertEquals(blobstreamNodeVk)
 

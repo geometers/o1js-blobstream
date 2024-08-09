@@ -1,5 +1,7 @@
 set -e 
 
+export MAX_THREADS=4
+
 SCRIPT_DIR=$(dirname -- $(realpath $0)) 
 cd $SCRIPT_DIR/../..
 
@@ -59,10 +61,12 @@ pushd ./scripts
 ./e2e_plonk.sh $RUN_DIR/env.blobInclusion
 
 source $RUN_DIR/env.blobstream
+export BLOBSTREAM_ENABLED=true
 export BLOBSTREAM_WORK_DIR=$WORK_DIR
 export BLOBSTREAM_PROGRAM_VK=$PROGRAM_VK
 
 source $RUN_DIR/env.blobInclusion
+export BLOB_INCLUSION_ENABLED=true
 export BLOB_INCLUSION_WORK_DIR=$WORK_DIR
 export BLOB_INCLUSION_PROGRAM_VK=$PROGRAM_VK
 
@@ -94,7 +98,20 @@ else
   exit 1
 fi
 
-node "../contracts/build/src/blobstream/prove_zkps.js" rollup_contract ${RUN_DIR}/blobstreamProof.json ${RUN_DIR}/blobInclusionProof.json ${CACHE_DIR} &
+node "../contracts/build/src/blobstream/prove_zkps.js" batcher ${RUN_DIR}/blobInclusionProof.json $SCRIPT_DIR/blobInclusionSP1Proof.json ${RUN_DIR}/batcherProof.json ${CACHE_DIR} &
+
+node_pid=$!
+wait $node_pid
+exit_status=$?
+
+if [ $exit_status -eq 0 ]; then
+  echo "Batcher proof successfully written"
+else
+  echo "Batcher proof failed"
+  exit 1
+fi
+
+node "../contracts/build/src/blobstream/prove_zkps.js" rollup_contract ${RUN_DIR}/blobstreamProof.json ${RUN_DIR}/batcherProof.json ${CACHE_DIR} &
 
 node_pid=$!
 wait $node_pid
@@ -106,8 +123,5 @@ else
   echo "Rollup failed"
   exit 1
 fi
-
-
-
 
 popd
