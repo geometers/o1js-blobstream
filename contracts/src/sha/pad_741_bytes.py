@@ -39,6 +39,8 @@ def get_padding(message: str):
 
     message += length.to_bytes(8, 'big') # pad to 8 bytes or 64 bits
     padding += length.to_bytes(8, 'big') # pad to 8 bytes or 64 bits
+    print(length)
+    print(length.to_bytes(8, 'big'))    
     assert (len(message) * 8) % 512 == 0, "Padding did not complete properly!"
 
     return bytearray(padding)

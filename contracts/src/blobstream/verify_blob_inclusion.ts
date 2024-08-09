@@ -24,9 +24,6 @@ import fs from 'fs';
 import { blob } from 'stream/consumers';
 import { Bytes32 } from './verify_blobstream.js';
 
-const blobInclusionProgramVk: FrC = FrC.from(process.env.BLOB_INCLUSION_PROGRAM_VK as string)
-const workDir = process.env.BLOB_INCLUSION_WORK_DIR as string;
-
 class BlobInclusionInput extends Struct({
     digest: Bytes32.provable,
 }) {}
@@ -42,11 +39,22 @@ const blobInclusionVerifier = ZkProgram({
             input: BlobInclusionInput,
             proof: NodeProofLeft,
         ) {
-            const blobInclusionNodeVk: Field = Field.from(JSON.parse(fs.readFileSync(`${workDir}/proofs/layer5/p0.json`, 'utf8')).publicOutput[2]);
-            const vk = VerificationKey.fromJSON(JSON.parse(fs.readFileSync(`${workDir}/vks/nodeVk.json`, 'utf8')))
+            let vk: VerificationKey;
+            let blobInclusionNodeVk: Field;
+            let blobInclusionProgramVk: FrC;
+            if (process.env.BLOB_INCLUSION_ENABLED == 'true') {
+              blobInclusionProgramVk = FrC.from(process.env.BLOB_INCLUSION_PROGRAM_VK || "0" as string)
+              const workDir = process.env.BLOB_INCLUSION_WORK_DIR as string;
 
-            proof.verify(vk)
-            proof.publicOutput.subtreeVkDigest.assertEquals(blobInclusionNodeVk)
+              blobInclusionNodeVk = Field.from(JSON.parse(fs.readFileSync(`${workDir}/proofs/layer5/p0.json`, 'utf8')).publicOutput[2]);
+              vk = VerificationKey.fromJSON(JSON.parse(fs.readFileSync(`${workDir}/vks/nodeVk.json`, 'utf8')))
+            } else {
+              blobInclusionProgramVk = FrC.from(0n);
+              blobInclusionNodeVk = Field.from(0n);
+              vk = VerificationKey.empty();
+            }
+            proof.verify(vk);
+            proof.publicOutput.subtreeVkDigest.assertEquals(blobInclusionNodeVk);
 
             const pi0 = blobInclusionProgramVk;
             const pi1 = parseDigestProvable(Bytes.from(input.digest));

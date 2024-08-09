@@ -18,6 +18,9 @@ import {
     SelfProof,
     Proof,
     UInt32,
+    FeatureFlags,
+    DynamicProof,
+    Bool,
   } from 'o1js';
 import { FrC } from '../towers/index.js';
 import { NodeProofLeft } from '../structs.js';
@@ -30,14 +33,11 @@ import { BlobInclusionInput, BlobInclusionProof } from './verify_blob_inclusion.
 
 const workDir = process.env.BLOB_INCLUSION_WORK_DIR as string;
 
-// 1. first proof in the chain includes initial state, which is carried to the end
-// 2. subsequent proofs verify previous proof and add to the rolling hash
-// 3. 10th proof calls verify_blob_inclusion with the rolling hash
-
 class Bytes29 extends Bytes(29) {}
 class Bytes64 extends Bytes(64) {}
 
-const Bytes212Padding = [
+const BLOB_SIZE = 212;
+const Bytes289Padding = [
     UInt8.from(0x80n), 
     UInt8.from(0), 
     UInt8.from(0), 
@@ -67,24 +67,27 @@ const Bytes212Padding = [
     UInt8.from(0), 
     UInt8.from(0), 
     UInt8.from(0), 
-    UInt8.from(0x74n), 
+    UInt8.from(0x09n), 
     UInt8.from(0x08n), 
 ]
 
 class BatcherInput extends Struct({
   currentStateHash: Field,
   index: Field,
-  namespaceHash: Field,
+  namespace: Bytes29.provable,
   currentRollingHash: Provable.Array(Field, 2),
+  batcherVkHash: Field,
+  blobInclusionVkHash: Field,
 }) {}
 
 class BatcherOutput extends Struct({
   initialStateHash: Field,
   currentStateHash: Field,
   currentRollingHash: Provable.Array(Field, 2),
+  dataCommitment: Bytes32.provable,
 }) {}
 
-const BATCH_SIZE=4;
+const NUM_PROOFS=5;
 
 function bytesToField(bs: UInt8[]): Field {
   return bs.reduce((acc, byte, idx) => {
@@ -125,48 +128,72 @@ function fieldToHalfHash(f: Field): UInt32[] {
     return fieldToHalfHash(f[0]).concat(fieldToHalfHash(f[1]));
   }
 
+class BatcherDynamicProof extends DynamicProof<BatcherInput, BatcherOutput> {
+    static publicInputType = BatcherInput;
+    static publicOutputType = BatcherOutput;
+    static maxProofsVerified = 2 as const;
+
+    static featureFlags = FeatureFlags.allMaybe;
+}
+
+class BlobInclusionDynamicProof extends DynamicProof<BlobInclusionInput, Undefined> {
+    static publicInputType = BlobInclusionInput;
+    static publicOutputType = Undefined;
+    static maxProofsVerified = 1 as const;
+
+    static featureFlags = FeatureFlags.allMaybe;
+}
+
 const batcherVerifier = ZkProgram({
     name: 'batcherVerifier',
     publicInput: BatcherInput,
     publicOutput: BatcherOutput,
     methods: {
       compute: {
-        privateInputs: [SelfProof, BlobInclusionProof, Field, Bytes64.provable, Bytes29.provable],
+        privateInputs: [BatcherDynamicProof, VerificationKey, BlobInclusionDynamicProof, VerificationKey, Field, Bytes64.provable],
         async method(
             input: BatcherInput,
-            previousProof: SelfProof<BatcherInput, BatcherOutput>,
-            blobInclusionProof: Proof<BlobInclusionInput, Undefined>,
+            previousProof: BatcherDynamicProof,
+            batcherVk: VerificationKey,
+            blobInclusionProof: BlobInclusionDynamicProof,
+            blobInclusionVk: VerificationKey,
             counter: Field,
             incrementByBytes: Bytes64,
-            namespace: Bytes29,
         ) {
-          const isFirst = input.index.equals(Field(0))
+          const isFirst = input.index.equals(Field(0));
           const isNotFirst = isFirst.not();
           Provable.assertEqualIf(isNotFirst, Field, input.index, previousProof.publicInput.index.add(Field(1)));
-          previousProof.verifyIf(isNotFirst);
-          const isLast = input.index.equals(Field(BATCH_SIZE));
+          previousProof.verifyIf(batcherVk, isNotFirst);
+          Provable.assertEqualIf(isNotFirst, Field, input.batcherVkHash, batcherVk.hash);
+          Provable.assertEqualIf(isNotFirst, Field, previousProof.publicInput.batcherVkHash, batcherVk.hash);
+          const isLast = input.index.equals(Field(NUM_PROOFS - 1));
 
           input.currentStateHash.assertEquals(Poseidon.hashPacked(Field, counter));
-
-          input.namespaceHash.assertEquals(Poseidon.hashPacked(Bytes29.provable, namespace));
 
           let namespaceBytes: UInt8[] = []; 
           namespaceBytes = namespaceBytes.concat([
               UInt8.from(29n),
-              ...Array(15).fill(UInt8.from(0)),
+              ...Array(7).fill(UInt8.from(0)),
           ]);    
-          namespaceBytes = namespaceBytes.concat(namespace.bytes);    
+          namespaceBytes = namespaceBytes.concat(input.namespace.bytes);    
           namespaceBytes = namespaceBytes.concat([
-              ...Array(19).fill(UInt8.from(0)),
-          ]);
+              UInt8.from(BLOB_SIZE),
+              ...Array(7).fill(UInt8.from(0)),
+          ]);    
+          namespaceBytes = namespaceBytes.concat(incrementByBytes.bytes.slice(45));
 
-          let lastBlockBytes: UInt8[] = incrementByBytes.bytes.slice(0, 20); 
-          lastBlockBytes = lastBlockBytes.concat(Bytes212Padding);
+          let lastBlockBytes: UInt8[] = incrementByBytes.bytes.slice(0, 33); 
+          lastBlockBytes = lastBlockBytes.concat(Bytes289Padding);
 
-          let bytesToHash = Provable.if(isFirst, new Bytes64(namespaceBytes), 
-            Provable.if(isLast, new Bytes64(lastBlockBytes), incrementByBytes),
+          let bytesToHash = Provable.if(isFirst, Bytes64.provable, Bytes64.from(namespaceBytes), 
+            Provable.if(isLast, Bytes64.provable, Bytes64.from(lastBlockBytes), incrementByBytes),
           );
+
+          // Provable.asProver(() => { 
+          //   console.log(`bytes to hash ${input.index.toBigInt()}: ${Buffer.from(bytesToHash.toBytes()).toString('hex')}`);
+          // });
           
+          const dataCommitment = incrementByBytes.bytes.slice(1, 33);
           const chunks = [];
           for (let i = 0; i < bytesToHash.length; i += 4) {
               const chunk = UInt32.Unsafe.fromField(
@@ -176,24 +203,37 @@ const batcherVerifier = ZkProgram({
           }
 
           let initialStateFields = hashToFields(Gadgets.SHA256.initialState);
-          Provable.assertEqualIf(isFirst, Provable.Array(Field, 2), initialStateFields, input.currentRollingHash);
+          const currentH = Provable.if(isFirst, Provable.Array(Field, 2), initialStateFields, input.currentRollingHash);
 
           let W = Gadgets.SHA256.createMessageSchedule(chunks); 
-          let H = fieldsToHash(input.currentRollingHash);
+          let H = fieldsToHash(currentH);
           H = Gadgets.SHA256.compression(H, W)
 
-          const newCounter = counter.add(bytesToField(incrementByBytes.bytes.slice(0, 20)));
+          const numToAdd = bytesToField(incrementByBytes.bytes.slice(0, 20));
+          // Provable.asProver(() => { 
+          //   console.log(`num to add in circuit ${input.index.toBigInt()}: ${numToAdd.toBigInt()}`);
+          // });
+ 
+          const newCounter = Provable.if(isNotFirst.and(isLast.not()), counter.add(numToAdd), counter);
           const currentStateHash = Poseidon.hashPacked(Field, newCounter);
 
-          blobInclusionProof.verifyIf(isLast);
+          blobInclusionProof.verifyIf(blobInclusionVk, isLast);
+          Provable.assertEqualIf(isLast, Field, input.blobInclusionVkHash, blobInclusionVk.hash);
           const currentRollingHash = hashToFields(H);
-          const currentRollingHashBytes = currentRollingHash.flatMap(x=>wordToBytes(x, 16));
-          Provable.assertEqualIf(isLast, Bytes32.provable, blobInclusionProof.publicInput.digest, new Bytes32(currentRollingHashBytes));
+          const currentRollingHashBytes = H.flatMap(x=>wordToBytes(x.value, 4).reverse());
+
+          // Provable.asProver(() => { 
+          //   console.log(`current H ${input.index.toBigInt()}: ${H.map(x=>x.toBigint())}`);
+          //   console.log(`current rolling hash bytes ${input.index.toBigInt()}: ${Buffer.from(currentRollingHashBytes.map(x=>x.toNumber())).toString('hex')}`);
+          // });
+
+          Provable.assertEqualIf(isLast, Bytes32.provable, blobInclusionProof.publicInput.digest, Bytes32.from(currentRollingHashBytes));
 
           return new BatcherOutput({
-            initialStateHash: Provable.if(isFirst, input.currentStateHash, previousProof.publicOutput.initialStateHash),
+            initialStateHash: Provable.if(isFirst, Field, input.currentStateHash, previousProof.publicOutput.initialStateHash),
             currentStateHash,
             currentRollingHash,
+            dataCommitment: Bytes32.from(dataCommitment),
           });
         },
       },
@@ -201,4 +241,4 @@ const batcherVerifier = ZkProgram({
 });
 
 const BatcherProof = ZkProgram.Proof(batcherVerifier);
-export { batcherVerifier, BatcherProof, BatcherInput };
+export { batcherVerifier, BatcherProof, BatcherInput, BatcherOutput, Bytes29, Bytes64, BatcherDynamicProof, BlobInclusionDynamicProof, bytesToField };
