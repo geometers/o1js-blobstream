@@ -18,7 +18,7 @@
     "buildw": "tsc --watch",
     "coverage": "node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage",
     "format": "prettier --write --ignore-unknown **/*",
-    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
+    "test": "npm run build && node --max-old-space-size=65536 build/src/plonk/e2e_test.js && node --max-old-space-size=65536 build/src/plonk/mm_loop/e2e_test.js && node --max-old-space-size=65536 build/src/plonk/piop/e2e_test.js && node --max-old-space-size=65536 build/src/plonk/piop/e2e_test.js && node --max-old-space-size=65536 build/src/groth/e2e_test.js",
     "testw": "node --experimental-vm-modules node_modules/jest/bin/jest.js --watch",
     "lint": "npx eslint src/* --fix"
   },
