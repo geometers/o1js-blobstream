@@ -71,11 +71,9 @@ export class HelloWorldRollup extends SmartContract {
             ])
         ).assertEquals(blobstreamRoot);
 
-        const currentState = this.rollupState.get();
-        this.rollupState.requireEquals(currentState);
+        const currentState = this.rollupState.getAndRequireEquals();
         currentState.assertEquals(batcherProof.publicOutput.initialStateHash);
 
-        this.rollupState.requireNothing();
         this.rollupState.set(batcherProof.publicOutput.currentStateHash);
 
         const blobInclusionVkHash = this.blobInclusionVkHash.get();

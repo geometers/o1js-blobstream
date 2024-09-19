@@ -47,10 +47,9 @@ export class BlobstreamProcessor extends SmartContract {
 
     @method async update(admin: PrivateKey, blobstreamProof: BlobstreamProofType, path: BlobstreamMerkleWitness) {
         blobstreamProof.verify()
-        let leafIndex = this.currentLeafIndex.get();
-        this.currentLeafIndex.requireEquals(leafIndex);
+        let leafIndex = this.currentLeafIndex.getAndRequireEquals();
 
-        let commitmentsRoot = this.commitmentsRoot.get();
+        let commitmentsRoot = this.commitmentsRoot.getAndRequireEquals();
         this.commitmentsRoot.requireEquals(commitmentsRoot);
 
         path.calculateRoot(Field(0)).assertEquals(commitmentsRoot);
@@ -58,7 +57,6 @@ export class BlobstreamProcessor extends SmartContract {
             ...blobstreamProof.publicInput.dataCommitment.toFields(),
         ]));
 
-        this.commitmentsRoot.requireNothing();
         this.commitmentsRoot.set(newRoot);
 
         this.currentLeafIndex.set(leafIndex.add(Field.from(1)));
