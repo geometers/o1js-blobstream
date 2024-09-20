@@ -50,7 +50,6 @@ export class BlobstreamProcessor extends SmartContract {
         let leafIndex = this.currentLeafIndex.getAndRequireEquals();
 
         let commitmentsRoot = this.commitmentsRoot.getAndRequireEquals();
-        this.commitmentsRoot.requireEquals(commitmentsRoot);
 
         path.calculateRoot(Field(0)).assertEquals(commitmentsRoot);
         const newRoot = path.calculateRoot(Poseidon.hash([
