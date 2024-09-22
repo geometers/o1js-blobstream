@@ -28,6 +28,12 @@ jobs:
         name: Checkout code
         uses: actions/checkout@v4
 
+      -
+        name: Run e2e_risc_zero.sh
+        working-directory: scripts/risc_zero_example/
+        run: |
+          bash ./e2e_risc_zero.sh
+
       - 
         name: Run e2e_blobstream_inclusion.sh
         working-directory: scripts/blobstream_example/
