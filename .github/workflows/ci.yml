@@ -57,6 +57,11 @@ jobs:
         with:
           node-version: 22
 
+      - 
+        name: Install build dependencies
+        run: |
+          sudo apt-get -y -qq install build-essential
+
       -
         name: Run e2e_risc_zero.sh
         working-directory: scripts/risc_zero_example/
