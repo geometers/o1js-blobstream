@@ -1,0 +1,75 @@
+name: CI
+run-name: ${{ github.actor }} is testing out o1js-blobstream
+on: [push]
+#on:
+  #push:
+    #branches: [ "main" ]
+  #pull_request:
+    #branches: [ "main" ]
+
+env:
+  MAX_THREADS: 2
+
+jobs:
+  setup_node_and_rust:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [22.x]
+    steps:
+      - 
+        name: Checkout code
+        uses: actions/checkout@v4
+
+      -
+        name: Clear up disk space
+        run: |
+          echo "free space:"
+          df -h
+          bash ./ci_free_disk_space.sh
+          echo "free space:"
+          df -h
+
+      - 
+        name: Clear up disk space #2
+        uses: jlumbroso/free-disk-space@main
+        with:
+          # this might remove tools that are actually needed,
+          # if set to "true" but frees about 6 GB
+          tool-cache: false
+          
+          # all of these default to true, but feel free to set to
+          # "false" if necessary for your workflow
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: true
+          docker-images: true
+          swap-storage: true
+
+      - 
+        name: Use Rust
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+
+      - 
+        name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - 
+        name: Install build dependencies
+        run: |
+          sudo apt-get -y -qq install build-essential
+
+      -
+        name: Run e2e_risc_zero.sh
+        working-directory: scripts/risc_zero_example/
+        run: |
+          bash ./e2e_risc_zero.sh
+
+      - 
+        name: Run e2e_blobstream_inclusion.sh
+        working-directory: scripts/blobstream_example/
+        run: |
+          bash ./e2e_blobstream_inclusion.sh
