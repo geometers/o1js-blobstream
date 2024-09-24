@@ -272,12 +272,20 @@ async function blobstream_contract() {
 
     console.log('initial state', initialState);
 
+    console.log('setting blobstream parameters');
+
+    const blobstreamProof = await BlobstreamProof.fromJSON(JSON.parse(fs.readFileSync(blobstreamProofPath, 'utf8')));
+
+    txn = await Mina.transaction(feePayer1, async () => {
+        await contract.setParameters(Poseidon.hashPacked(Bytes32.provable, blobstreamProof.publicInput.trustedHeaderHash));
+    });
+    await txn.prove();
+    await txn.sign([feePayer1.key]).send();
+
     // update state with value that satisfies preconditions and correct admin private key
     console.log(
     `updating blobstream state`
     );
-
-    const blobstreamProof = await BlobstreamProof.fromJSON(JSON.parse(fs.readFileSync(blobstreamProofPath, 'utf8')));
 
     const path = blobstreamTree.getWitness(0n);
 
@@ -338,8 +346,17 @@ async function rollup_contract() {
     await txn.sign([feePayer1.key, rollupContractAccount.key]).send();
 
     console.log('Setting Blobstream parameters...');
+
+    const blobstreamProof = await BlobstreamProof.fromJSON(JSON.parse(fs.readFileSync(blobstreamProofPath, 'utf8')));
+
     txn = await Mina.transaction(feePayer1, async () => {
         await rollupContract.setParameters(adminPrivateKey, contractAccount, blobInclusionVk.hash, batcherVk.hash);
+    });
+    await txn.prove();
+    await txn.sign([feePayer1.key]).send();
+
+    txn = await Mina.transaction(feePayer1, async () => {
+        await contract.setParameters(Poseidon.hashPacked(Bytes32.provable, blobstreamProof.publicInput.trustedHeaderHash));
     });
     await txn.prove();
     await txn.sign([feePayer1.key]).send();
@@ -348,7 +365,6 @@ async function rollup_contract() {
     `Updating Blobstream state...`
     );
 
-    const blobstreamProof = await BlobstreamProof.fromJSON(JSON.parse(fs.readFileSync(blobstreamProofPath, 'utf8')));
     const batcherProof = await BatcherProof.fromJSON(JSON.parse(fs.readFileSync(batcherProofPath, 'utf8')));
 
     const path = blobstreamTree.getWitness(0n);
