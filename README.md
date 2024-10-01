@@ -1,6 +1,6 @@
 # o1js-pairing
 
-See the [Gitbook](https://github.com/geometers/o1js-blobstream) for documentation.
+See the [Gitbook](https://o1js-blobstream.gitbook.io/o1js-blobstream) for documentation.
 
 ## License
 
