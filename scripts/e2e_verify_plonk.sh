@@ -3,7 +3,7 @@
 set -e
 
 source ./scripts/.env
-cd ./contracts
+
 NODE_SCRIPT="./build/src/plonk/e2e_verify.js"
 
 AUX_WITNESS_RELATIVE_PATH="../$AUX_WITNESS_PATH"

@@ -3,3 +3,29 @@ scripts/blobstream_example/run
 scripts/risc_zero_example/run
 scripts/risc_zero_example/work_dir
 scripts/risc_zero_example/cache_dir
+scripts/conversion
+conversion
+
+# NodeJS
+node_modules
+build
+coverage
+
+# Editor
+.vscode
+
+# System
+.DS_Store
+
+# Never commit keys to Git!
+keys
+
+groth16_cache
+
+src/recursion/vks
+src/recursion/proofs
+
+src/plonk/recursion/vks
+src/plonk/recursion/proofs
+
+.conversion-cache

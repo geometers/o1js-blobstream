@@ -12,7 +12,6 @@ rm -f $MLO_RELATIVE_PATH
 AUX_WITNESS_RELATIVE_PATH="$(realpath ${WORK_DIR_RELATIVE_TO_SCRIPTS})/aux_wtns.json"
 rm -f $AUX_WITNESS_RELATIVE_PATH
 
-cd ./contracts
 NODE_SCRIPT="./build/src/groth/serialize_mlo.js"
 
 # obtain mlo result
@@ -32,7 +31,7 @@ else
 fi
 
 # reposition 
-cd ../pairing-utils
+cd ./pairing-utils
 
 cargo run --bin aux_witness -- $MLO_RELATIVE_PATH $AUX_WITNESS_RELATIVE_PATH & 
 cargo_pid=$!

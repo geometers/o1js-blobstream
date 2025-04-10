@@ -4,8 +4,6 @@ args=("$@")
 ENV=${args[0]}
 source ${ENV}
 
-cd ./contracts
-
 WORK_DIR_RELATIVE_TO_SCRIPTS="../scripts/${WORK_DIR}"
 CACHE_DIR_RELATIVE_TO_SCRIPTS="../scripts/${CACHE_DIR}"
 AUX_WITNESS_RELATIVE_PATH="$(realpath ${WORK_DIR_RELATIVE_TO_SCRIPTS})/aux_wtns.json"

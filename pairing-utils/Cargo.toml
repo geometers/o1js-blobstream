@@ -1,11 +1,12 @@
 [package]
-name = "pairing-utils"
-version = "0.1.0"
+name = "proof-conversion-pairing-utils"
+version = "0.4.0"
 edition = "2021"
 
 [lib]
 name = "pairing_utils"
 path = "src/lib.rs"
+crate-type = ["rlib", "cdylib"]
 
 [dependencies]
 ark-ff = "0.4.2"
@@ -18,3 +19,17 @@ ark-serialize = "0.4.2"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 num-bigint = "0.4"
+
+# WebAssembly-specific output (for wasm-pack)
+[target.wasm32-unknown-unknown.dependencies]
+wasm-bindgen = "0.2"
+serde-wasm-bindgen = "0.4"
+
+# WebAssembly feature
+[features]
+wasm = ["wasm-bindgen", "serde-wasm-bindgen"]
+
+# Conditional dependencies for Wasm
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+wasm-bindgen = { version = "0.2", optional = true }
+serde-wasm-bindgen = { version = "0.4", optional = true }

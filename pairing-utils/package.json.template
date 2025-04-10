@@ -1,0 +1,22 @@
+{
+    "name": "@nori-zk/proof-conversion-pairing-utils",
+    "type": "module",
+    "version": "0.3.0",
+    "license": "Apache-2.0",
+    "publishConfig": {
+      "registry": "https://registry.npmjs.org/",
+      "access": "public"
+    },
+    "files": [
+      "pairing_utils_bg.wasm",
+      "pairing_utils.js",
+      "pairing_utils_bg.js",
+      "pairing_utils.d.ts"
+    ],
+    "main": "pairing_utils.js",
+    "types": "pairing_utils.d.ts",
+    "sideEffects": [
+      "./pairing_utils.js",
+      "./snippets/*"
+    ]
+  }

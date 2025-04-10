@@ -9,8 +9,6 @@ source ${ENV}
 SCRIPT_DIR=$(dirname -- $(realpath $0)) 
 cd $SCRIPT_DIR/..
 
-pushd ./contracts
-
 node_version=$(node -v)
 node_version=${node_version:1}
 node_version=${node_version%\.*}
@@ -24,8 +22,6 @@ fi
 
 npm install
 npm run build
-
-popd
 
 WORK_DIR_RELATIVE_TO_SCRIPTS="./scripts/${WORK_DIR}"
 mkdir -p ${WORK_DIR_RELATIVE_TO_SCRIPTS}
